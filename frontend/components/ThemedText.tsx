@@ -1,21 +1,18 @@
+import React from 'react';
 import { Text, TextProps, StyleSheet } from 'react-native';
+import { useTheme } from '../context/ThemeContext';
 
-import { useThemeColor } from '../hooks/useThemeColor';
-
-export interface ThemedTextProps extends TextProps {
-  lightColor?: string;
-  darkColor?: string;
-  type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link';
-  children?: React.ReactNode;
-}
-
-export function ThemedText({ style, lightColor, darkColor, type = 'default', children, ...otherProps }: ThemedTextProps) {
-  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
+export function ThemedText({ style, ...props }: TextProps) {
+  const { isDarkMode } = useTheme();
 
   return (
-    <Text style={[{ color }, styles[type], style]} {...otherProps}>
-      {children}
-    </Text>
+    <Text 
+      style={[
+        { color: isDarkMode ? '#FFFFFF' : '#000000' },
+        style
+      ]} 
+      {...props} 
+    />
   );
 }
 

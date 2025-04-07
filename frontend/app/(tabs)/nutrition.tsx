@@ -4,14 +4,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Header from '../../components/Header';
 import { ThemedView } from '../../components/ThemedView';
 
-export default function TrainingScreen() {
+export default function NutritionScreen() {
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView edges={['top']}>
-        <Header title="Training" />
+        <Header title="Nutrition" />
       </SafeAreaView>
       <ThemedView style={styles.content}>
-        {/* Training content will go here */}
+        {/* Nutrition content will go here */}
       </ThemedView>
     </ThemedView>
   );
@@ -25,4 +25,4 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
-});
+}); 

@@ -1,12 +1,31 @@
-import { StyleSheet, Text, View } from "react-native";
+import { useEffect } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useAuth } from '../context/AuthContext';
+import Logo from '../components/Logo';
 
-export default function Page() {
+export default function SplashScreen() {
+  const router = useRouter();
+  const { session } = useAuth();
+
+  useEffect(() => {
+    const checkAuthAndNavigate = async () => {
+      // Wait for 2 seconds to show the splash screen
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      if (session) {
+        router.replace('/(tabs)');
+      } else {
+        router.replace('/(onboarding)/get-started');
+      }
+    };
+
+    checkAuthAndNavigate();
+  }, [session]);
+
   return (
     <View style={styles.container}>
-      <View style={styles.main}>
-        <Text style={styles.title}>Hello World</Text>
-        <Text style={styles.subtitle}>This is the first page of your app.</Text>
-      </View>
+      <Logo size={80} color="#fff" />
     </View>
   );
 }
@@ -14,21 +33,8 @@ export default function Page() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    padding: 24,
-  },
-  main: {
-    flex: 1,
-    justifyContent: "center",
-    maxWidth: 960,
-    marginHorizontal: "auto",
-  },
-  title: {
-    fontSize: 64,
-    fontWeight: "bold",
-  },
-  subtitle: {
-    fontSize: 36,
-    color: "#38434D",
+    backgroundColor: '#000',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

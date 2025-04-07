@@ -1,17 +1,10 @@
 import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useColorScheme } from 'react-native';
 
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
-
-// Add proper types for the color parameter
 interface TabBarIconProps {
-  color: string
-  size?: number
+  color: string;
+  size: number;
 }
 
 export default function TabLayout() {
@@ -20,30 +13,56 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: '#FF6B00',
+        tabBarInactiveTintColor: colorScheme === 'dark' ? '#64748B' : '#94A3B8',
+        tabBarStyle: {
+          backgroundColor: colorScheme === 'dark' ? '#1E293B' : '#FFFFFF',
+          borderTopColor: colorScheme === 'dark' ? '#334155' : '#E2E8F0',
+          height: 60,
+          paddingBottom: 8,
+          paddingTop: 8,
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '500',
+        },
         headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
-          },
-          default: {},
-        }),
-      }}>
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }: TabBarIconProps) => <IconSymbol size={28} name="house.fill" color={color} />,
+          title: 'Training',
+          tabBarIcon: ({ color, size }: TabBarIconProps) => (
+            <Ionicons name="fitness" size={size} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="nutrition"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }: TabBarIconProps) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: 'Nutrition',
+          tabBarIcon: ({ color, size }: TabBarIconProps) => (
+            <Ionicons name="nutrition" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="fasting"
+        options={{
+          title: 'Fasting',
+          tabBarIcon: ({ color, size }: TabBarIconProps) => (
+            <Ionicons name="time" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Me',
+          tabBarIcon: ({ color, size }: TabBarIconProps) => (
+            <Ionicons name="person" size={size} color={color} />
+          ),
         }}
       />
     </Tabs>
