@@ -35,13 +35,12 @@ export default function SignUp() {
     clearError()
     
     try {
-      // First sign up the user
-      const response = await signUp(email, password)
+      // Sign up the user with their full name
+      const response = await signUp(email, password, fullName)
       
       if (response.success) {
         // Then update their profile with additional information
         const profileResponse = await updateProfile({ 
-          full_name: fullName,
           phone: phone,
           age: 0, // Default value
           fitness_goals: [] // Default empty array

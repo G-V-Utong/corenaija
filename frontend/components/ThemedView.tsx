@@ -8,7 +8,7 @@ export function ThemedView({ style, ...props }: ViewProps) {
   return (
     <View 
       style={[
-        { backgroundColor: isDarkMode ? '#1E293B' : '#FFFFFF' },
+        { backgroundColor: isDarkMode ? '#0F172A' : '#FFFFFF' },
         style
       ]} 
       {...props} 

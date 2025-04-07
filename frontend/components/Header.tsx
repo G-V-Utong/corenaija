@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
-import { View, TouchableOpacity, StyleSheet, Modal, useColorScheme } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, TouchableOpacity, StyleSheet, Modal, Animated, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { ThemedText } from './ThemedText';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
+
+const { width } = Dimensions.get('window');
 
 interface HeaderProps {
   title: string;
@@ -11,29 +14,60 @@ interface HeaderProps {
 
 export default function Header({ title }: HeaderProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const colorScheme = useColorScheme();
+  const { isDarkMode } = useTheme();
   const router = useRouter();
-  const { isDarkMode, toggleTheme } = useTheme();
+  const { user } = useAuth();
+  
+  // Animation value for sidebar
+  const sidebarAnimation = useRef(new Animated.Value(-width)).current;
 
-  const menuItems = [
+  const mainMenuItems = [
     { icon: 'fitness-outline', label: 'Coach', onPress: () => router.push('/coach') },
     { icon: 'bar-chart-outline', label: 'Training History', onPress: () => router.push('/training-history') },
     { icon: 'nutrition-outline', label: 'Nutrition', onPress: () => router.push('/nutrition') },
-    { icon: 'settings-outline', label: 'Settings', onPress: () => router.push('/settings') },
-    { icon: isDarkMode ? 'sunny-outline' : 'moon-outline', 
-      label: isDarkMode ? 'Light Mode' : 'Dark Mode', 
-      onPress: toggleTheme 
-    },
-    { icon: 'shield-checkmark-outline', label: 'Safety center', onPress: () => {} },
-    { icon: 'help-circle-outline', label: 'Help', onPress: () => {} },
-    { icon: 'information-circle-outline', label: 'About', onPress: () => {} },
-    { icon: 'log-out-outline', label: 'Logout', onPress: () => {}, color: '#FF3B30' },
   ];
 
+  const bottomMenuItems = [
+    { icon: 'settings-outline', label: 'Settings', onPress: () => router.push('/settings') },
+    { icon: 'help-circle-outline', label: 'Help', onPress: () => {} },
+    { icon: 'information-circle-outline', label: 'About', onPress: () => {} },
+  ];
+  
+  // Toggle sidebar with animation
+  const toggleSidebar = (open: boolean) => {
+    if (open) {
+      setIsSidebarOpen(true);
+      Animated.timing(sidebarAnimation, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      Animated.timing(sidebarAnimation, {
+        toValue: -width,
+        duration: 300,
+        useNativeDriver: true,
+      }).start(() => {
+        setIsSidebarOpen(false);
+      });
+    }
+  };
+  
+  // Handle navigation with animation
+  const handleNavigation = (onPress: () => void) => {
+    toggleSidebar(false);
+    setTimeout(() => {
+      onPress();
+    }, 300);
+  };
+
+  // Get user's full name or display a default
+  const userFullName = user?.full_name || 'User';
+  
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => setIsSidebarOpen(true)} style={styles.menuButton}>
+        <TouchableOpacity onPress={() => toggleSidebar(true)} style={styles.menuButton}>
           <Ionicons name="menu" size={24} color={isDarkMode ? '#FFFFFF' : '#000000'} />
         </TouchableOpacity>
         <ThemedText style={styles.title}>{title}</ThemedText>
@@ -43,20 +77,25 @@ export default function Header({ title }: HeaderProps) {
         visible={isSidebarOpen}
         animationType="none"
         transparent={true}
-        onRequestClose={() => setIsSidebarOpen(false)}
+        onRequestClose={() => toggleSidebar(false)}
       >
         <TouchableOpacity 
           style={styles.modalOverlay} 
           activeOpacity={1} 
-          onPress={() => setIsSidebarOpen(false)}
+          onPress={() => toggleSidebar(false)}
         >
-          <View style={[
-            styles.sidebar,
-            { backgroundColor: isDarkMode ? '#1E293B' : '#FFFFFF' }
-          ]}>
+          <Animated.View 
+            style={[
+              styles.sidebar,
+              { 
+                backgroundColor: isDarkMode ? '#0F172A' : '#FFFFFF',
+                transform: [{ translateX: sidebarAnimation }]
+              }
+            ]}
+          >
             <TouchableOpacity 
               style={styles.closeButton}
-              onPress={() => setIsSidebarOpen(false)}
+              onPress={() => toggleSidebar(false)}
             >
               <Ionicons 
                 name="close" 
@@ -75,11 +114,10 @@ export default function Header({ title }: HeaderProps) {
                   />
                 </View>
                 <View style={styles.profileInfo}>
-                  <ThemedText style={styles.profileName}>Roger F. Bothman</ThemedText>
-                  <TouchableOpacity onPress={() => {
+                  <ThemedText style={styles.profileName}>{userFullName}</ThemedText>
+                  <TouchableOpacity onPress={() => handleNavigation(() => {
                     router.push('/profile');
-                    setIsSidebarOpen(false);
-                  }}>
+                  })}>
                     <ThemedText style={styles.viewProfile}>View profile</ThemedText>
                   </TouchableOpacity>
                 </View>
@@ -96,29 +134,40 @@ export default function Header({ title }: HeaderProps) {
               </View>
             </View>
             
-            {menuItems.map((item, index) => (
-              <TouchableOpacity
-                key={index}
-                style={styles.menuItem}
-                onPress={() => {
-                  item.onPress();
-                  if (item.label !== 'Dark Mode' && item.label !== 'Light Mode') {
-                    setIsSidebarOpen(false);
-                  }
-                }}
-              >
-                <Ionicons
-                  name={item.icon as any}
-                  size={24}
-                  color={item.color || (isDarkMode ? '#FFFFFF' : '#000000')}
-                />
-                <ThemedText style={[
-                  styles.menuItemText,
-                  item.color ? { color: item.color } : {}
-                ]}>{item.label}</ThemedText>
-              </TouchableOpacity>
-            ))}
-          </View>
+            <View style={styles.menuSection}>
+              {mainMenuItems.map((item, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={styles.menuItem}
+                  onPress={() => handleNavigation(item.onPress)}
+                >
+                  <Ionicons
+                    name={item.icon as any}
+                    size={24}
+                    color={isDarkMode ? '#FFFFFF' : '#000000'}
+                  />
+                  <ThemedText style={styles.menuItemText}>{item.label}</ThemedText>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <View style={styles.bottomMenuSection}>
+              {bottomMenuItems.map((item, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={styles.menuItem}
+                  onPress={() => handleNavigation(item.onPress)}
+                >
+                  <Ionicons
+                    name={item.icon as any}
+                    size={24}
+                    color={isDarkMode ? '#FFFFFF' : '#000000'}
+                  />
+                  <ThemedText style={styles.menuItemText}>{item.label}</ThemedText>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </Animated.View>
         </TouchableOpacity>
       </Modal>
     </View>
@@ -162,11 +211,11 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '80%',
     maxWidth: 360,
-    paddingTop: 5,
+    paddingTop: 0,
   },
   profileSection: {
     paddingLeft: 20,
-    paddingTop: 20,
+    paddingTop:20,
     borderBottomWidth: 1,
     borderBottomColor: '#E2E8F0',
   },
@@ -188,7 +237,7 @@ const styles = StyleSheet.create({
   profileName: {
     fontSize: 18,
     fontWeight: '600',
-    marginBottom: 4,
+    marginBottom: 2,
   },
   viewProfile: {
     fontSize: 14,
@@ -211,10 +260,19 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#64748B',
   },
+  menuSection: {
+    paddingVertical: 8,
+  },
+  bottomMenuSection: {
+    borderTopWidth: 1,
+    borderTopColor: '#E2E8F0',
+    marginTop: 'auto',
+    paddingVertical: 8,
+  },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 16,
+    paddingVertical: 12,
     paddingHorizontal: 20,
   },
   menuItemText: {

@@ -6,22 +6,25 @@ import Logo from '../components/Logo';
 
 export default function SplashScreen() {
   const router = useRouter();
-  const { session } = useAuth();
+  const { session, loading } = useAuth();
 
   useEffect(() => {
     const checkAuthAndNavigate = async () => {
       // Wait for 2 seconds to show the splash screen
       await new Promise(resolve => setTimeout(resolve, 2000));
 
-      if (session) {
-        router.replace('/(tabs)');
-      } else {
-        router.replace('/(onboarding)/get-started');
+      // Only navigate if we're not still loading
+      if (!loading) {
+        if (session) {
+          router.replace('/(tabs)');
+        } else {
+          router.replace('/(onboarding)/get-started');
+        }
       }
     };
 
     checkAuthAndNavigate();
-  }, [session]);
+  }, [session, loading]);
 
   return (
     <View style={styles.container}>
