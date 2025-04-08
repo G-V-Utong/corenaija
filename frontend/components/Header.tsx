@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { ThemedText } from './ThemedText';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 
 const { width } = Dimensions.get('window');
 
@@ -17,20 +18,21 @@ export default function Header({ title }: HeaderProps) {
   const { isDarkMode } = useTheme();
   const router = useRouter();
   const { user } = useAuth();
+  const { t } = useLanguage();
   
   // Animation value for sidebar
   const sidebarAnimation = useRef(new Animated.Value(-width)).current;
 
   const mainMenuItems = [
-    { icon: 'fitness-outline', label: 'Coach', onPress: () => router.push('/coach') },
-    { icon: 'bar-chart-outline', label: 'Training History', onPress: () => router.push('/training-history') },
-    { icon: 'nutrition-outline', label: 'Nutrition', onPress: () => router.push('/nutrition') },
+    { icon: 'fitness-outline', label: t('sidebar.menu.coach'), onPress: () => router.push('/coach') },
+    { icon: 'bar-chart-outline', label: t('sidebar.menu.trainingHistory'), onPress: () => router.push('/training-history') },
+    { icon: 'nutrition-outline', label: t('sidebar.menu.nutrition'), onPress: () => router.push('/nutrition') },
   ];
 
   const bottomMenuItems = [
-    { icon: 'help-circle-outline', label: 'Help', onPress: () => {} },
-    { icon: 'information-circle-outline', label: 'About', onPress: () => {} },
-    { icon: 'settings-outline', label: 'Settings', onPress: () => router.push('/settings') },
+    { icon: 'help-circle-outline', label: t('sidebar.menu.help'), onPress: () => {} },
+    { icon: 'information-circle-outline', label: t('sidebar.menu.about'), onPress: () => {} },
+    { icon: 'settings-outline', label: t('sidebar.menu.settings'), onPress: () => router.push('/settings') },
   ];
   
   // Toggle sidebar with animation
@@ -90,7 +92,7 @@ export default function Header({ title }: HeaderProps) {
           activeOpacity={1} 
           onPress={() => toggleSidebar(false)}
         >
-          <Animated.View 
+          <Animated.View
             style={[
               styles.sidebar,
               { 
@@ -127,18 +129,19 @@ export default function Header({ title }: HeaderProps) {
                   <TouchableOpacity onPress={() => handleNavigation(() => {
                     router.push('/profile');
                   })}>
-                    <ThemedText style={styles.viewProfile}>View profile</ThemedText>
+                    <ThemedText style={styles.viewProfile}>{t('sidebar.viewProfile')}</ThemedText>
                   </TouchableOpacity>
                 </View>
               </View>
+              
               <View style={styles.statsContainer}>
                 <View style={styles.statItem}>
                   <ThemedText style={styles.statValue}>108</ThemedText>
-                  <ThemedText style={styles.statLabel}>Kilometers</ThemedText>
+                  <ThemedText style={styles.statLabel}>{t('sidebar.stats.kilometers')}</ThemedText>
                 </View>
                 <View style={styles.statItem}>
                   <ThemedText style={styles.statValue}>4</ThemedText>
-                  <ThemedText style={styles.statLabel}>Rides</ThemedText>
+                  <ThemedText style={styles.statLabel}>{t('sidebar.stats.rides')}</ThemedText>
                 </View>
               </View>
             </View>

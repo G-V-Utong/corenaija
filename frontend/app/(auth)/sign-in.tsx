@@ -1,23 +1,31 @@
-import { useState } from 'react'
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
+import React, { useState } from 'react'
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
 import { authStyles as styles } from '../../styles/auth.styles'
 import { Ionicons } from '@expo/vector-icons'
 import HomeLogo from '@/components/HomeLogo'
+import { ThemedView } from '../../components/ThemedView'
+import { ThemedText } from '../../components/ThemedText'
+import { useTheme } from '../../context/ThemeContext'
+import { useLanguage } from '../../context/LanguageContext'
 
-export default function SignIn() {
+export default function SignInScreen() {
   const router = useRouter()
   const { signIn, error, loading, clearError } = useAuth()
   const { showToast } = useToast()
+  const { isDarkMode } = useTheme()
+  const { t } = useLanguage()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleSignIn = async () => {
     if (!email || !password) {
+      Alert.alert(t('common.error'), t('validation.required'))
       return
     }
     
@@ -25,6 +33,7 @@ export default function SignIn() {
     clearError()
     
     try {
+      setIsLoading(true)
       const response = await signIn(email, password)
       if (response.success) {
         showToast('Successfully signed in!', 'success')
@@ -33,50 +42,56 @@ export default function SignIn() {
         showToast(error || 'Failed to sign in', 'error')
       }
     } catch (err) {
+      console.error('Sign in error:', err)
       showToast('An error occurred during sign in', 'error')
     } finally {
       setIsSubmitting(false)
+      setIsLoading(false)
     }
   }
 
   return (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
-    >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-      <View style={styles.logoContainer}>
-        <HomeLogo size={40} color="#FF6B00" />
-      </View>
-
-        <View style={styles.header}>
-          <Text style={styles.headerText}>Welcome Back</Text>
-          <Text style={styles.subHeaderText}>Sign in to continue</Text>
-        </View>
-
+    <ThemedView style={styles.container}>
+      <View style={styles.content}>
+        <ThemedText style={styles.title}>{t('auth.signIn.title')}</ThemedText>
+        
         <View style={styles.form}>
           <View style={styles.inputContainer}>
-            <Ionicons name="mail-outline" size={20} color="#64748B" style={styles.inputIcon} />
+            <ThemedText style={styles.label}>{t('auth.signIn.emailLabel')}</ThemedText>
             <TextInput
-              style={styles.input}
-              placeholder="Email"
+              style={[
+                styles.input,
+                { 
+                  color: isDarkMode ? '#FFFFFF' : '#000000',
+                  backgroundColor: isDarkMode ? '#1E293B' : '#F1F5F9',
+                  borderColor: isDarkMode ? '#334155' : '#CBD5E1'
+                }
+              ]}
+              placeholder={t('auth.signIn.emailPlaceholder')}
+              placeholderTextColor={isDarkMode ? '#64748B' : '#94A3B8'}
               value={email}
               onChangeText={setEmail}
               autoCapitalize="none"
               keyboardType="email-address"
-              placeholderTextColor="#94A3B8"
             />
           </View>
 
           <View style={styles.inputContainer}>
-            <Ionicons name="lock-closed-outline" size={20} color="#64748B" style={styles.inputIcon} />
+            <ThemedText style={styles.label}>{t('auth.signIn.passwordLabel')}</ThemedText>
             <TextInput
-              style={styles.input}
-              placeholder="Password"
+              style={[
+                styles.input,
+                { 
+                  color: isDarkMode ? '#FFFFFF' : '#000000',
+                  backgroundColor: isDarkMode ? '#1E293B' : '#F1F5F9',
+                  borderColor: isDarkMode ? '#334155' : '#CBD5E1'
+                }
+              ]}
+              placeholder={t('auth.signIn.passwordPlaceholder')}
+              placeholderTextColor={isDarkMode ? '#64748B' : '#94A3B8'}
               value={password}
               onChangeText={setPassword}
               secureTextEntry={!showPassword}
-              placeholderTextColor="#94A3B8"
             />
             <TouchableOpacity 
               onPress={() => setShowPassword(!showPassword)}
@@ -91,48 +106,38 @@ export default function SignIn() {
           </View>
 
           <TouchableOpacity 
-            onPress={() => router.push('/forgot-password')}
             style={styles.forgotPassword}
+            onPress={() => router.push('/forgot-password')}
           >
-            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+            <ThemedText style={styles.forgotPasswordText}>
+              {t('auth.signIn.forgotPassword')}
+            </ThemedText>
           </TouchableOpacity>
 
           {error && <Text style={styles.errorText}>{error}</Text>}
 
-          <TouchableOpacity 
-            style={styles.button} 
+          <TouchableOpacity
+            style={[styles.button, isLoading && styles.buttonDisabled]}
             onPress={handleSignIn}
-            disabled={isSubmitting || !email || !password}
+            disabled={isLoading}
           >
-            {isSubmitting ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={styles.buttonText}>Sign In</Text>
-            )}
+            <ThemedText style={styles.buttonText}>
+              {isLoading ? t('common.loading') : t('auth.signIn.signInButton')}
+            </ThemedText>
           </TouchableOpacity>
 
-          {/* <View style={styles.divider}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>OR</Text>
-            <View style={styles.dividerLine} />
-          </View>
-
-          <TouchableOpacity 
-            style={styles.socialButton}
-            onPress={() => {}}
-          >
-            <Ionicons name="logo-google" size={20} color="#000" />
-            <Text style={styles.socialButtonText}>Continue with Google</Text>
-          </TouchableOpacity> */}
-
-          <View style={styles.signUpContainer}>
-            <Text style={styles.signUpText}>Don't have an account? </Text>
+          <View style={styles.footer}>
+            <ThemedText style={styles.footerText}>
+              {t('auth.signIn.noAccount')}
+            </ThemedText>
             <TouchableOpacity onPress={() => router.push('/sign-up')}>
-              <Text style={styles.signUpLink}>Sign Up</Text>
+              <ThemedText style={styles.footerLink}>
+                {t('auth.signIn.signUp')}
+              </ThemedText>
             </TouchableOpacity>
           </View>
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      </View>
+    </ThemedView>
   )
 } 

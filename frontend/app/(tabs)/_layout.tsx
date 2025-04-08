@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface TabBarIconProps {
   color: string;
@@ -10,6 +11,7 @@ interface TabBarIconProps {
 
 export default function TabLayout() {
   const { isDarkMode } = useTheme();
+  const { t } = useLanguage();
 
   return (
     <Tabs
@@ -34,7 +36,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Training',
+          title: t('tabs.training'),
           tabBarIcon: ({ color, size, focused }: TabBarIconProps) => (
             <Ionicons 
               name="fitness" 
@@ -47,7 +49,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="nutrition"
         options={{
-          title: 'Nutrition',
+          title: t('tabs.nutrition'),
           tabBarIcon: ({ color, size, focused }: TabBarIconProps) => (
             <Ionicons 
               name="nutrition" 
@@ -60,7 +62,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="fasting"
         options={{
-          title: 'Fasting',
+          title: t('tabs.fasting'),
           tabBarIcon: ({ color, size, focused }: TabBarIconProps) => (
             <Ionicons 
               name="time" 
@@ -73,7 +75,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Me',
+          title: t('tabs.profile'),
           tabBarIcon: ({ color, size, focused }: TabBarIconProps) => (
             <Ionicons 
               name="person" 

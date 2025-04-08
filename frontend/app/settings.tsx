@@ -8,10 +8,12 @@ import { ThemedView } from '../components/ThemedView';
 import { ThemedText } from '../components/ThemedText';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function SettingsScreen() {
   const router = useRouter();
   const { isDarkMode, themeMode, setThemeMode } = useTheme();
+  const { language, setLanguage, getLanguageLabel, t } = useLanguage();
   const { signOut, deleteAccount, updateEmail, updatePassword, user } = useAuth();
   const [showThemeModal, setShowThemeModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -19,6 +21,7 @@ export default function SettingsScreen() {
   const [showAccountModal, setShowAccountModal] = useState(false);
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [newEmail, setNewEmail] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -28,40 +31,40 @@ export default function SettingsScreen() {
   const getThemeValue = () => {
     switch (themeMode) {
       case 'light':
-        return 'Light';
+        return t('settings.theme.light');
       case 'dark':
-        return 'Dark';
+        return t('settings.theme.dark');
       case 'system':
-        return 'System';
+        return t('settings.theme.system');
       default:
-        return 'System';
+        return t('settings.theme.system');
     }
   };
 
   const settingsOptions = [
     {
       icon: 'contrast-outline',
-      label: 'Theme',
+      label: t('settings.theme.label'),
       value: getThemeValue(),
       onPress: () => setShowThemeModal(true),
     },
     {
       icon: 'person-outline',
-      label: 'Account',
-      value: 'Manage',
+      label: t('settings.account.label'),
+      value: t('settings.account.value'),
       onPress: () => setShowAccountModal(true),
     },
     {
       icon: 'notifications-outline',
-      label: 'Notifications',
-      value: 'On',
+      label: t('settings.notifications.label'),
+      value: t('settings.notifications.value'),
       onPress: () => {},
     },
     {
       icon: 'language-outline',
-      label: 'Language',
-      value: 'English',
-      onPress: () => {},
+      label: t('settings.language.label'),
+      value: getLanguageLabel(language),
+      onPress: () => setShowLanguageModal(true),
     },
   ];
 
@@ -100,7 +103,7 @@ export default function SettingsScreen() {
 
   const handleUpdateEmail = async () => {
     if (!newEmail || !currentPassword) {
-      Alert.alert('Error', 'Please fill in all fields');
+      Alert.alert(t('common.error'), t('validation.required'));
       return;
     }
 
@@ -108,16 +111,16 @@ export default function SettingsScreen() {
       setIsUpdating(true);
       const response = await updateEmail(newEmail, currentPassword);
       if (response.success) {
-        Alert.alert('Success', 'Email updated successfully');
+        Alert.alert(t('common.success'), t('settings.account.emailUpdated'));
         setShowEmailModal(false);
         setNewEmail('');
         setCurrentPassword('');
       } else {
-        Alert.alert('Error', response.error?.message || 'Failed to update email');
+        Alert.alert(t('common.error'), response.error?.message || t('errors.updateFailed'));
       }
     } catch (error) {
       console.error('Update email error:', error);
-      Alert.alert('Error', 'An unexpected error occurred');
+      Alert.alert(t('common.error'), t('errors.default'));
     } finally {
       setIsUpdating(false);
     }
@@ -125,12 +128,12 @@ export default function SettingsScreen() {
 
   const handleUpdatePassword = async () => {
     if (!newPassword || !confirmPassword) {
-      Alert.alert('Error', 'Please fill in all fields');
+      Alert.alert(t('common.error'), t('validation.required'));
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match');
+      Alert.alert(t('common.error'), t('settings.account.passwordsDontMatch'));
       return;
     }
 
@@ -138,44 +141,49 @@ export default function SettingsScreen() {
       setIsUpdating(true);
       const response = await updatePassword(newPassword);
       if (response.success) {
-        Alert.alert('Success', 'Password updated successfully');
+        Alert.alert(t('common.success'), t('settings.account.passwordUpdated'));
         setShowPasswordModal(false);
         setNewPassword('');
         setConfirmPassword('');
       } else {
-        Alert.alert('Error', response.error?.message || 'Failed to update password');
+        Alert.alert(t('common.error'), response.error?.message || t('errors.updateFailed'));
       }
     } catch (error) {
       console.error('Update password error:', error);
-      Alert.alert('Error', 'An unexpected error occurred');
+      Alert.alert(t('common.error'), t('errors.default'));
     } finally {
       setIsUpdating(false);
     }
   };
 
   const themeOptions = [
-    { label: 'Light', value: 'light', icon: 'sunny-outline' },
-    { label: 'Dark', value: 'dark', icon: 'moon-outline' },
-    { label: 'System', value: 'system', icon: 'phone-portrait-outline' },
+    { label: t('settings.theme.light'), value: 'light', icon: 'sunny-outline' },
+    { label: t('settings.theme.dark'), value: 'dark', icon: 'moon-outline' },
+    { label: t('settings.theme.system'), value: 'system', icon: 'phone-portrait-outline' },
   ];
 
   const accountOptions = [
     { 
       icon: 'mail-outline', 
-      label: 'Change Email', 
+      label: t('settings.account.changeEmail'), 
       onPress: () => setShowEmailModal(true) 
     },
     { 
       icon: 'lock-closed-outline', 
-      label: 'Change Password', 
+      label: t('settings.account.changePassword'), 
       onPress: () => setShowPasswordModal(true) 
     },
+  ];
+
+  const languageOptions = [
+    { label: 'English', value: 'en', icon: 'language-outline' },
+    { label: 'Pidgin', value: 'pcm', icon: 'language-outline' },
   ];
 
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView edges={['top']}>
-        <Header title="Settings" />
+        <Header title={t('settings.title')} />
       </SafeAreaView>
       <ScrollView style={styles.content}>
         <View style={styles.section}>
@@ -222,7 +230,7 @@ export default function SettingsScreen() {
                 style={styles.settingIcon}
               />
               <ThemedText style={[styles.settingLabel, { color: '#FF3B30' }]}>
-                Delete Account
+                {t('settings.deleteAccount.label')}
               </ThemedText>
             </View>
             <Ionicons
@@ -256,7 +264,7 @@ export default function SettingsScreen() {
             onPress={() => setShowThemeModal(false)}
           >
             <ThemedView style={styles.modalContent}>
-              <ThemedText style={styles.modalTitle}>Choose Theme</ThemedText>
+              <ThemedText style={styles.modalTitle}>{t('settings.theme.modalTitle')}</ThemedText>
               {themeOptions.map((option, index) => (
                 <TouchableOpacity
                   key={index}
@@ -307,7 +315,7 @@ export default function SettingsScreen() {
             onPress={() => setShowAccountModal(false)}
           >
             <ThemedView style={styles.modalContent}>
-              <ThemedText style={styles.modalTitle}>Account Settings</ThemedText>
+              <ThemedText style={styles.modalTitle}>{t('settings.account.modalTitle')}</ThemedText>
               {accountOptions.map((option, index) => (
                 <TouchableOpacity
                   key={index}
@@ -355,10 +363,10 @@ export default function SettingsScreen() {
             onPress={() => !isUpdating && setShowEmailModal(false)}
           >
             <ThemedView style={styles.modalContent}>
-              <ThemedText style={styles.modalTitle}>Change Email</ThemedText>
+              <ThemedText style={styles.modalTitle}>{t('settings.account.changeEmail')}</ThemedText>
               
               <View style={styles.inputContainer}>
-                <ThemedText style={styles.inputLabel}>Current Email</ThemedText>
+                <ThemedText style={styles.inputLabel}>{t('settings.account.currentEmail')}</ThemedText>
                 <TextInput
                   style={[
                     styles.input,
@@ -374,7 +382,7 @@ export default function SettingsScreen() {
               </View>
               
               <View style={styles.inputContainer}>
-                <ThemedText style={styles.inputLabel}>New Email</ThemedText>
+                <ThemedText style={styles.inputLabel}>{t('settings.account.newEmail')}</ThemedText>
                 <TextInput
                   style={[
                     styles.input,
@@ -386,7 +394,7 @@ export default function SettingsScreen() {
                   ]}
                   value={newEmail}
                   onChangeText={setNewEmail}
-                  placeholder="Enter new email"
+                  placeholder={t('settings.account.enterNewEmail')}
                   placeholderTextColor={isDarkMode ? '#64748B' : '#94A3B8'}
                   keyboardType="email-address"
                   autoCapitalize="none"
@@ -394,7 +402,7 @@ export default function SettingsScreen() {
               </View>
               
               <View style={styles.inputContainer}>
-                <ThemedText style={styles.inputLabel}>Current Password</ThemedText>
+                <ThemedText style={styles.inputLabel}>{t('settings.account.currentPassword')}</ThemedText>
                 <TextInput
                   style={[
                     styles.input,
@@ -406,7 +414,7 @@ export default function SettingsScreen() {
                   ]}
                   value={currentPassword}
                   onChangeText={setCurrentPassword}
-                  placeholder="Enter current password"
+                  placeholder={t('settings.account.enterCurrentPassword')}
                   placeholderTextColor={isDarkMode ? '#64748B' : '#94A3B8'}
                   secureTextEntry
                 />
@@ -418,7 +426,7 @@ export default function SettingsScreen() {
                   onPress={() => setShowEmailModal(false)}
                   disabled={isUpdating}
                 >
-                  <ThemedText style={styles.cancelButtonText}>Cancel</ThemedText>
+                  <ThemedText style={styles.cancelButtonText}>{t('common.cancel')}</ThemedText>
                 </TouchableOpacity>
                 
                 <TouchableOpacity
@@ -427,9 +435,9 @@ export default function SettingsScreen() {
                   disabled={isUpdating}
                 >
                   {isUpdating ? (
-                    <ThemedText style={styles.saveButtonText}>Updating...</ThemedText>
+                    <ThemedText style={styles.saveButtonText}>{t('common.loading')}</ThemedText>
                   ) : (
-                    <ThemedText style={styles.saveButtonText}>Update</ThemedText>
+                    <ThemedText style={styles.saveButtonText}>{t('common.update')}</ThemedText>
                   )}
                 </TouchableOpacity>
               </View>
@@ -450,10 +458,10 @@ export default function SettingsScreen() {
             onPress={() => !isUpdating && setShowPasswordModal(false)}
           >
             <ThemedView style={styles.modalContent}>
-              <ThemedText style={styles.modalTitle}>Change Password</ThemedText>
+              <ThemedText style={styles.modalTitle}>{t('settings.account.changePassword')}</ThemedText>
               
               <View style={styles.inputContainer}>
-                <ThemedText style={styles.inputLabel}>New Password</ThemedText>
+                <ThemedText style={styles.inputLabel}>{t('settings.account.newPassword')}</ThemedText>
                 <TextInput
                   style={[
                     styles.input,
@@ -465,14 +473,14 @@ export default function SettingsScreen() {
                   ]}
                   value={newPassword}
                   onChangeText={setNewPassword}
-                  placeholder="Enter new password"
+                  placeholder={t('settings.account.enterNewPassword')}
                   placeholderTextColor={isDarkMode ? '#64748B' : '#94A3B8'}
                   secureTextEntry
                 />
               </View>
               
               <View style={styles.inputContainer}>
-                <ThemedText style={styles.inputLabel}>Confirm Password</ThemedText>
+                <ThemedText style={styles.inputLabel}>{t('settings.account.confirmPassword')}</ThemedText>
                 <TextInput
                   style={[
                     styles.input,
@@ -484,7 +492,7 @@ export default function SettingsScreen() {
                   ]}
                   value={confirmPassword}
                   onChangeText={setConfirmPassword}
-                  placeholder="Confirm new password"
+                  placeholder={t('settings.account.confirmNewPassword')}
                   placeholderTextColor={isDarkMode ? '#64748B' : '#94A3B8'}
                   secureTextEntry
                 />
@@ -496,7 +504,7 @@ export default function SettingsScreen() {
                   onPress={() => setShowPasswordModal(false)}
                   disabled={isUpdating}
                 >
-                  <ThemedText style={styles.cancelButtonText}>Cancel</ThemedText>
+                  <ThemedText style={styles.cancelButtonText}>{t('common.cancel')}</ThemedText>
                 </TouchableOpacity>
                 
                 <TouchableOpacity
@@ -505,9 +513,9 @@ export default function SettingsScreen() {
                   disabled={isUpdating}
                 >
                   {isUpdating ? (
-                    <ThemedText style={styles.saveButtonText}>Updating...</ThemedText>
+                    <ThemedText style={styles.saveButtonText}>{t('common.loading')}</ThemedText>
                   ) : (
-                    <ThemedText style={styles.saveButtonText}>Update</ThemedText>
+                    <ThemedText style={styles.saveButtonText}>{t('common.update')}</ThemedText>
                   )}
                 </TouchableOpacity>
               </View>
@@ -528,12 +536,12 @@ export default function SettingsScreen() {
             onPress={() => !isDeleting && setShowDeleteModal(false)}
           >
             <ThemedView style={styles.modalContent}>
-              <ThemedText style={styles.modalTitle}>Delete Account</ThemedText>
+              <ThemedText style={styles.modalTitle}>{t('settings.deleteAccount.modalTitle')}</ThemedText>
               <ThemedText style={styles.deleteWarningText}>
-                This action is irreversible. All your data will be permanently deleted.
+                {t('settings.deleteAccount.warning')}
               </ThemedText>
               <ThemedText style={styles.deleteQuestionText}>
-                Are you sure you want to delete your account?
+                {t('settings.deleteAccount.question')}
               </ThemedText>
               
               <View style={styles.deleteModalButtons}>
@@ -542,7 +550,7 @@ export default function SettingsScreen() {
                   onPress={() => setShowDeleteModal(false)}
                   disabled={isDeleting}
                 >
-                  <ThemedText style={styles.cancelButtonText}>Cancel</ThemedText>
+                  <ThemedText style={styles.cancelButtonText}>{t('common.cancel')}</ThemedText>
                 </TouchableOpacity>
                 
                 <TouchableOpacity
@@ -551,13 +559,75 @@ export default function SettingsScreen() {
                   disabled={isDeleting}
                 >
                   {isDeleting ? (
-                    <ThemedText style={styles.deleteButtonText}>Deleting...</ThemedText>
+                    <ThemedText style={styles.deleteButtonText}>{t('settings.deleteAccount.deleting')}</ThemedText>
                   ) : (
-                    <ThemedText style={styles.deleteButtonText}>Delete</ThemedText>
+                    <ThemedText style={styles.deleteButtonText}>{t('common.delete')}</ThemedText>
                   )}
                 </TouchableOpacity>
               </View>
             </ThemedView>
+          </TouchableOpacity>
+        </Modal>
+
+        {/* Language Modal */}
+        <Modal
+          visible={showLanguageModal}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => setShowLanguageModal(false)}
+        >
+          <TouchableOpacity
+            style={styles.modalOverlay}
+            activeOpacity={1}
+            onPress={() => setShowLanguageModal(false)}
+          >
+            <View style={[
+              styles.modalContent,
+              { backgroundColor: isDarkMode ? '#1A1A1A' : '#FFFFFF' }
+            ]}>
+              <View style={styles.modalHeader}>
+                <ThemedText style={styles.modalTitle}>{t('settings.language.modalTitle')}</ThemedText>
+                <TouchableOpacity onPress={() => setShowLanguageModal(false)}>
+                  <Ionicons
+                    name="close"
+                    size={24}
+                    color={isDarkMode ? '#FFFFFF' : '#000000'}
+                  />
+                </TouchableOpacity>
+              </View>
+              {languageOptions.map((option, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={[
+                    styles.modalOption,
+                    index !== languageOptions.length - 1 && styles.modalOptionBorder
+                  ]}
+                  onPress={() => {
+                    setLanguage(option.value as 'en' | 'pcm');
+                    setShowLanguageModal(false);
+                  }}
+                >
+                  <View style={styles.modalOptionContent}>
+                    <Ionicons
+                      name={option.icon as any}
+                      size={24}
+                      color={isDarkMode ? '#FFFFFF' : '#000000'}
+                      style={styles.modalOptionIcon}
+                    />
+                    <ThemedText style={styles.modalOptionLabel}>
+                      {option.label}
+                    </ThemedText>
+                  </View>
+                  {language === option.value && (
+                    <Ionicons
+                      name="checkmark"
+                      size={24}
+                      color="#FF6B00"
+                    />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
           </TouchableOpacity>
         </Modal>
       </ScrollView>
@@ -733,5 +803,31 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
     color: '#FFFFFF',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  modalOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 16,
+  },
+  modalOptionBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  modalOptionContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  modalOptionIcon: {
+    marginRight: 16,
+  },
+  modalOptionLabel: {
+    fontSize: 16,
   },
 }); 
