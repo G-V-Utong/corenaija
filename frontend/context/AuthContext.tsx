@@ -18,6 +18,8 @@ interface AuthContextType extends Omit<AuthState, 'error'> {
   signIn: (email: string, password: string) => Promise<AuthResponse>
   signOut: () => Promise<AuthResponse>
   updateProfile: (profile: Partial<UserProfile>) => Promise<AuthResponse>
+  updateEmail: (newEmail: string, password: string) => Promise<AuthResponse>
+  updatePassword: (newPassword: string) => Promise<AuthResponse>
   deleteAccount: () => Promise<AuthResponse>
   clearError: () => void
 }
@@ -272,6 +274,72 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           error: {
             type: 'Unknown',
             message: error.message
+          }
+        }
+      }
+    },
+
+    updateEmail: async (newEmail: string, password: string): Promise<AuthResponse> => {
+      try {
+        if (!state.user?.id) {
+          throw new Error('No user logged in')
+        }
+        
+        // Update email in auth.users
+        const { error: authError } = await supabase.auth.updateUser({
+          email: newEmail
+        })
+        
+        if (authError) throw authError
+        
+        // Update email in profiles table
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({ email: newEmail })
+          .eq('id', state.user.id)
+        
+        if (profileError) throw profileError
+        
+        // Update the local user state
+        setState(prev => ({
+          ...prev,
+          user: { ...prev.user!, email: newEmail }
+        }))
+        
+        return { success: true }
+      } catch (error: any) {
+        console.error('Error updating email:', error);
+        return {
+          success: false,
+          error: {
+            type: 'Unknown',
+            message: error.message || 'Failed to update email'
+          }
+        }
+      }
+    },
+
+    updatePassword: async (newPassword: string): Promise<AuthResponse> => {
+      try {
+        if (!state.user?.id) {
+          throw new Error('No user logged in')
+        }
+        
+        // Update password in auth.users
+        const { error } = await supabase.auth.updateUser({
+          password: newPassword
+        })
+        
+        if (error) throw error
+        
+        return { success: true }
+      } catch (error: any) {
+        console.error('Error updating password:', error);
+        return {
+          success: false,
+          error: {
+            type: 'Unknown',
+            message: error.message || 'Failed to update password'
           }
         }
       }

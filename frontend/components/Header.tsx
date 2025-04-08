@@ -28,9 +28,9 @@ export default function Header({ title }: HeaderProps) {
   ];
 
   const bottomMenuItems = [
-    { icon: 'settings-outline', label: 'Settings', onPress: () => router.push('/settings') },
     { icon: 'help-circle-outline', label: 'Help', onPress: () => {} },
     { icon: 'information-circle-outline', label: 'About', onPress: () => {} },
+    { icon: 'settings-outline', label: 'Settings', onPress: () => router.push('/settings') },
   ];
   
   // Toggle sidebar with animation
@@ -66,7 +66,13 @@ export default function Header({ title }: HeaderProps) {
   
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <View style={[
+        styles.header,
+        { 
+          backgroundColor: isDarkMode ? '#1A1A1A' : '#FFFFFF',
+          borderBottomColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+        }
+      ]}>
         <TouchableOpacity onPress={() => toggleSidebar(true)} style={styles.menuButton}>
           <Ionicons name="menu" size={24} color={isDarkMode ? '#FFFFFF' : '#000000'} />
         </TouchableOpacity>
@@ -88,7 +94,7 @@ export default function Header({ title }: HeaderProps) {
             style={[
               styles.sidebar,
               { 
-                backgroundColor: isDarkMode ? '#0F172A' : '#FFFFFF',
+                backgroundColor: isDarkMode ? '#1A1A1A' : '#FFFFFF',
                 transform: [{ translateX: sidebarAnimation }]
               }
             ]}
@@ -104,7 +110,10 @@ export default function Header({ title }: HeaderProps) {
               />
             </TouchableOpacity>
             
-            <View style={styles.profileSection}>
+            <View style={[
+              styles.profileSection,
+              { borderBottomColor: isDarkMode ? '#4a5057' : '#E2E8F0' }
+            ]}>
               <View style={styles.profileHeader}>
                 <View style={styles.profileImage}>
                   <Ionicons 
@@ -151,7 +160,9 @@ export default function Header({ title }: HeaderProps) {
               ))}
             </View>
 
-            <View style={styles.bottomMenuSection}>
+            <View style={[styles.bottomMenuSection,
+                { borderTopColor: isDarkMode ? '#4a5057' : '#E2E8F0' }
+            ]}>
               {bottomMenuItems.map((item, index) => (
                 <TouchableOpacity
                   key={index}
@@ -183,7 +194,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    height: 56,
+    borderBottomWidth: 1,
   },
   menuButton: {
     padding: 8,
@@ -217,7 +228,6 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingTop:20,
     borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
   },
   profileHeader: {
     flexDirection: 'row',
@@ -265,7 +275,6 @@ const styles = StyleSheet.create({
   },
   bottomMenuSection: {
     borderTopWidth: 1,
-    borderTopColor: '#E2E8F0',
     marginTop: 'auto',
     paddingVertical: 8,
   },

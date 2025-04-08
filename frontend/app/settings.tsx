@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, TouchableOpacity, Modal, Alert } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Modal, Alert, TextInput, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -12,10 +12,18 @@ import { useAuth } from '../context/AuthContext';
 export default function SettingsScreen() {
   const router = useRouter();
   const { isDarkMode, themeMode, setThemeMode } = useTheme();
-  const { signOut, deleteAccount } = useAuth();
+  const { signOut, deleteAccount, updateEmail, updatePassword, user } = useAuth();
   const [showThemeModal, setShowThemeModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showAccountModal, setShowAccountModal] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [newEmail, setNewEmail] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const getThemeValue = () => {
     switch (themeMode) {
@@ -36,6 +44,12 @@ export default function SettingsScreen() {
       label: 'Theme',
       value: getThemeValue(),
       onPress: () => setShowThemeModal(true),
+    },
+    {
+      icon: 'person-outline',
+      label: 'Account',
+      value: 'Manage',
+      onPress: () => setShowAccountModal(true),
     },
     {
       icon: 'notifications-outline',
@@ -84,10 +98,78 @@ export default function SettingsScreen() {
     }
   };
 
+  const handleUpdateEmail = async () => {
+    if (!newEmail || !currentPassword) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    try {
+      setIsUpdating(true);
+      const response = await updateEmail(newEmail, currentPassword);
+      if (response.success) {
+        Alert.alert('Success', 'Email updated successfully');
+        setShowEmailModal(false);
+        setNewEmail('');
+        setCurrentPassword('');
+      } else {
+        Alert.alert('Error', response.error?.message || 'Failed to update email');
+      }
+    } catch (error) {
+      console.error('Update email error:', error);
+      Alert.alert('Error', 'An unexpected error occurred');
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleUpdatePassword = async () => {
+    if (!newPassword || !confirmPassword) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match');
+      return;
+    }
+
+    try {
+      setIsUpdating(true);
+      const response = await updatePassword(newPassword);
+      if (response.success) {
+        Alert.alert('Success', 'Password updated successfully');
+        setShowPasswordModal(false);
+        setNewPassword('');
+        setConfirmPassword('');
+      } else {
+        Alert.alert('Error', response.error?.message || 'Failed to update password');
+      }
+    } catch (error) {
+      console.error('Update password error:', error);
+      Alert.alert('Error', 'An unexpected error occurred');
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   const themeOptions = [
     { label: 'Light', value: 'light', icon: 'sunny-outline' },
     { label: 'Dark', value: 'dark', icon: 'moon-outline' },
     { label: 'System', value: 'system', icon: 'phone-portrait-outline' },
+  ];
+
+  const accountOptions = [
+    { 
+      icon: 'mail-outline', 
+      label: 'Change Email', 
+      onPress: () => setShowEmailModal(true) 
+    },
+    { 
+      icon: 'lock-closed-outline', 
+      label: 'Change Password', 
+      onPress: () => setShowPasswordModal(true) 
+    },
   ];
 
   return (
@@ -95,7 +177,7 @@ export default function SettingsScreen() {
       <SafeAreaView edges={['top']}>
         <Header title="Settings" />
       </SafeAreaView>
-      <ThemedView style={styles.content}>
+      <ScrollView style={styles.content}>
         <View style={styles.section}>
           {settingsOptions.map((option, index) => (
             <TouchableOpacity
@@ -212,6 +294,227 @@ export default function SettingsScreen() {
           </TouchableOpacity>
         </Modal>
 
+        {/* Account Settings Modal */}
+        <Modal
+          visible={showAccountModal}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setShowAccountModal(false)}
+        >
+          <TouchableOpacity 
+            style={styles.modalOverlay}
+            activeOpacity={1}
+            onPress={() => setShowAccountModal(false)}
+          >
+            <ThemedView style={styles.modalContent}>
+              <ThemedText style={styles.modalTitle}>Account Settings</ThemedText>
+              {accountOptions.map((option, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={[
+                    styles.themeOption,
+                    index !== accountOptions.length - 1 && styles.themeOptionBorder
+                  ]}
+                  onPress={() => {
+                    option.onPress();
+                    setShowAccountModal(false);
+                  }}
+                >
+                  <View style={styles.themeOptionLeft}>
+                    <Ionicons
+                      name={option.icon as any}
+                      size={24}
+                      color={isDarkMode ? '#FFFFFF' : '#000000'}
+                      style={styles.themeOptionIcon}
+                    />
+                    <ThemedText style={styles.themeOptionLabel}>
+                      {option.label}
+                    </ThemedText>
+                  </View>
+                  <Ionicons
+                    name="chevron-forward"
+                    size={20}
+                    color={isDarkMode ? '#64748B' : '#94A3B8'}
+                  />
+                </TouchableOpacity>
+              ))}
+            </ThemedView>
+          </TouchableOpacity>
+        </Modal>
+
+        {/* Update Email Modal */}
+        <Modal
+          visible={showEmailModal}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setShowEmailModal(false)}
+        >
+          <TouchableOpacity 
+            style={styles.modalOverlay}
+            activeOpacity={1}
+            onPress={() => !isUpdating && setShowEmailModal(false)}
+          >
+            <ThemedView style={styles.modalContent}>
+              <ThemedText style={styles.modalTitle}>Change Email</ThemedText>
+              
+              <View style={styles.inputContainer}>
+                <ThemedText style={styles.inputLabel}>Current Email</ThemedText>
+                <TextInput
+                  style={[
+                    styles.input,
+                    { 
+                      color: isDarkMode ? '#FFFFFF' : '#000000',
+                      backgroundColor: isDarkMode ? '#1E293B' : '#F1F5F9',
+                      borderColor: isDarkMode ? '#334155' : '#CBD5E1'
+                    }
+                  ]}
+                  value={user?.email || ''}
+                  editable={false}
+                />
+              </View>
+              
+              <View style={styles.inputContainer}>
+                <ThemedText style={styles.inputLabel}>New Email</ThemedText>
+                <TextInput
+                  style={[
+                    styles.input,
+                    { 
+                      color: isDarkMode ? '#FFFFFF' : '#000000',
+                      backgroundColor: isDarkMode ? '#1E293B' : '#F1F5F9',
+                      borderColor: isDarkMode ? '#334155' : '#CBD5E1'
+                    }
+                  ]}
+                  value={newEmail}
+                  onChangeText={setNewEmail}
+                  placeholder="Enter new email"
+                  placeholderTextColor={isDarkMode ? '#64748B' : '#94A3B8'}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                />
+              </View>
+              
+              <View style={styles.inputContainer}>
+                <ThemedText style={styles.inputLabel}>Current Password</ThemedText>
+                <TextInput
+                  style={[
+                    styles.input,
+                    { 
+                      color: isDarkMode ? '#FFFFFF' : '#000000',
+                      backgroundColor: isDarkMode ? '#1E293B' : '#F1F5F9',
+                      borderColor: isDarkMode ? '#334155' : '#CBD5E1'
+                    }
+                  ]}
+                  value={currentPassword}
+                  onChangeText={setCurrentPassword}
+                  placeholder="Enter current password"
+                  placeholderTextColor={isDarkMode ? '#64748B' : '#94A3B8'}
+                  secureTextEntry
+                />
+              </View>
+              
+              <View style={styles.modalButtons}>
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.cancelButton]}
+                  onPress={() => setShowEmailModal(false)}
+                  disabled={isUpdating}
+                >
+                  <ThemedText style={styles.cancelButtonText}>Cancel</ThemedText>
+                </TouchableOpacity>
+                
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.saveButton]}
+                  onPress={handleUpdateEmail}
+                  disabled={isUpdating}
+                >
+                  {isUpdating ? (
+                    <ThemedText style={styles.saveButtonText}>Updating...</ThemedText>
+                  ) : (
+                    <ThemedText style={styles.saveButtonText}>Update</ThemedText>
+                  )}
+                </TouchableOpacity>
+              </View>
+            </ThemedView>
+          </TouchableOpacity>
+        </Modal>
+
+        {/* Update Password Modal */}
+        <Modal
+          visible={showPasswordModal}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setShowPasswordModal(false)}
+        >
+          <TouchableOpacity 
+            style={styles.modalOverlay}
+            activeOpacity={1}
+            onPress={() => !isUpdating && setShowPasswordModal(false)}
+          >
+            <ThemedView style={styles.modalContent}>
+              <ThemedText style={styles.modalTitle}>Change Password</ThemedText>
+              
+              <View style={styles.inputContainer}>
+                <ThemedText style={styles.inputLabel}>New Password</ThemedText>
+                <TextInput
+                  style={[
+                    styles.input,
+                    { 
+                      color: isDarkMode ? '#FFFFFF' : '#000000',
+                      backgroundColor: isDarkMode ? '#1E293B' : '#F1F5F9',
+                      borderColor: isDarkMode ? '#334155' : '#CBD5E1'
+                    }
+                  ]}
+                  value={newPassword}
+                  onChangeText={setNewPassword}
+                  placeholder="Enter new password"
+                  placeholderTextColor={isDarkMode ? '#64748B' : '#94A3B8'}
+                  secureTextEntry
+                />
+              </View>
+              
+              <View style={styles.inputContainer}>
+                <ThemedText style={styles.inputLabel}>Confirm Password</ThemedText>
+                <TextInput
+                  style={[
+                    styles.input,
+                    { 
+                      color: isDarkMode ? '#FFFFFF' : '#000000',
+                      backgroundColor: isDarkMode ? '#1E293B' : '#F1F5F9',
+                      borderColor: isDarkMode ? '#334155' : '#CBD5E1'
+                    }
+                  ]}
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
+                  placeholder="Confirm new password"
+                  placeholderTextColor={isDarkMode ? '#64748B' : '#94A3B8'}
+                  secureTextEntry
+                />
+              </View>
+              
+              <View style={styles.modalButtons}>
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.cancelButton]}
+                  onPress={() => setShowPasswordModal(false)}
+                  disabled={isUpdating}
+                >
+                  <ThemedText style={styles.cancelButtonText}>Cancel</ThemedText>
+                </TouchableOpacity>
+                
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.saveButton]}
+                  onPress={handleUpdatePassword}
+                  disabled={isUpdating}
+                >
+                  {isUpdating ? (
+                    <ThemedText style={styles.saveButtonText}>Updating...</ThemedText>
+                  ) : (
+                    <ThemedText style={styles.saveButtonText}>Update</ThemedText>
+                  )}
+                </TouchableOpacity>
+              </View>
+            </ThemedView>
+          </TouchableOpacity>
+        </Modal>
+
         {/* Delete Account Confirmation Modal */}
         <Modal
           visible={showDeleteModal}
@@ -257,7 +560,7 @@ export default function SettingsScreen() {
             </ThemedView>
           </TouchableOpacity>
         </Modal>
-      </ThemedView>
+      </ScrollView>
     </ThemedView>
   );
 }
@@ -392,6 +695,40 @@ const styles = StyleSheet.create({
     backgroundColor: '#FF3B30',
   },
   deleteButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'center',
+    color: '#FFFFFF',
+  },
+  inputContainer: {
+    marginBottom: 16,
+  },
+  inputLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  input: {
+    padding: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 8,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 16,
+  },
+  modalButton: {
+    flex: 1,
+    padding: 16,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 59, 48, 0.1)',
+  },
+  saveButton: {
+    backgroundColor: '#FF3B30',
+  },
+  saveButtonText: {
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
