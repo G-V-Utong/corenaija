@@ -14,7 +14,7 @@ type AuthChangeEvent =
 
 interface AuthContextType extends Omit<AuthState, 'error'> {
   error: string | null
-  signUp: (email: string, password: string, fullName: string) => Promise<AuthResponse>
+  signUp: (email: string, password: string) => Promise<AuthResponse>
   signIn: (email: string, password: string) => Promise<AuthResponse>
   signOut: () => Promise<AuthResponse>
   updateProfile: (profile: Partial<UserProfile>) => Promise<AuthResponse>
@@ -22,6 +22,7 @@ interface AuthContextType extends Omit<AuthState, 'error'> {
   updatePassword: (newPassword: string) => Promise<AuthResponse>
   deleteAccount: () => Promise<AuthResponse>
   clearError: () => void
+  resetPassword: (email: string) => Promise<AuthResponse>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -135,7 +136,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     error: state.error?.message ?? null,
     clearError,
     
-    signUp: async (email: string, password: string, fullName: string): Promise<AuthResponse> => {
+    signUp: async (email: string, password: string): Promise<AuthResponse> => {
       try {
         // Sign up the user
         const { data, error } = await supabase.auth.signUp({ email, password })
@@ -144,44 +145,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Wait a moment for the trigger to create the profile
         await new Promise(resolve => setTimeout(resolve, 1000));
         
-        // Create or update the user's profile with their full name
+        // Fetch the profile to update the state
         if (data.user) {
-          // First check if profile exists
-          const { data: existingProfile, error: checkError } = await supabase
-            .from('profiles')
-            .select('id')
-            .eq('id', data.user.id)
-            .single()
-          
-          if (checkError && checkError.code !== 'PGRST116') { // PGRST116 is "not found" error
-            throw checkError
-          }
-          
-          if (existingProfile) {
-            // Update existing profile
-            const { error: updateError } = await supabase
-              .from('profiles')
-              .update({ full_name: fullName })
-              .eq('id', data.user.id)
-            
-            if (updateError) throw updateError
-          } else {
-            // Create new profile
-            const { error: insertError } = await supabase
-              .from('profiles')
-              .insert({ 
-                id: data.user.id,
-                full_name: fullName,
-                email: email
-              })
-            
-            if (insertError) {
-              console.error('Error inserting profile:', insertError);
-              throw insertError;
-            }
-          }
-          
-          // Fetch the profile to update the state
           await fetchUserProfile(data.user.id)
         }
         
@@ -232,17 +197,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           ...prev, 
           user: null,
           session: null,
-          loading: false
+          loading: false,
+          error: null
         }))
         
         return { success: true }
       } catch (error: any) {
+        console.error('Error in signOut:', error);
         const errorType = mapAuthError(error)
         return {
           success: false,
           error: {
             type: errorType,
-            message: error.message
+            message: error.message || 'Failed to sign out'
           }
         }
       }
@@ -378,6 +345,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             message: error.message || 'Failed to delete account'
           }
         }
+      }
+    },
+
+    resetPassword: async (email: string): Promise<AuthResponse> => {
+      try {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: 'naijacore://reset-password',
+        })
+        
+        if (error) {
+          setState(prev => ({ ...prev, error: error.message }))
+          return { success: false, error }
+        }
+        
+        return { success: true }
+      } catch (error: any) {
+        setState(prev => ({ ...prev, error: error.message || 'An error occurred while resetting password' }))
+        return { success: false, error }
       }
     },
   }

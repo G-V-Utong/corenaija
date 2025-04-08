@@ -52,92 +52,106 @@ export default function SignInScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <View style={styles.content}>
-        <ThemedText style={styles.title}>{t('auth.signIn.title')}</ThemedText>
-        
-        <View style={styles.form}>
-          <View style={styles.inputContainer}>
-            <ThemedText style={styles.label}>{t('auth.signIn.emailLabel')}</ThemedText>
-            <TextInput
-              style={[
-                styles.input,
-                { 
-                  color: isDarkMode ? '#FFFFFF' : '#000000',
-                  backgroundColor: isDarkMode ? '#1E293B' : '#F1F5F9',
-                  borderColor: isDarkMode ? '#334155' : '#CBD5E1'
-                }
-              ]}
-              placeholder={t('auth.signIn.emailPlaceholder')}
-              placeholderTextColor={isDarkMode ? '#64748B' : '#94A3B8'}
-              value={email}
-              onChangeText={setEmail}
-              autoCapitalize="none"
-              keyboardType="email-address"
-            />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.content}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <View style={styles.logoContainer}>
+            <HomeLogo size={40} color="#FF6B00"/>
           </View>
-
-          <View style={styles.inputContainer}>
-            <ThemedText style={styles.label}>{t('auth.signIn.passwordLabel')}</ThemedText>
-            <TextInput
-              style={[
-                styles.input,
-                { 
-                  color: isDarkMode ? '#FFFFFF' : '#000000',
-                  backgroundColor: isDarkMode ? '#1E293B' : '#F1F5F9',
-                  borderColor: isDarkMode ? '#334155' : '#CBD5E1'
-                }
-              ]}
-              placeholder={t('auth.signIn.passwordPlaceholder')}
-              placeholderTextColor={isDarkMode ? '#64748B' : '#94A3B8'}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry={!showPassword}
-            />
-            <TouchableOpacity 
-              onPress={() => setShowPassword(!showPassword)}
-              style={styles.passwordToggle}
-            >
-              <Ionicons 
-                name={showPassword ? "eye-outline" : "eye-off-outline"} 
-                size={20} 
-                color="#64748B" 
+          
+          <ThemedText style={styles.title}>Welcome Back!</ThemedText>
+          <ThemedText style={styles.subtitle}>Sign in to continue your fitness journey</ThemedText>
+          
+          <View style={styles.form}>
+            <View style={styles.inputContainer}>
+              <ThemedText style={styles.label}>Email</ThemedText>
+              <TextInput
+                style={[
+                  styles.input,
+                  { 
+                    color: isDarkMode ? '#FFFFFF' : '#000000',
+                    backgroundColor: isDarkMode ? '#1E293B' : '#F1F5F9',
+                    borderColor: isDarkMode ? '#334155' : '#CBD5E1'
+                  }
+                ]}
+                placeholder="Enter your email"
+                placeholderTextColor={isDarkMode ? '#64748B' : '#94A3B8'}
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                keyboardType="email-address"
               />
-            </TouchableOpacity>
-          </View>
+            </View>
 
-          <TouchableOpacity 
-            style={styles.forgotPassword}
-            onPress={() => router.push('/forgot-password')}
-          >
-            <ThemedText style={styles.forgotPasswordText}>
-              {t('auth.signIn.forgotPassword')}
-            </ThemedText>
-          </TouchableOpacity>
+            <View style={styles.inputContainer}>
+              <ThemedText style={styles.label}>Password</ThemedText>
+              <TextInput
+                style={[
+                  styles.input,
+                  { 
+                    color: isDarkMode ? '#FFFFFF' : '#000000',
+                    backgroundColor: isDarkMode ? '#1E293B' : '#F1F5F9',
+                    borderColor: isDarkMode ? '#334155' : '#CBD5E1'
+                  }
+                ]}
+                placeholder="Enter your password"
+                placeholderTextColor={isDarkMode ? '#64748B' : '#94A3B8'}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={!showPassword}
+              />
+              <TouchableOpacity 
+                onPress={() => setShowPassword(!showPassword)}
+                style={styles.passwordToggle}
+              >
+                <Ionicons 
+                  name={showPassword ? "eye-outline" : "eye-off-outline"} 
+                  size={20} 
+                  color="#64748B" 
+                />
+              </TouchableOpacity>
+            </View>
 
-          {error && <Text style={styles.errorText}>{error}</Text>}
-
-          <TouchableOpacity
-            style={[styles.button, isLoading && styles.buttonDisabled]}
-            onPress={handleSignIn}
-            disabled={isLoading}
-          >
-            <ThemedText style={styles.buttonText}>
-              {isLoading ? t('common.loading') : t('auth.signIn.signInButton')}
-            </ThemedText>
-          </TouchableOpacity>
-
-          <View style={styles.footer}>
-            <ThemedText style={styles.footerText}>
-              {t('auth.signIn.noAccount')}
-            </ThemedText>
-            <TouchableOpacity onPress={() => router.push('/sign-up')}>
-              <ThemedText style={styles.footerLink}>
-                {t('auth.signIn.signUp')}
+            <TouchableOpacity 
+              style={styles.forgotPassword}
+              onPress={() => router.push('/forgot-password')}
+            >
+              <ThemedText style={styles.forgotPasswordText}>
+                Forgot Password?
               </ThemedText>
             </TouchableOpacity>
+
+            {error && <Text style={styles.errorText}>{error}</Text>}
+
+            <TouchableOpacity
+              style={[styles.button, isLoading && styles.buttonDisabled]}
+              onPress={handleSignIn}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <ThemedText style={styles.buttonText}>
+                  Sign In
+                </ThemedText>
+              )}
+            </TouchableOpacity>
+
+            <View style={styles.footer}>
+              <ThemedText style={styles.footerText}>
+                Don't have an account?
+              </ThemedText>
+              <TouchableOpacity onPress={() => router.push('/sign-up')}>
+                <ThemedText style={styles.footerLink}>
+                  Sign Up
+                </ThemedText>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </ThemedView>
   )
 } 

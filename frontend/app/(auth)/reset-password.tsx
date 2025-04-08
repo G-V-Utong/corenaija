@@ -6,6 +6,8 @@ import { useToast } from '../../context/ToastContext'
 import { authStyles as styles } from '../../styles/auth.styles'
 import { Ionicons } from '@expo/vector-icons'
 import HomeLogo from '@/components/HomeLogo'
+import { ThemedText } from '@/components/ThemedText'
+import { useTheme } from '@/context/ThemeContext'
 
 export default function ResetPassword() {
   const router = useRouter()
@@ -15,6 +17,7 @@ export default function ResetPassword() {
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const { isDarkMode } = useTheme()
 
   const handleResetPassword = async () => {
     if (!password || !confirmPassword) {
@@ -51,24 +54,31 @@ export default function ResetPassword() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
       <View style={styles.logoContainer}>
         <HomeLogo size={40} color="#FF6B00" />
       </View>
 
 
         <View style={styles.header}>
-          <Text style={styles.headerText}>Reset Password</Text>
-          <Text style={styles.subHeaderText}>
+          <Text style={styles.title}>Reset Password</Text>
+          <Text style={styles.subtitle}>
             Enter your new password
           </Text>
         </View>
 
         <View style={styles.form}>
           <View style={styles.inputContainer}>
-            <Ionicons name="lock-closed-outline" size={20} color="#64748B" style={styles.inputIcon} />
+          <ThemedText style={styles.label}>New Password</ThemedText>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                { 
+                  color: isDarkMode ? '#FFFFFF' : '#000000',
+                  backgroundColor: isDarkMode ? '#1E293B' : '#F1F5F9',
+                  borderColor: isDarkMode ? '#334155' : '#CBD5E1'
+                }
+              ]}
               placeholder="New Password"
               value={password}
               onChangeText={setPassword}
@@ -88,9 +98,16 @@ export default function ResetPassword() {
           </View>
 
           <View style={styles.inputContainer}>
-            <Ionicons name="lock-closed-outline" size={20} color="#64748B" style={styles.inputIcon} />
+          <ThemedText style={styles.label}>Confirm Password</ThemedText>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                { 
+                  color: isDarkMode ? '#FFFFFF' : '#000000',
+                  backgroundColor: isDarkMode ? '#1E293B' : '#F1F5F9',
+                  borderColor: isDarkMode ? '#334155' : '#CBD5E1'
+                }
+              ]}
               placeholder="Confirm New Password"
               value={confirmPassword}
               onChangeText={setConfirmPassword}
@@ -121,13 +138,15 @@ export default function ResetPassword() {
             )}
           </TouchableOpacity>
 
-          <TouchableOpacity 
-            style={styles.backButton}
-            onPress={() => router.push('/sign-in')}
-          >
-            <Ionicons name="arrow-back" size={20} color="#FF6B00" />
-            <Text style={styles.backButtonText}>Back to Sign In</Text>
-          </TouchableOpacity>
+          <View style={styles.footer}>
+          <Ionicons name="arrow-back" size={20} color="#FF6B00" />
+              
+              <TouchableOpacity onPress={() => router.push('/sign-in')}>
+              <ThemedText style={styles.backButtonText}>
+                Back to Sign In
+              </ThemedText>
+              </TouchableOpacity>
+            </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

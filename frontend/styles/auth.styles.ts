@@ -3,141 +3,98 @@ import { StyleSheet } from 'react-native'
 export const authStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-  },
-  scrollContainer: {
-    flexGrow: 1,
     padding: 20,
+  },
+  content: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    paddingVertical: 20,
   },
   logoContainer: {
     alignItems: 'center',
-    marginTop: 10,
     marginBottom: 30,
   },
-  logoPlaceholder: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#EFF6FF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  appName: {
+  title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1E293B',
-    marginTop: 10,
-  },
-  header: {
-    marginBottom: 30,
-  },
-  headerText: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#1E293B',
+    textAlign: 'center',
     marginBottom: 8,
   },
-  subHeaderText: {
+  subtitle: {
     fontSize: 16,
-    color: '#64748B',
+    textAlign: 'center',
+    marginBottom: 32,
+    opacity: 0.7,
   },
   form: {
-    marginBottom: 20,
+    width: '100%',
   },
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F8FAFC',
-    borderRadius: 12,
     marginBottom: 16,
-    paddingHorizontal: 16,
-    height: 56,
   },
-  inputIcon: {
-    marginRight: 12,
+  label: {
+    fontSize: 14,
+    marginBottom: 8,
   },
   input: {
-    flex: 1,
+    height: 48,
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 16,
     fontSize: 16,
-    color: '#1E293B',
   },
   passwordToggle: {
-    padding: 4,
+    position: 'absolute',
+    right: 16,
+    top: 40,
+  },
+  forgotPassword: {
+    alignSelf: 'flex-end',
+    marginBottom: 16,
+  },
+  forgotPasswordText: {
+    fontSize: 14,
+    opacity: 0.7,
   },
   button: {
+    height: 48,
+    borderRadius: 8,
     backgroundColor: '#FF6B00',
-    borderRadius: 12,
-    height: 56,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: 16,
+  },
+  buttonDisabled: {
+    opacity: 0.7,
   },
   buttonText: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
   },
-  backButton: {
+  footer: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 16,
+    alignItems: 'center',
+    marginTop: 24,
   },
-  backButtonText: {
+  footerText: {
+    fontSize: 14,
+    marginRight: 4,
+  },
+  footerLink: {
+    fontSize: 14,
     color: '#FF6B00',
-    fontSize: 16,
-    marginLeft: 8,
+    fontWeight: '600',
   },
   errorText: {
     color: '#EF4444',
     fontSize: 14,
-    marginTop: 8,
     marginBottom: 16,
-  },
-  divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 20,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#E2E8F0',
-  },
-  dividerText: {
-    color: '#64748B',
-    paddingHorizontal: 16,
-  },
-  socialButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    height: 56,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    marginBottom: 16,
-  },
-  socialButtonText: {
-    color: '#1E293B',
-    fontSize: 16,
-    marginLeft: 12,
-  },
-  signUpContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 16,
-  },
-  signUpText: {
-    color: '#64748B',
-    fontSize: 16,
-  },
-  signUpLink: {
-    color: '#FF6B00',
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 4,
+    textAlign: 'center',
   },
 }) 

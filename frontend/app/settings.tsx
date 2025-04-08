@@ -76,9 +76,11 @@ export default function SettingsScreen() {
         router.replace('/(auth)/sign-in');
       } else {
         console.error('Logout failed:', response.error?.message);
+        Alert.alert(t('common.error'), response.error?.message || t('errors.default'));
       }
     } catch (error) {
       console.error('Logout error:', error);
+      Alert.alert(t('common.error'), t('errors.default'));
     }
   };
 
@@ -247,7 +249,7 @@ export default function SettingsScreen() {
         >
           <Ionicons name="log-out-outline" size={24} color="#FF3B30" />
           <ThemedText style={[styles.logoutText, { color: '#FF3B30' }]}>
-            Logout
+            {t('settings.logout.label')}
           </ThemedText>
         </TouchableOpacity>
 
