@@ -5,6 +5,7 @@ export interface UserProfile {
   email?: string
   phone?: string
   full_name: string
+  first_name: string
   age: number
   fitness_goals: string[]
   height?: number
@@ -30,6 +31,7 @@ export type AuthErrorType =
 
 export interface AuthResponse {
   success: boolean
+  onboardingCompleted?: boolean
   error?: {
     type: AuthErrorType
     message: string

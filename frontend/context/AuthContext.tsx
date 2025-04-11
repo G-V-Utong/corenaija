@@ -1,7 +1,9 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { supabase, mapAuthError } from '../lib/supabase'
 import { AuthState, UserProfile, AuthResponse } from '../types/auth.types'
 import { Session } from '@supabase/supabase-js'
+import { useAppEvents } from './AppEventsContext'
+import { USER_SIGNED_IN, USER_SIGNED_UP, USER_SIGNED_OUT } from './AppEventsContext'
 
 type AuthChangeEvent =
   | 'INITIAL_SESSION'
@@ -34,6 +36,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loading: true,
     error: null,
   })
+
+  const { emit } = useAppEvents();
 
   const clearError = () => setState(prev => ({ ...prev, error: null }))
 
@@ -129,6 +133,75 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
+  const signIn = useCallback(async (email: string, password: string) => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+
+      if (error) throw error
+
+      if (data.user) {
+        setState(prev => ({ ...prev, user: data.user }))
+        emit(USER_SIGNED_IN)
+        
+        // Check onboarding status
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('onboarding_completed')
+          .eq('id', data.user.id)
+          .single()
+
+        return {
+          success: true,
+          onboardingCompleted: profile?.onboarding_completed || false,
+        }
+      }
+
+      return { success: false, error: 'No user data returned' }
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred during sign in';
+      return { success: false, error: errorMessage }
+    }
+  }, [emit])
+
+  const signUp = useCallback(async (email: string, password: string) => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      })
+
+      if (error) throw error
+
+      if (data.user) {
+        setState(prev => ({ ...prev, user: data.user }))
+        emit(USER_SIGNED_UP)
+        return { success: true }
+      }
+
+      return { success: false, error: 'No user data returned' }
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred during sign up';
+      return { success: false, error: errorMessage }
+    }
+  }, [emit])
+
+  const signOut = useCallback(async () => {
+    try {
+      const { error } = await supabase.auth.signOut()
+      if (error) throw error
+      
+      setState(prev => ({ ...prev, user: null }))
+      emit(USER_SIGNED_OUT)
+      return { success: true }
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred during sign out';
+      return { success: false, error: errorMessage }
+    }
+  }, [emit])
+
   const value = {
     user: state.user,
     session: state.session,
@@ -136,84 +209,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     error: state.error?.message ?? null,
     clearError,
     
-    signUp: async (email: string, password: string): Promise<AuthResponse> => {
-      try {
-        // Sign up the user
-        const { data, error } = await supabase.auth.signUp({ email, password })
-        if (error) throw error
-        
-        // Wait a moment for the trigger to create the profile
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Fetch the profile to update the state
-        if (data.user) {
-          await fetchUserProfile(data.user.id)
-        }
-        
-        return { success: true }
-      } catch (error: any) {
-        console.error('Error in signUp:', error);
-        const errorType = mapAuthError(error)
-        return {
-          success: false,
-          error: {
-            type: errorType,
-            message: error.message
-          }
-        }
-      }
-    },
-
-    signIn: async (email: string, password: string): Promise<AuthResponse> => {
-      try {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-        if (error) throw error
-        
-        // Fetch user profile after successful sign-in
-        if (data.user) {
-          await fetchUserProfile(data.user.id)
-        }
-        
-        return { success: true }
-      } catch (error: any) {
-        const errorType = mapAuthError(error)
-        return {
-          success: false,
-          error: {
-            type: errorType,
-            message: error.message
-          }
-        }
-      }
-    },
-
-    signOut: async (): Promise<AuthResponse> => {
-      try {
-        const { error } = await supabase.auth.signOut()
-        if (error) throw error
-        
-        // Clear the user state and session
-        setState(prev => ({ 
-          ...prev, 
-          user: null,
-          session: null,
-          loading: false,
-          error: null
-        }))
-        
-        return { success: true }
-      } catch (error: any) {
-        console.error('Error in signOut:', error);
-        const errorType = mapAuthError(error)
-        return {
-          success: false,
-          error: {
-            type: errorType,
-            message: error.message || 'Failed to sign out'
-          }
-        }
-      }
-    },
+    signUp,
+    signIn,
+    signOut,
 
     updateProfile: async (profile: Partial<UserProfile>): Promise<AuthResponse> => {
       try {

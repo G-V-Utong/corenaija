@@ -7,6 +7,10 @@ export default function OnboardingLayout() {
         name="get-started" 
         options={{ headerShown: false }} 
       />
+      <Stack.Screen 
+        name="index" 
+        options={{ headerShown: false }} 
+      />
     </Stack>
   );
 } 

@@ -9,10 +9,12 @@ import {
   ImageBackground,
   StatusBar,
   SafeAreaView,
+  ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ThemedText } from '../../components/ThemedText';
+import { useTheme } from '@/context/ThemeContext';
+import { ThemedText } from '@/components/ThemedText';
 import Logo from '../../components/Logo';
 import HomeLogo from '@/components/HomeLogo';
 import GetStartedLogo from '@/components/GetStartedLogo';
@@ -115,6 +117,10 @@ export default function GetStartedScreen() {
     }
   };
 
+  const handleGetStarted = () => {
+    router.replace('/(auth)/sign-in');
+  };
+
   const renderSlide = ({ item }: { item: typeof slides[0] }) => (
     <ImageBackground
       source={item.image}
@@ -178,14 +184,14 @@ export default function GetStartedScreen() {
 
         <TouchableOpacity
           style={styles.button}
-          onPress={() => router.push('/(auth)/sign-up')}
+          onPress={handleGetStarted}
         >
           <ThemedText style={styles.buttonText}>GET STARTED</ThemedText>
         </TouchableOpacity>
 
         <View style={styles.loginContainer}>
           <ThemedText style={styles.loginText}>Already have an account? </ThemedText>
-          <TouchableOpacity onPress={() => router.push('/(auth)/sign-in')}>
+          <TouchableOpacity onPress={() => router.replace('/(auth)/sign-in')}>
             <ThemedText style={styles.loginLink}>Login</ThemedText>
           </TouchableOpacity>
         </View>

@@ -44,7 +44,7 @@ export default function SignUpScreen() {
       const response = await signUp(email, password)
       if (response.success) {
         showToast('Successfully signed up!', 'success')
-        router.push('/(tabs)')
+        router.replace('/onboarding')
       } else {
         showToast(error || 'Failed to sign up', 'error')
       }
@@ -170,7 +170,7 @@ export default function SignUpScreen() {
               <ThemedText style={styles.footerText}>
                 Already have an account?
               </ThemedText>
-              <TouchableOpacity onPress={() => router.push('/sign-in')}>
+              <TouchableOpacity onPress={() => router.replace('/sign-in')}>
                 <ThemedText style={styles.footerLink}>
                   Sign In
                 </ThemedText>
