@@ -61,7 +61,7 @@ const defaultOnboardingData: OnboardingData = {
   eating_out_frequency: '',
 
   // Fasting Preferences
-  fasting_status: 'none',
+  fasting_status: '',
   preferred_fasting_protocol: '16_8',
   fasting_reason: 'weight_loss',
   fasting_experience: 'beginner'
@@ -137,10 +137,10 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
               diet_type: profile.diet_type || [],
               eating_pattern: profile.eating_pattern || '',
               eating_out_frequency: profile.eating_out_frequency || '',
-              fasting_status: 'none',
-              preferred_fasting_protocol: '16_8',
-              fasting_reason: 'weight_loss',
-              fasting_experience: 'beginner'
+              fasting_status: '',
+              preferred_fasting_protocol: '',
+              fasting_reason: '',
+              fasting_experience: ''
             };
             setOnboardingData(existingData);
           } else {
@@ -198,9 +198,9 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
               eating_pattern: profile.eating_pattern || '',
               eating_out_frequency: profile.eating_out_frequency || '',
               fasting_status: 'none',
-              preferred_fasting_protocol: '16_8',
-              fasting_reason: 'weight_loss',
-              fasting_experience: 'beginner'
+              preferred_fasting_protocol: '',
+              fasting_reason: '',
+              fasting_experience: ''
             };
             setOnboardingData(existingData);
           } else {

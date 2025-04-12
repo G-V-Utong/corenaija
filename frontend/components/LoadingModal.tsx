@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Modal, View, Text, StyleSheet, Animated } from 'react-native';
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '../context/ThemeContext';
 import { ThemedView } from './ThemedView';
 import { LoadingSpinner } from './common/LoadingSpinner';
 import { ThemedText } from './ThemedText';
@@ -13,7 +13,7 @@ interface LoadingModalProps {
 }
 
 export const LoadingModal = ({ visible, onComplete, duration = 2000 }: LoadingModalProps) => {
-  const { colors } = useTheme();
+  const { isDarkMode } = useTheme();
   const progress = useRef(new Animated.Value(0)).current;
   const translateX = useRef(new Animated.Value(-100)).current;
 
@@ -65,12 +65,18 @@ export const LoadingModal = ({ visible, onComplete, duration = 2000 }: LoadingMo
       animationType="fade"
     >
       <ThemedView style={styles.overlay}>
-        <ThemedView style={styles.modalContent}>
+        <ThemedView style={[
+          styles.modalContent,
+          { backgroundColor: isDarkMode ? '#1A1A1A' : '#FFFFFF' }
+        ]}>
           <LoadingSpinner size={60} />
           <ThemedText style={styles.message}>
             Please hold on while we create a tailored experience just for you.
           </ThemedText>
-          <ThemedView style={styles.progressBarContainer}>
+          <ThemedView style={[
+            styles.progressBarContainer,
+            { backgroundColor: isDarkMode ? '#334155' : '#E5E7EB' }
+          ]}>
             <Animated.View 
               style={[
                 styles.progressBar,
@@ -86,7 +92,9 @@ export const LoadingModal = ({ visible, onComplete, duration = 2000 }: LoadingMo
                 ]}
               >
                 <LinearGradient
-                  colors={['rgba(255,255,255,0)', 'rgba(255,255,255,0.3)', 'rgba(255,255,255,0)']}
+                  colors={isDarkMode ? 
+                    ['rgba(255,255,255,0)', 'rgba(255,255,255,0.1)', 'rgba(255,255,255,0)'] :
+                    ['rgba(255,255,255,0)', 'rgba(255,255,255,0.3)', 'rgba(255,255,255,0)']}
                   start={{ x: 0, y: 0.5 }}
                   end={{ x: 1, y: 0.5 }}
                   style={StyleSheet.absoluteFill}
@@ -108,7 +116,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: 'white',
     borderRadius: 24,
     padding: 32,
     alignItems: 'center',
@@ -134,7 +141,6 @@ const styles = StyleSheet.create({
   progressBarContainer: {
     width: '100%',
     height: 8,
-    backgroundColor: '#E5E7EB',
     borderRadius: 8,
     overflow: 'hidden',
   },
