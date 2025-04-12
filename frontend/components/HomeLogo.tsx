@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, StyleSheet, Text, Image } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
+import { useTheme } from '../hooks/useTheme';
 import { Ionicons } from '@expo/vector-icons';
 
 interface LogoProps {
@@ -7,7 +8,9 @@ interface LogoProps {
   color?: string;
 }
 
-export default function HomeLogo({ size = 40, color = '#FF6B00' }: LogoProps) {
+export default function HomeLogo({ size = 40, color = '#F36746' }: LogoProps) {
+  const { colors, isDark } = useTheme();
+  
   return (
     <View style={styles.container}>
       <Image
@@ -16,7 +19,7 @@ export default function HomeLogo({ size = 40, color = '#FF6B00' }: LogoProps) {
         resizeMode="contain"
       />
       <View style={styles.textContainer}>
-        <Text style={[styles.text, { fontSize: size * 0.8 }]}>
+        <Text style={[styles.text, { fontSize: size * 0.8, color: colors.text }]}>
           Reform
         </Text>
         <Text style={[styles.bodiText, { color, fontSize: size * 0.8 }]}>
@@ -38,7 +41,6 @@ const styles = StyleSheet.create({
   },
   text: {
     fontWeight: '500',
-    color: '#1E293B',
   },
   bodiText: {
     fontWeight: '800',

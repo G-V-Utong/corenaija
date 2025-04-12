@@ -38,7 +38,7 @@ export default function OnboardingProgress({ sections, currentSection }: Onboard
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 8,
+    paddingTop: 48,
     paddingBottom: 8,
     backgroundColor: 'transparent',
   },
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#FF6B00',
+    backgroundColor: '#F36746',
     borderRadius: 4,
   },
   progressText: {
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   activeSection: {
-    backgroundColor: '#FF6B00',
+    backgroundColor: '#F36746',
   },
   sectionText: {
     fontSize: 12,

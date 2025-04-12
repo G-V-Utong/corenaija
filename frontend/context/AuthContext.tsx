@@ -25,6 +25,7 @@ interface AuthContextType extends Omit<AuthState, 'error'> {
   deleteAccount: () => Promise<AuthResponse>
   clearError: () => void
   resetPassword: (email: string) => Promise<AuthResponse>
+  refreshUserProfile: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -133,236 +134,329 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
-  const signIn = useCallback(async (email: string, password: string) => {
+  const signIn = useCallback(async (email: string, password: string): Promise<AuthResponse> => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
-      })
+      });
 
-      if (error) throw error
-
-      if (data.user) {
-        setState(prev => ({ ...prev, user: data.user }))
-        emit(USER_SIGNED_IN)
-        
-        // Check onboarding status
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('onboarding_completed')
-          .eq('id', data.user.id)
-          .single()
-
+      if (error) {
         return {
-          success: true,
-          onboardingCompleted: profile?.onboarding_completed || false,
-        }
+          success: false,
+          error: {
+            type: 'auth/signin-failed' as const,
+            message: error.message
+          }
+        };
       }
 
-      return { success: false, error: 'No user data returned' }
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'An error occurred during sign in';
-      return { success: false, error: errorMessage }
-    }
-  }, [emit])
+      if (!data?.user) {
+        return {
+          success: false,
+          error: {
+            type: 'auth/no-user' as const,
+            message: 'No user data returned'
+          }
+        };
+      }
 
-  const signUp = useCallback(async (email: string, password: string) => {
+      // Check if onboarding is completed
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('onboarding_completed')
+        .eq('id', data.user.id)
+        .single();
+
+      setState(prev => ({ ...prev, user: data.user }));
+      emit(USER_SIGNED_IN);
+
+      return {
+        success: true,
+        onboardingCompleted: profile?.onboarding_completed
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          type: 'auth/unknown' as const,
+          message: error instanceof Error ? error.message : 'Unknown error'
+        }
+      };
+    }
+  }, [emit]);
+
+  const signUp = useCallback(async (email: string, password: string): Promise<AuthResponse> => {
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-      })
+      });
 
-      if (error) throw error
-
-      if (data.user) {
-        setState(prev => ({ ...prev, user: data.user }))
-        emit(USER_SIGNED_UP)
-        return { success: true }
+      if (error) {
+        return {
+          success: false,
+          error: {
+            type: 'auth/signup-failed' as const,
+            message: error.message
+          }
+        };
       }
 
-      return { success: false, error: 'No user data returned' }
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'An error occurred during sign up';
-      return { success: false, error: errorMessage }
-    }
-  }, [emit])
+      if (!data?.user) {
+        return {
+          success: false,
+          error: {
+            type: 'auth/no-user' as const,
+            message: 'No user data returned'
+          }
+        };
+      }
 
-  const signOut = useCallback(async () => {
+      setState(prev => ({ ...prev, user: data.user }));
+      emit(USER_SIGNED_UP);
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          type: 'auth/unknown' as const,
+          message: error instanceof Error ? error.message : 'Unknown error'
+        }
+      };
+    }
+  }, [emit]);
+
+  const signOut = useCallback(async (): Promise<AuthResponse> => {
     try {
-      const { error } = await supabase.auth.signOut()
-      if (error) throw error
-      
-      setState(prev => ({ ...prev, user: null }))
-      emit(USER_SIGNED_OUT)
-      return { success: true }
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'An error occurred during sign out';
-      return { success: false, error: errorMessage }
-    }
-  }, [emit])
+      const { error } = await supabase.auth.signOut();
 
-  const value = {
+      if (error) {
+        return {
+          success: false,
+          error: {
+            type: 'auth/signout-failed' as const,
+            message: error.message
+          }
+        };
+      }
+
+      setState(prev => ({ ...prev, user: null, session: null }));
+      emit(USER_SIGNED_OUT);
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          type: 'auth/unknown' as const,
+          message: error instanceof Error ? error.message : 'Unknown error'
+        }
+      };
+    }
+  }, [emit]);
+
+  const refreshUserProfile = useCallback(async (): Promise<void> => {
+    if (!state.user?.id) return;
+    
+    try {
+      const profile = await fetchUserProfile(state.user.id);
+      if (!profile) {
+        console.error('No profile data returned');
+        return;
+      }
+
+      setState(prev => ({
+        ...prev,
+        user: {
+          ...prev.user!,
+          ...profile as UserProfile
+        }
+      }));
+    } catch (error: any) {
+      console.error('Error refreshing user profile:', error);
+      setState(prev => ({ ...prev, error: error.message }));
+    }
+  }, [state.user?.id]);
+
+  const updateProfile = useCallback(async (profile: Partial<UserProfile>): Promise<AuthResponse> => {
+    try {
+      if (!state.user?.id) {
+        throw new Error('No user logged in');
+      }
+      
+      const { error } = await supabase
+        .from('profiles')
+        .update({ ...profile, updated_at: new Date().toISOString() })
+        .eq('id', state.user.id);
+      
+      if (error) throw error;
+      
+      // Update the local user state
+      setState(prev => ({
+        ...prev,
+        user: { ...prev.user!, ...profile }
+      }));
+      
+      return { success: true };
+    } catch (error: any) {
+      console.error('Error updating profile:', error);
+      return {
+        success: false,
+        error: {
+          type: 'auth/update-failed',
+          message: error.message || 'Failed to update profile'
+        }
+      };
+    }
+  }, [state.user?.id]);
+
+  const updateEmail = useCallback(async (newEmail: string, password: string): Promise<AuthResponse> => {
+    try {
+      if (!state.user?.id) {
+        throw new Error('No user logged in');
+      }
+      
+      // Update email in auth.users
+      const { error: authError } = await supabase.auth.updateUser({
+        email: newEmail
+      });
+      
+      if (authError) throw authError;
+      
+      // Update email in profiles table
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({ email: newEmail })
+        .eq('id', state.user.id);
+      
+      if (profileError) throw profileError;
+      
+      // Update the local user state
+      setState(prev => ({
+        ...prev,
+        user: { ...prev.user!, email: newEmail }
+      }));
+      
+      return { success: true };
+    } catch (error: any) {
+      console.error('Error updating email:', error);
+      return {
+        success: false,
+        error: {
+          type: 'auth/update-failed',
+          message: error.message || 'Failed to update email'
+        }
+      };
+    }
+  }, [state.user?.id]);
+
+  const updatePassword = useCallback(async (newPassword: string): Promise<AuthResponse> => {
+    try {
+      if (!state.user?.id) {
+        throw new Error('No user logged in');
+      }
+      
+      // Update password in auth.users
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+      
+      if (error) throw error;
+      
+      return { success: true };
+    } catch (error: any) {
+      console.error('Error updating password:', error);
+      return {
+        success: false,
+        error: {
+          type: 'auth/update-failed',
+          message: error.message || 'Failed to update password'
+        }
+      };
+    }
+  }, [state.user?.id]);
+
+  const deleteAccount = useCallback(async (): Promise<AuthResponse> => {
+    try {
+      if (!state.user?.id) {
+        throw new Error('No user logged in');
+      }
+      
+      // Call the server-side function to delete the user's account
+      const { error: deleteError } = await supabase
+        .rpc('delete_user', { user_id: state.user.id });
+      
+      if (deleteError) {
+        console.error('Error deleting user account:', deleteError);
+        throw deleteError;
+      }
+      
+      // Clear the user state and session
+      setState(prev => ({ 
+        ...prev, 
+        user: null,
+        session: null,
+        loading: false
+      }));
+      
+      return { success: true };
+    } catch (error: any) {
+      console.error('Error in deleteAccount:', error);
+      return {
+        success: false,
+        error: {
+          type: 'auth/delete-failed',
+          message: error.message || 'Failed to delete account'
+        }
+      };
+    }
+  }, [state.user?.id]);
+
+  const resetPassword = useCallback(async (email: string): Promise<AuthResponse> => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: 'naijacore://reset-password',
+      });
+      
+      if (error) {
+        setState(prev => ({ ...prev, error: error.message }));
+        return {
+          success: false,
+          error: {
+            type: 'auth/reset-failed',
+            message: error.message
+          }
+        };
+      }
+      
+      return { success: true };
+    } catch (error: any) {
+      setState(prev => ({ ...prev, error: error.message || 'An error occurred while resetting password' }));
+      return {
+        success: false,
+        error: {
+          type: 'auth/reset-failed',
+          message: error.message || 'Failed to reset password'
+        }
+      };
+    }
+  }, []);
+
+  const value: AuthContextType = {
     user: state.user,
     session: state.session,
     loading: state.loading,
     error: state.error?.message ?? null,
     clearError,
-    
     signUp,
     signIn,
     signOut,
-
-    updateProfile: async (profile: Partial<UserProfile>): Promise<AuthResponse> => {
-      try {
-        if (!state.user?.id) {
-          throw new Error('No user logged in')
-        }
-        
-        const { error } = await supabase
-          .from('profiles')
-          .update({ ...profile, updated_at: new Date().toISOString() })
-          .eq('id', state.user.id)
-        
-        if (error) throw error
-        
-        // Update the local user state
-        setState(prev => ({
-          ...prev,
-          user: { ...prev.user!, ...profile }
-        }))
-        
-        return { success: true }
-      } catch (error: any) {
-        return {
-          success: false,
-          error: {
-            type: 'Unknown',
-            message: error.message
-          }
-        }
-      }
-    },
-
-    updateEmail: async (newEmail: string, password: string): Promise<AuthResponse> => {
-      try {
-        if (!state.user?.id) {
-          throw new Error('No user logged in')
-        }
-        
-        // Update email in auth.users
-        const { error: authError } = await supabase.auth.updateUser({
-          email: newEmail
-        })
-        
-        if (authError) throw authError
-        
-        // Update email in profiles table
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .update({ email: newEmail })
-          .eq('id', state.user.id)
-        
-        if (profileError) throw profileError
-        
-        // Update the local user state
-        setState(prev => ({
-          ...prev,
-          user: { ...prev.user!, email: newEmail }
-        }))
-        
-        return { success: true }
-      } catch (error: any) {
-        console.error('Error updating email:', error);
-        return {
-          success: false,
-          error: {
-            type: 'Unknown',
-            message: error.message || 'Failed to update email'
-          }
-        }
-      }
-    },
-
-    updatePassword: async (newPassword: string): Promise<AuthResponse> => {
-      try {
-        if (!state.user?.id) {
-          throw new Error('No user logged in')
-        }
-        
-        // Update password in auth.users
-        const { error } = await supabase.auth.updateUser({
-          password: newPassword
-        })
-        
-        if (error) throw error
-        
-        return { success: true }
-      } catch (error: any) {
-        console.error('Error updating password:', error);
-        return {
-          success: false,
-          error: {
-            type: 'Unknown',
-            message: error.message || 'Failed to update password'
-          }
-        }
-      }
-    },
-
-    deleteAccount: async (): Promise<AuthResponse> => {
-      try {
-        if (!state.user?.id) {
-          throw new Error('No user logged in')
-        }
-        
-        // Call the server-side function to delete the user's account
-        const { error: deleteError } = await supabase
-          .rpc('delete_user', { user_id: state.user.id })
-        
-        if (deleteError) {
-          console.error('Error deleting user account:', deleteError);
-          throw deleteError;
-        }
-        
-        // Clear the user state and session
-        setState(prev => ({ 
-          ...prev, 
-          user: null,
-          session: null,
-          loading: false
-        }))
-        
-        return { success: true }
-      } catch (error: any) {
-        console.error('Error in deleteAccount:', error);
-        return {
-          success: false,
-          error: {
-            type: 'Unknown',
-            message: error.message || 'Failed to delete account'
-          }
-        }
-      }
-    },
-
-    resetPassword: async (email: string): Promise<AuthResponse> => {
-      try {
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: 'naijacore://reset-password',
-        })
-        
-        if (error) {
-          setState(prev => ({ ...prev, error: error.message }))
-          return { success: false, error }
-        }
-        
-        return { success: true }
-      } catch (error: any) {
-        setState(prev => ({ ...prev, error: error.message || 'An error occurred while resetting password' }))
-        return { success: false, error }
-      }
-    },
+    updateProfile,
+    updateEmail,
+    updatePassword,
+    deleteAccount,
+    resetPassword,
+    refreshUserProfile
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

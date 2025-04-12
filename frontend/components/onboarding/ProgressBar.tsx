@@ -24,7 +24,7 @@ export function ProgressBar({ currentStep, totalSteps }: ProgressBarProps) {
             styles.progress,
             { 
               width: `${progress}%`,
-              backgroundColor: '#FF6B00'
+              backgroundColor: '#F36746'
             }
           ]} 
         />

@@ -130,7 +130,7 @@ export default function NutritionPreferences() {
                 styles.dietCard,
                 { 
                   backgroundColor: onboardingData.diet_type?.includes(diet.id)
-                    ? '#FF6B00' 
+                    ? '#F36746' 
                     : isDarkMode ? '#1E293B' : '#F1F5F9'
                 }
               ]}
@@ -173,7 +173,7 @@ export default function NutritionPreferences() {
                 styles.optionButton,
                 { 
                   backgroundColor: onboardingData.dietary_restrictions?.includes(restriction)
-                    ? '#FF6B00' 
+                    ? '#F36746' 
                     : isDarkMode ? '#1E293B' : '#F1F5F9'
                 }
               ]}
@@ -207,7 +207,7 @@ export default function NutritionPreferences() {
                 styles.patternCard,
                 { 
                   backgroundColor: onboardingData.eating_pattern === pattern.id 
-                    ? '#FF6B00' 
+                    ? '#F36746' 
                     : isDarkMode ? '#1E293B' : '#F1F5F9'
                 }
               ]}
@@ -245,7 +245,7 @@ export default function NutritionPreferences() {
                 styles.optionButton,
                 { 
                   backgroundColor: onboardingData.eating_out_frequency === frequency 
-                    ? '#FF6B00' 
+                    ? '#F36746' 
                     : isDarkMode ? '#1E293B' : '#F1F5F9'
                 }
               ]}
@@ -275,7 +275,7 @@ export default function NutritionPreferences() {
                 styles.optionButton,
                 { 
                   backgroundColor: onboardingData.cooking_skills === skill 
-                    ? '#FF6B00' 
+                    ? '#F36746' 
                     : isDarkMode ? '#1E293B' : '#F1F5F9'
                 }
               ]}

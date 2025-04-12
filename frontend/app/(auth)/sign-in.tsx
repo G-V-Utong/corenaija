@@ -40,7 +40,7 @@ export default function SignInScreen() {
         if (response.onboardingCompleted) {
           router.replace('/(tabs)')
         } else {
-          router.replace('/onboarding')
+          router.replace('/(onboarding)')
         }
       } else {
         showToast(error || 'Failed to sign in', 'error')
@@ -62,7 +62,7 @@ export default function SignInScreen() {
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.logoContainer}>
-            <HomeLogo size={40} color="#FF6B00"/>
+            <HomeLogo size={40} color="#F36746"/>
           </View>
           
           <ThemedText style={styles.title}>Welcome Back!</ThemedText>

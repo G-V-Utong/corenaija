@@ -238,17 +238,17 @@ export default function SettingsScreen() {
               <Ionicons
                 name="trash-outline"
                 size={24}
-                color="#FF3B30"
+                color="#F36746"
                 style={styles.settingIcon}
               />
-              <ThemedText style={[styles.settingLabel, { color: '#FF3B30' }]}>
+              <ThemedText style={[styles.settingLabel, { color: '#F36746' }]}>
                 {t('settings.deleteAccount.label')}
               </ThemedText>
             </View>
             <Ionicons
               name="chevron-forward"
               size={20}
-              color="#FF3B30"
+              color="#F36746"
             />
           </TouchableOpacity>
         </View>
@@ -257,8 +257,8 @@ export default function SettingsScreen() {
           style={styles.logoutButton}
           onPress={handleLogout}
         >
-          <Ionicons name="log-out-outline" size={24} color="#FF3B30" />
-          <ThemedText style={[styles.logoutText, { color: '#FF3B30' }]}>
+          <Ionicons name="log-out-outline" size={24} color="#F36746" />
+          <ThemedText style={[styles.logoutText, { color: '#F36746' }]}>
             {t('settings.logout.label')}
           </ThemedText>
         </TouchableOpacity>
@@ -305,7 +305,7 @@ export default function SettingsScreen() {
                     <Ionicons
                       name="checkmark"
                       size={24}
-                      color="#FF6B00"
+                      color="#F36746"
                     />
                   )}
                 </TouchableOpacity>
@@ -634,7 +634,7 @@ export default function SettingsScreen() {
                     <Ionicons
                       name="checkmark"
                       size={24}
-                      color="#FF6B00"
+                      color="#F36746"
                     />
                   )}
                 </TouchableOpacity>
@@ -774,7 +774,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   deleteButton: {
-    backgroundColor: '#FF3B30',
+    backgroundColor: '#F36746',
   },
   deleteButtonText: {
     fontSize: 16,
@@ -808,7 +808,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 59, 48, 0.1)',
   },
   saveButton: {
-    backgroundColor: '#FF3B30',
+    backgroundColor: '#F36746',
   },
   saveButtonText: {
     fontSize: 16,

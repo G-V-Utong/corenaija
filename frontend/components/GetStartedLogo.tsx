@@ -7,7 +7,7 @@ interface LogoProps {
   color?: string;
 }
 
-export default function GetStartedLogo({ size = 40, color = '#FF6B00' }: LogoProps) {
+export default function GetStartedLogo({ size = 40, color = '#F36746' }: LogoProps) {
   return (
     <View style={styles.container}>
       <Image

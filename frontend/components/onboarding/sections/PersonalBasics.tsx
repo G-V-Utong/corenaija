@@ -40,8 +40,10 @@ export default function PersonalBasics() {
     setShowDatePicker(false);
     if (selectedDate) {
       setTempDate(selectedDate);
-      setDateOfBirth(selectedDate.toISOString());
-      updateOnboardingData({ date_of_birth: selectedDate.toISOString() });
+      // Format the date as YYYY-MM-DD for PostgreSQL
+      const formattedDate = selectedDate.toISOString().split('T')[0];
+      setDateOfBirth(formattedDate);
+      updateOnboardingData({ date_of_birth: formattedDate });
     }
   };
 
@@ -106,7 +108,7 @@ export default function PersonalBasics() {
                 styles.optionButton,
                 { 
                   backgroundColor: gender === option 
-                    ? '#FF6B00' 
+                    ? '#F36746' 
                     : isDarkMode ? '#1E293B' : '#F1F5F9'
                 }
               ]}
@@ -141,7 +143,7 @@ export default function PersonalBasics() {
             placeholderTextColor={isDarkMode ? '#64748B' : '#94A3B8'}
           />
           <TouchableOpacity
-            style={[styles.button, { backgroundColor: '#FF6B00' }]}
+            style={[styles.button, { backgroundColor: '#F36746' }]}
             onPress={handleCustomGenderSubmit}
           >
             <ThemedText style={styles.buttonText}>Submit</ThemedText>
@@ -197,7 +199,7 @@ export default function PersonalBasics() {
                 styles.optionButton,
                 { 
                   backgroundColor: measurementSystem === option 
-                    ? '#FF6B00' 
+                    ? '#F36746' 
                     : isDarkMode ? '#1E293B' : '#F1F5F9'
                 }
               ]}

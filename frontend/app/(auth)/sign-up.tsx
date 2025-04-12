@@ -10,6 +10,7 @@ import { ThemedView } from '../../components/ThemedView'
 import { ThemedText } from '../../components/ThemedText'
 import { useTheme } from '../../context/ThemeContext'
 import { useLanguage } from '../../context/LanguageContext'
+import { supabase } from '../../lib/supabase'
 
 export default function SignUpScreen() {
   const router = useRouter()
@@ -44,7 +45,7 @@ export default function SignUpScreen() {
       const response = await signUp(email, password)
       if (response.success) {
         showToast('Successfully signed up!', 'success')
-        router.replace('/onboarding')
+        router.replace('/sign-in')
       } else {
         showToast(error || 'Failed to sign up', 'error')
       }

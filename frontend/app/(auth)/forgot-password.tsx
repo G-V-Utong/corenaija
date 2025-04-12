@@ -53,7 +53,7 @@ export default function ForgotPassword() {
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.logoContainer}>
-            <HomeLogo size={40} color="#FF6B00" />
+            <HomeLogo size={40} color="#F36746" />
           </View>
 
           <View style={styles.header}>
@@ -102,7 +102,7 @@ export default function ForgotPassword() {
             </TouchableOpacity>
 
             <View style={styles.footer}>
-              <Ionicons name="arrow-back" size={20} color="#FF6B00" />
+              <Ionicons name="arrow-back" size={20} color="#F36746" />
               <TouchableOpacity onPress={() => router.push('/sign-in')}>
                 <ThemedText style={styles.backButtonText}>
                   Back to Sign In

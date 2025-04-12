@@ -64,7 +64,7 @@ export default function Header({ title }: HeaderProps) {
   };
 
   // Get user's full name or display a default
-  const userFirstName = user?.first_name || 'User';
+  const userName = user?.first_name || user?.full_name || 'User';
   // const userNickName = user?.nickname || 'User';
   
   return (
@@ -126,7 +126,7 @@ export default function Header({ title }: HeaderProps) {
                   />
                 </View>
                 <View style={styles.profileInfo}>
-                  <ThemedText style={styles.profileName}>{userFirstName}</ThemedText>
+                  <ThemedText style={styles.profileName}>{userName}</ThemedText>
                   <TouchableOpacity onPress={() => handleNavigation(() => {
                     router.push('/profile');
                   })}>
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
   },
   viewProfile: {
     fontSize: 14,
-    color: '#FF6B00',
+    color: '#F36746',
   },
   statsContainer: {
     flexDirection: 'row',

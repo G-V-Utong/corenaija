@@ -373,7 +373,7 @@ export default function PhysicalProfile({ onboardingData, onUpdate }: PhysicalPr
           <Ionicons
             name={isMultiSelect ? 'checkmark-circle' : 'radio-button-on'}
             size={24}
-            color="#FF6B00"
+            color="#F36746"
           />
         )}
       </TouchableOpacity>
@@ -467,7 +467,7 @@ export default function PhysicalProfile({ onboardingData, onUpdate }: PhysicalPr
         <Switch
           value={isMetric}
           onValueChange={toggleMeasurementSystem}
-          trackColor={{ false: isDarkMode ? '#334155' : '#CBD5E1', true: '#FF6B00' }}
+          trackColor={{ false: isDarkMode ? '#334155' : '#CBD5E1', true: '#F36746' }}
           thumbColor={isMetric ? '#FFFFFF' : isDarkMode ? '#94A3B8' : '#64748B'}
         />
       </View>
@@ -720,7 +720,7 @@ const styles = StyleSheet.create({
     transform: [{ scale: 1 }],
   },
   selectedOption: {
-    borderColor: '#FF6B00',
+    borderColor: '#F36746',
     transform: [{ scale: 1.02 }],
   },
   optionLabel: {
@@ -761,7 +761,7 @@ const styles = StyleSheet.create({
   checkIcon: {
     position: 'absolute',
     right: 16,
-    color: '#FF6B00',
+    color: '#F36746',
   },
   optionContent: {
     flex: 1,

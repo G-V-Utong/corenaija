@@ -221,19 +221,30 @@ export default function FitnessGoals() {
         { backgroundColor: isDarkMode ? '#334155' : '#F1F5F9' },
       ]}
       onPress={onPress}
+      activeOpacity={0.7}
     >
       {icon && (
         <Ionicons
           name={icon as any}
           size={24}
-          color={isSelected ? '#FFFFFF' : isDarkMode ? '#FFFFFF' : '#000000'}
+          color={isSelected ? (isDarkMode ? '#FFFFFF' : '#000000') : (isDarkMode ? '#FFFFFF' : '#000000')}
         />
       )}
       <View style={styles.optionContent}>
-        <ThemedText style={[styles.optionTitle, isSelected && styles.selectedText]}>
+        <ThemedText 
+          style={[
+            styles.optionTitle, 
+            isSelected && (isDarkMode ? styles.selectedText : { color: '#000000' })
+          ]}
+        >
           {title}
         </ThemedText>
-        <ThemedText style={[styles.optionDescription, isSelected && styles.selectedText]}>
+        <ThemedText 
+          style={[
+            styles.optionDescription, 
+            isSelected && (isDarkMode ? styles.selectedText : { color: '#000000' })
+          ]}
+        >
           {description}
         </ThemedText>
       </View>
@@ -241,11 +252,17 @@ export default function FitnessGoals() {
         <Ionicons
           name="checkmark-circle"
           size={24}
-          color="#FF6B00"
+          color="#F36746"
         />
       )}
     </TouchableOpacity>
   );
+
+  const handleOptionSelect = (key: string, value: any) => {
+    if (updateOnboardingData) {
+      updateOnboardingData({ [key]: value });
+    }
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -261,7 +278,7 @@ export default function FitnessGoals() {
               goal.title,
               goal.description,
               onboardingData?.primary_fitness_goal === goal.id,
-              () => updateOnboardingData && updateOnboardingData({ primary_fitness_goal: goal.id }),
+              () => handleOptionSelect('primary_fitness_goal', goal.id),
               goal.icon
             )}
           </View>
@@ -280,7 +297,7 @@ export default function FitnessGoals() {
               level.title,
               level.description,
               onboardingData?.fitness_level === level.id,
-              () => updateOnboardingData && updateOnboardingData({ fitness_level: level.id }),
+              () => handleOptionSelect('fitness_level', level.id),
               undefined
             )}
           </View>
@@ -299,7 +316,7 @@ export default function FitnessGoals() {
               option.label,
               '',
               onboardingData?.workout_frequency === option.id,
-              () => updateOnboardingData && updateOnboardingData({ workout_frequency: option.id }),
+              () => handleOptionSelect('workout_frequency', option.id),
               undefined
             )}
           </View>
@@ -318,7 +335,7 @@ export default function FitnessGoals() {
               option,
               '',
               onboardingData?.workout_duration === option,
-              () => updateOnboardingData && updateOnboardingData({ workout_duration: option }),
+              () => handleOptionSelect('workout_duration', option),
               undefined
             )}
           </View>
@@ -344,7 +361,7 @@ export default function FitnessGoals() {
               <ThemedText
                 style={[
                   styles.equipmentText,
-                  onboardingData?.equipment_access?.includes(equipment) && styles.selectedText,
+                  onboardingData?.equipment_access?.includes(equipment) && (isDarkMode ? styles.selectedText : { color: '#000000' })
                 ]}
               >
                 {equipment}
@@ -365,11 +382,11 @@ export default function FitnessGoals() {
                 styles.optionButton,
                 { 
                   backgroundColor: onboardingData?.muscle_group_focus === group.id
-                    ? '#FF6B00' 
+                    ? '#F36746' 
                     : isDarkMode ? '#1E293B' : '#F1F5F9'
                 }
               ]}
-              onPress={() => updateOnboardingData && updateOnboardingData({ muscle_group_focus: group.id })}
+              onPress={() => handleOptionSelect('muscle_group_focus', group.id)}
             >
               <ThemedText 
                 style={[
@@ -436,7 +453,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   selectedOption: {
-    backgroundColor: '#FF6B00',
+    backgroundColor: '#F36746',
   },
   optionContent: {
     flex: 1,
@@ -467,8 +484,8 @@ const styles = StyleSheet.create({
     borderColor: '#CBD5E1',
   },
   selectedEquipment: {
-    backgroundColor: '#FF6B00',
-    borderColor: '#FF6B00',
+    backgroundColor: '#F36746',
+    borderColor: '#F36746',
   },
   equipmentText: {
     fontSize: 14,

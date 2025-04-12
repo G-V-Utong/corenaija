@@ -83,7 +83,7 @@ export default function FastingPreferences() {
         <Ionicons
           name={isMultiSelect ? 'checkmark-circle' : 'radio-button-on'}
           size={24}
-          color="#FF6B00"
+          color="#F36746"
         />
       )}
     </TouchableOpacity>
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   selectedOption: {
-    borderColor: '#FF6B00',
+    borderColor: '#F36746',
     borderWidth: 2,
   },
   optionLabel: {

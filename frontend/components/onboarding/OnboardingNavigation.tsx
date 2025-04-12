@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   nextButton: {
-    backgroundColor: '#FF6B00',
+    backgroundColor: '#F36746',
   },
   buttonText: {
     fontSize: 16,

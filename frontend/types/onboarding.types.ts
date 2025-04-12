@@ -28,6 +28,11 @@ export interface OnboardingData {
   // Muscle Group Focus
   muscle_group_focus: 'balanced' | 'chest' | 'back' | 'arms' | 'legs' | 'abs' | 'glutes';
 
+  // Nutrition Preferences
+  diet_type: string[];
+  eating_pattern: string;
+  eating_out_frequency: string;
+
   // Fasting Preferences
   fasting_status: 'none' | 'intermittent' | 'extended' | 'time_restricted' | 'religious';
   preferred_fasting_protocol: '16_8' | '18_6' | '20_4' | '5_2' | 'custom';

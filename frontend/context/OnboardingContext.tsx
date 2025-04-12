@@ -15,6 +15,7 @@ interface OnboardingContextType {
   nextStep: () => void;
   previousStep: () => void;
   saveOnboardingData: () => Promise<boolean>;
+  saveSectionData: (sectionData: Partial<OnboardingData>) => Promise<boolean>;
   resetOnboardingData: () => void;
   isLoading: boolean;
   error: string | null;
@@ -53,6 +54,11 @@ const defaultOnboardingData: OnboardingData = {
 
   // Muscle Group Focus
   muscle_group_focus: 'balanced',
+
+  // Nutrition Preferences
+  diet_type: [],
+  eating_pattern: '',
+  eating_out_frequency: '',
 
   // Fasting Preferences
   fasting_status: 'none',
@@ -128,10 +134,13 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
               allergies: profile.allergies || [],
               sleep_quality: profile.sleep_quality || '',
               muscle_group_focus: profile.muscle_group_focus || 'balanced',
-              fasting_status: profile.fasting_status || 'none',
-              preferred_fasting_protocol: profile.preferred_fasting_protocol || '16_8',
-              fasting_reason: profile.fasting_reason || 'weight_loss',
-              fasting_experience: profile.fasting_experience || 'beginner'
+              diet_type: profile.diet_type || [],
+              eating_pattern: profile.eating_pattern || '',
+              eating_out_frequency: profile.eating_out_frequency || '',
+              fasting_status: 'none',
+              preferred_fasting_protocol: '16_8',
+              fasting_reason: 'weight_loss',
+              fasting_experience: 'beginner'
             };
             setOnboardingData(existingData);
           } else {
@@ -185,10 +194,13 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
               allergies: profile.allergies || [],
               sleep_quality: profile.sleep_quality || '',
               muscle_group_focus: profile.muscle_group_focus || 'balanced',
-              fasting_status: profile.fasting_status || 'none',
-              preferred_fasting_protocol: profile.preferred_fasting_protocol || '16_8',
-              fasting_reason: profile.fasting_reason || 'weight_loss',
-              fasting_experience: profile.fasting_experience || 'beginner'
+              diet_type: profile.diet_type || [],
+              eating_pattern: profile.eating_pattern || '',
+              eating_out_frequency: profile.eating_out_frequency || '',
+              fasting_status: 'none',
+              preferred_fasting_protocol: '16_8',
+              fasting_reason: 'weight_loss',
+              fasting_experience: 'beginner'
             };
             setOnboardingData(existingData);
           } else {
@@ -211,47 +223,14 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
   }, [user, subscribe]);
 
   const updateOnboardingData = useCallback(async (data: Partial<OnboardingData>) => {
-    console.log('[OnboardingContext] Updating data:', data);
+    console.log('[OnboardingContext] Updating local data:', data);
     
-    if (!user) {
-      console.error('[OnboardingContext] No user found, cannot update data');
-      return;
-    }
-
-    try {
-      // First update the database
-      console.log('[OnboardingContext] Updating database');
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({
-          ...data,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id);
-
-      if (updateError) {
-        console.error('[OnboardingContext] Database update error:', updateError);
-        throw updateError;
-      }
-
-      // Then update local state
-      console.log('[OnboardingContext] Updating local state');
-      setOnboardingData(prev => {
-        if (!prev) return null;
-        const newData = { ...prev, ...data };
-        console.log('[OnboardingContext] New state:', newData);
-        return newData;
-      });
-
-      // Validate the updated data
-      console.log('[OnboardingContext] Validating data');
-      const { errors } = validateOnboardingData(onboardingData);
-      setValidationErrors(errors);
-    } catch (error) {
-      console.error('[OnboardingContext] Error updating data:', error);
-      throw error;
-    }
-  }, [user, onboardingData]);
+    // Update local state immediately for responsive UI
+    setOnboardingData(prev => {
+      if (!prev) return null;
+      return { ...prev, ...data };
+    });
+  }, []);
 
   const nextStep = useCallback(() => {
     if (currentStep < totalSteps - 1) {
@@ -273,31 +252,46 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
 
     try {
       console.log('Attempting to save final onboarding data:', onboardingData);
+      
+      // Format or remove empty date
+      const formattedData = {
+        ...onboardingData,
+        date_of_birth: onboardingData.date_of_birth || null, // Use null instead of empty string
+      };
+
       // Save final onboarding data to profiles table
       const { error } = await supabase
         .from('profiles')
         .update({
-          first_name: onboardingData.first_name,
-          last_name: onboardingData.last_name,
-          email: onboardingData.email,
-          phone: onboardingData.phone_number,
-          date_of_birth: onboardingData.date_of_birth,
-          gender: onboardingData.gender,
-          height: onboardingData.height,
-          weight: onboardingData.weight,
-          target_weight: onboardingData.target_weight,
-          activity_level: onboardingData.activity_level,
-          fitness_goals: onboardingData.fitness_goals,
-          dietary_restrictions: onboardingData.dietary_restrictions,
-          health_conditions: onboardingData.health_conditions,
-          medications: onboardingData.medications,
-          sleep_hours: onboardingData.sleep_hours,
-          energy_level: onboardingData.energy_level,
-          stress_level: onboardingData.stress_level,
-          measurement_system: onboardingData.measurement_system,
-          body_type: onboardingData.body_type,
-          allergies: onboardingData.allergies,
-          sleep_quality: onboardingData.sleep_quality,
+          first_name: formattedData.first_name,
+          last_name: formattedData.last_name,
+          email: formattedData.email,
+          phone: formattedData.phone_number,
+          date_of_birth: formattedData.date_of_birth,
+          gender: formattedData.gender,
+          height: formattedData.height,
+          weight: formattedData.weight,
+          target_weight: formattedData.target_weight,
+          activity_level: formattedData.activity_level,
+          fitness_goals: formattedData.fitness_goals,
+          dietary_restrictions: formattedData.dietary_restrictions,
+          health_conditions: formattedData.health_conditions,
+          medications: formattedData.medications,
+          sleep_hours: formattedData.sleep_hours,
+          energy_level: formattedData.energy_level,
+          stress_level: formattedData.stress_level,
+          measurement_system: formattedData.measurement_system,
+          body_type: formattedData.body_type,
+          allergies: formattedData.allergies,
+          sleep_quality: formattedData.sleep_quality,
+          muscle_group_focus: formattedData.muscle_group_focus,
+          diet_type: formattedData.diet_type,
+          eating_pattern: formattedData.eating_pattern,
+          eating_out_frequency: formattedData.eating_out_frequency,
+          fasting_status: formattedData.fasting_status,
+          preferred_fasting_protocol: formattedData.preferred_fasting_protocol,
+          fasting_reason: formattedData.fasting_reason,
+          fasting_experience: formattedData.fasting_experience,
           onboarding_completed: true,
           updated_at: new Date().toISOString(),
         })
@@ -309,14 +303,46 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
       }
 
       console.log('Successfully completed onboarding process');
-      // Navigate to main app after successful save
-      router.replace('/(tabs)');
       return true;
     } catch (error) {
       console.error('Error in saveOnboardingData:', error);
       return false;
     }
-  }, [user, onboardingData, router]);
+  }, [user, onboardingData]);
+
+  const saveSectionData = useCallback(async (sectionData: Partial<OnboardingData>) => {
+    if (!user) {
+      console.error('Cannot save section data: No user found');
+      return false;
+    }
+
+    try {
+      // Update local state first
+      setOnboardingData(prev => {
+        if (!prev) return null;
+        return { ...prev, ...sectionData };
+      });
+
+      // Then save to database
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          ...sectionData,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+
+      if (error) {
+        console.error('Error saving section data:', error);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error in saveSectionData:', error);
+      return false;
+    }
+  }, [user]);
 
   const resetOnboardingData = useCallback(() => {
     setOnboardingData(defaultOnboardingData);
@@ -333,6 +359,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
         nextStep,
         previousStep,
         saveOnboardingData,
+        saveSectionData,
         resetOnboardingData,
         isLoading: loading,
         error: null,
