@@ -8,12 +8,20 @@ import { ThemedView } from '../components/ThemedView';
 import { ThemedText } from '../components/ThemedText';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
-import { useLanguage } from '../context/LanguageContext';
+import { useLanguage, Language } from '../context/LanguageContext';
+
+// Language labels mapping
+const languageLabels: Record<Language, string> = {
+  en: 'English',
+  pcm: 'Nigerian Pidgin',
+  ha: 'Hausa',
+  ig: 'Igbo',
+};
 
 export default function SettingsScreen() {
   const router = useRouter();
   const { isDarkMode, themeMode, setThemeMode } = useTheme();
-  const { language, setLanguage, getLanguageLabel, t } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   const { signOut, deleteAccount, updateEmail, updatePassword, user } = useAuth();
   const [showThemeModal, setShowThemeModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -63,7 +71,7 @@ export default function SettingsScreen() {
     {
       icon: 'language-outline',
       label: t('settings.language.label'),
-      value: getLanguageLabel(language),
+      value: languageLabels[language],
       onPress: () => setShowLanguageModal(true),
     },
   ];
@@ -92,11 +100,11 @@ export default function SettingsScreen() {
         // Force navigation to sign-in page
         router.replace('/(auth)/sign-in');
       } else {
-        Alert.alert('Error', response.error?.message || 'Failed to delete account');
+        Alert.alert(t('common.error'), response.error?.message || t('errors.deleteFailed'));
       }
     } catch (error) {
       console.error('Delete account error:', error);
-      Alert.alert('Error', 'An unexpected error occurred');
+      Alert.alert(t('common.error'), t('errors.default'));
     } finally {
       setIsDeleting(false);
       setShowDeleteModal(false);
@@ -178,8 +186,10 @@ export default function SettingsScreen() {
   ];
 
   const languageOptions = [
-    { label: 'English', value: 'en', icon: 'language-outline' },
-    { label: 'Pidgin', value: 'pcm', icon: 'language-outline' },
+    { label: languageLabels.en, value: 'en', icon: 'language-outline' },
+    { label: languageLabels.pcm, value: 'pcm', icon: 'language-outline' },
+    { label: languageLabels.ha, value: 'ha', icon: 'language-outline' },
+    { label: languageLabels.ig, value: 'ig', icon: 'language-outline' },
   ];
 
   return (
@@ -228,17 +238,17 @@ export default function SettingsScreen() {
               <Ionicons
                 name="trash-outline"
                 size={24}
-                color="#FF3B30"
+                color="#F36746"
                 style={styles.settingIcon}
               />
-              <ThemedText style={[styles.settingLabel, { color: '#FF3B30' }]}>
+              <ThemedText style={[styles.settingLabel, { color: '#F36746' }]}>
                 {t('settings.deleteAccount.label')}
               </ThemedText>
             </View>
             <Ionicons
               name="chevron-forward"
               size={20}
-              color="#FF3B30"
+              color="#F36746"
             />
           </TouchableOpacity>
         </View>
@@ -247,8 +257,8 @@ export default function SettingsScreen() {
           style={styles.logoutButton}
           onPress={handleLogout}
         >
-          <Ionicons name="log-out-outline" size={24} color="#FF3B30" />
-          <ThemedText style={[styles.logoutText, { color: '#FF3B30' }]}>
+          <Ionicons name="log-out-outline" size={24} color="#F36746" />
+          <ThemedText style={[styles.logoutText, { color: '#F36746' }]}>
             {t('settings.logout.label')}
           </ThemedText>
         </TouchableOpacity>
@@ -295,7 +305,7 @@ export default function SettingsScreen() {
                     <Ionicons
                       name="checkmark"
                       size={24}
-                      color="#FF6B00"
+                      color="#F36746"
                     />
                   )}
                 </TouchableOpacity>
@@ -605,7 +615,7 @@ export default function SettingsScreen() {
                     index !== languageOptions.length - 1 && styles.modalOptionBorder
                   ]}
                   onPress={() => {
-                    setLanguage(option.value as 'en' | 'pcm');
+                    setLanguage(option.value as Language);
                     setShowLanguageModal(false);
                   }}
                 >
@@ -624,7 +634,7 @@ export default function SettingsScreen() {
                     <Ionicons
                       name="checkmark"
                       size={24}
-                      color="#FF6B00"
+                      color="#F36746"
                     />
                   )}
                 </TouchableOpacity>
@@ -764,7 +774,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   deleteButton: {
-    backgroundColor: '#FF3B30',
+    backgroundColor: '#F36746',
   },
   deleteButtonText: {
     fontSize: 16,
@@ -798,7 +808,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 59, 48, 0.1)',
   },
   saveButton: {
-    backgroundColor: '#FF3B30',
+    backgroundColor: '#F36746',
   },
   saveButtonText: {
     fontSize: 16,

@@ -2,6 +2,8 @@ import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { useAuth } from '../../context/AuthContext';
+import { useEffect } from 'react';
 
 interface TabBarIconProps {
   color: string;
@@ -12,11 +14,17 @@ interface TabBarIconProps {
 export default function TabLayout() {
   const { isDarkMode } = useTheme();
   const { t } = useLanguage();
+  const { refreshUserProfile } = useAuth();
+
+  useEffect(() => {
+    // Load user data when tabs are mounted
+    refreshUserProfile();
+  }, []);
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#FF6B00',
+        tabBarActiveTintColor: '#F36746',
         tabBarInactiveTintColor: isDarkMode ? '#94A3B8' : '#64748B',
         tabBarStyle: {
           backgroundColor: isDarkMode ? '#1A1A1A' : '#FFFFFF',
@@ -41,7 +49,7 @@ export default function TabLayout() {
             <Ionicons 
               name="fitness" 
               size={size} 
-              color={focused ? '#FF6B00' : (isDarkMode ? '#FFFFFF' : color)} 
+              color={focused ? '#F36746' : (isDarkMode ? '#FFFFFF' : color)} 
             />
           ),
         }}
@@ -54,7 +62,7 @@ export default function TabLayout() {
             <Ionicons 
               name="nutrition" 
               size={size} 
-              color={focused ? '#FF6B00' : (isDarkMode ? '#FFFFFF' : color)} 
+              color={focused ? '#F36746' : (isDarkMode ? '#FFFFFF' : color)} 
             />
           ),
         }}
@@ -67,7 +75,7 @@ export default function TabLayout() {
             <Ionicons 
               name="time" 
               size={size} 
-              color={focused ? '#FF6B00' : (isDarkMode ? '#FFFFFF' : color)} 
+              color={focused ? '#F36746' : (isDarkMode ? '#FFFFFF' : color)} 
             />
           ),
         }}
@@ -80,7 +88,7 @@ export default function TabLayout() {
             <Ionicons 
               name="person" 
               size={size} 
-              color={focused ? '#FF6B00' : (isDarkMode ? '#FFFFFF' : color)} 
+              color={focused ? '#F36746' : (isDarkMode ? '#FFFFFF' : color)} 
             />
           ),
         }}

@@ -63,7 +63,7 @@ export const authStyles = StyleSheet.create({
   button: {
     height: 48,
     borderRadius: 8,
-    backgroundColor: '#FF6B00',
+    backgroundColor: '#F36746',
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 16,
@@ -88,7 +88,7 @@ export const authStyles = StyleSheet.create({
   },
   footerLink: {
     fontSize: 14,
-    color: '#FF6B00',
+    color: '#F36746',
     fontWeight: '600',
   },
   errorText: {
