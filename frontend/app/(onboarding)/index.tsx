@@ -68,21 +68,14 @@ export default function OnboardingScreen() {
   };
 
   const handleLoadingComplete = useCallback(async () => {
-    try {
-      await refreshUserProfile();
-      setShowLoadingModal(false);
-      router.replace('/(tabs)');
-    } catch (error) {
-      console.error('Error refreshing user profile:', error);
-      setShowLoadingModal(false);
-      // Still navigate to tabs even if refresh fails
-      router.replace('/(tabs)');
-    }
+    await refreshUserProfile();
+    setShowLoadingModal(false);
+    router.replace('/(tabs)');
   }, [refreshUserProfile, router]);
 
   const getCurrentSectionData = (section: number, data: OnboardingData): Partial<OnboardingData> => {
     switch (section) {
-      case 0: // Personal Basics
+      case 0:
         return {
           first_name: data.first_name,
           last_name: data.last_name,
@@ -90,66 +83,53 @@ export default function OnboardingScreen() {
           phone_number: data.phone_number,
           date_of_birth: data.date_of_birth,
           gender: data.gender,
+        };
+      case 1:
+        return {
           height: data.height,
           weight: data.weight,
           target_weight: data.target_weight,
+          body_type: data.body_type,
           activity_level: data.activity_level,
+          measurement_system: data.measurement_system,
+        };
+      case 2:
+        return {
           fitness_goals: data.fitness_goals,
-          dietary_restrictions: data.dietary_restrictions,
+          muscle_group_focus: data.muscle_group_focus,
           health_conditions: data.health_conditions,
           medications: data.medications,
           sleep_hours: data.sleep_hours,
           energy_level: data.energy_level,
-          stress_level: data.stress_level
+          stress_level: data.stress_level,
+          sleep_quality: data.sleep_quality,
         };
-      case 1: // Physical Profile
-        return {
-          measurement_system: data.measurement_system,
-          profile_picture: data.profile_picture,
-          body_type: data.body_type,
-          allergies: data.allergies,
-          sleep_quality: data.sleep_quality
-        };
-      case 2: // Fitness Goals
-        return {
-          muscle_group_focus: data.muscle_group_focus
-        };
-      case 3: // Nutrition Preferences
+      case 3:
         return {
           diet_type: data.diet_type,
           eating_pattern: data.eating_pattern,
-          eating_out_frequency: data.eating_out_frequency
+          eating_out_frequency: data.eating_out_frequency,
+          dietary_restrictions: data.dietary_restrictions,
+          allergies: data.allergies,
         };
-      case 4: // Fasting Preferences
+      case 4:
         return {
           fasting_status: data.fasting_status,
           preferred_fasting_protocol: data.preferred_fasting_protocol,
           fasting_reason: data.fasting_reason,
-          fasting_experience: data.fasting_experience
+          fasting_experience: data.fasting_experience,
         };
       default:
         return {};
     }
   };
 
-  const renderSection = () => {
+  const renderCurrentSection = () => {
     switch (currentSection) {
       case 0:
         return <PersonalBasics />;
       case 1:
-        if (!onboardingData || !updateOnboardingData) {
-          return (
-            <View style={styles.container}>
-              <ThemedText>Loading profile data...</ThemedText>
-            </View>
-          );
-        }
-        return (
-          <PhysicalProfile 
-            onboardingData={onboardingData} 
-            onUpdate={updateOnboardingData} 
-          />
-        );
+        return <PhysicalProfile />;
       case 2:
         return <FitnessGoals />;
       case 3:
@@ -162,51 +142,52 @@ export default function OnboardingScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <ThemedView style={styles.container}>
       <OnboardingProgress
         sections={SECTIONS}
         currentSection={currentSection}
       />
-      <ScrollView 
+      <ScrollView
         ref={scrollViewRef}
-        style={styles.content}
+        style={styles.scrollView}
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
       >
         <ThemedText style={styles.title}>
           {SECTIONS[currentSection].title}
         </ThemedText>
-        {renderSection()}
+        {renderCurrentSection()}
       </ScrollView>
+      
       <OnboardingNavigation
         currentSection={currentSection}
         totalSections={SECTIONS.length}
         onNext={handleNext}
         onBack={handleBack}
       />
+
       <LoadingModal
         visible={showLoadingModal}
         onComplete={handleLoadingComplete}
-        duration={2000}
       />
-    </View>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'transparent',
   },
-  content: {
+  scrollView: {
     flex: 1,
   },
   contentContainer: {
-    padding: 20,
+    flexGrow: 1,
+    padding: 16,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
   },
-}); 
+});
