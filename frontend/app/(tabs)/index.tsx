@@ -1,36 +1,46 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Header from '../../components/Header';
 import { ThemedView } from '../../components/ThemedView';
-import { ThemedText } from '../../components/ThemedText';
-import { PageLoader } from '../../components/common/PageLoader';
+import { WorkoutCalendar } from '../../components/WorkoutCalendar';
+import { useAuth } from '../../context/AuthContext';
+import { supabase } from '../../lib/supabase';
 
-export default function TrainingScreen() {
-  const [isLoading, setIsLoading] = useState(true);
+export default function ProfileScreen() {
+  const { session } = useAuth();
+  const [userName, setUserName] = useState('');
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 5000); // 5 seconds
+    if (session?.user) {
+      fetchUserProfile();
+    }
+  }, [session]);
 
-    return () => clearTimeout(timer);
-  }, []);
+  const fetchUserProfile = async () => {
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', session?.user.id)
+        .single();
+      
+      if (profile?.full_name) {
+        setUserName(profile.full_name.split(' ')[0]); // Get first name only
+      }
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+    }
+  };
 
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView edges={['top']}>
-        <Header title="Training" />
+        <Header title="Me" />
       </SafeAreaView>
-      <PageLoader isLoading={isLoading}>
-        <ThemedView style={styles.content}>
-          <ThemedView style={styles.messageContainer}>
-            <ThemedText style={styles.message}>
-              Training content loaded!
-            </ThemedText>
-          </ThemedView>
-        </ThemedView>
-      </PageLoader>
+      <ThemedView style={styles.content}>
+        <WorkoutCalendar userName={userName} />
+      </ThemedView>
     </ThemedView>
   );
 }
@@ -41,15 +51,5 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 16,
-  },
-  messageContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  message: {
-    fontSize: 18,
-    textAlign: 'center',
   },
 });

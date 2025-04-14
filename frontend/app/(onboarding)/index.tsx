@@ -1,12 +1,14 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
+import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useOnboarding } from '../../context/OnboardingContext';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import { ThemedView } from '../../components/ThemedView';
 import { ThemedText } from '../../components/ThemedText';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { LoadingModal } from '../../components/LoadingModal';
+import { Ionicons } from '@expo/vector-icons';
 import PersonalBasics from '../../components/onboarding/sections/PersonalBasics';
 import PhysicalProfile from '../../components/onboarding/sections/PhysicalProfile';
 import FitnessGoals from '../../components/onboarding/sections/FitnessGoals';
@@ -29,6 +31,7 @@ export default function OnboardingScreen() {
   const { onboardingData, saveOnboardingData, updateOnboardingData, isLoading, saveSectionData } = useOnboarding();
   const { refreshUserProfile } = useAuth();
   const [currentSection, setCurrentSection] = useState(0);
+  const { isDarkMode } = useTheme();
   const scrollViewRef = useRef<ScrollView>(null);
   const [showLoadingModal, setShowLoadingModal] = useState(false);
 
@@ -124,6 +127,10 @@ export default function OnboardingScreen() {
     }
   };
 
+  const handleBackToLogin = () => {
+    router.replace('/get-started');
+  };
+
   const renderCurrentSection = () => {
     switch (currentSection) {
       case 0:
@@ -143,6 +150,19 @@ export default function OnboardingScreen() {
 
   return (
     <ThemedView style={styles.container}>
+      {currentSection === 0 && (
+        <TouchableOpacity 
+          style={styles.backButton} 
+          onPress={handleBackToLogin}
+        >
+          <Ionicons 
+            name="arrow-back" 
+            size={24} 
+            color="#000000" 
+          />
+        </TouchableOpacity>
+      )}
+      
       <OnboardingProgress
         sections={SECTIONS}
         currentSection={currentSection}
@@ -189,5 +209,11 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 16,
+    left: 16,
+    zIndex: 1,
   },
 });

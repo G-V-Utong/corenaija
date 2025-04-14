@@ -44,6 +44,19 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
+          title: t('tabs.profile'),
+          tabBarIcon: ({ color, size, focused }: TabBarIconProps) => (
+            <Ionicons 
+              name="person" 
+              size={size} 
+              color={focused ? '#F36746' : (isDarkMode ? '#FFFFFF' : color)} 
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="training"
+        options={{
           title: t('tabs.training'),
           tabBarIcon: ({ color, size, focused }: TabBarIconProps) => (
             <Ionicons 
@@ -74,19 +87,6 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size, focused }: TabBarIconProps) => (
             <Ionicons 
               name="time" 
-              size={size} 
-              color={focused ? '#F36746' : (isDarkMode ? '#FFFFFF' : color)} 
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: t('tabs.profile'),
-          tabBarIcon: ({ color, size, focused }: TabBarIconProps) => (
-            <Ionicons 
-              name="person" 
               size={size} 
               color={focused ? '#F36746' : (isDarkMode ? '#FFFFFF' : color)} 
             />

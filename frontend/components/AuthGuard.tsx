@@ -22,28 +22,6 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     // Don't redirect if we're on the splash screen
     if (isSplashScreen) return;
 
-    const checkOnboardingStatus = async () => {
-      if (!session?.user?.id) return;
-
-      try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('onboarding_completed')
-          .eq('id', session.user.id)
-          .single();
-
-        if (error) throw error;
-
-        if (!data?.onboarding_completed && !inOnboardingGroup) {
-          router.replace('/(onboarding)');
-        } else if (data?.onboarding_completed && inOnboardingGroup) {
-          router.replace('/(tabs)');
-        }
-      } catch (err) {
-        console.error('Error checking onboarding status:', err);
-      }
-    };
-
     if (!session) {
       // Not authenticated
       if (!inAuthGroup && !inOnboardingGroup && !isGetStartedRoute) {
@@ -51,13 +29,9 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
         router.replace('/get-started');
       }
     } else {
-      // Authenticated
+      // User is authenticated, but let OnboardingContext handle onboarding status
       if (inAuthGroup || isGetStartedRoute) {
-        // Check onboarding status and redirect accordingly
-        checkOnboardingStatus();
-      } else {
-        // Check onboarding status for other routes
-        checkOnboardingStatus();
+        router.replace('/(onboarding)');
       }
     }
   }, [session, loading, segments, router]);
