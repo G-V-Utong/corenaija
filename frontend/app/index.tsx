@@ -56,11 +56,11 @@ export default function SplashScreen() {
   return (
     <ThemedView style={styles.container}>
       <Logo size={80} color="#F36746" />
-      <ActivityIndicator 
+      {/* <ActivityIndicator 
         size="large" 
         color="#F36746" 
         style={styles.loader}
-      />
+      /> */}
     </ThemedView>
   );
 }

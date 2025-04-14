@@ -34,10 +34,10 @@ export interface OnboardingData {
   eating_out_frequency: string;
 
   // Fasting Preferences
-  fasting_status: 'none' | 'intermittent' | 'extended' | 'time_restricted' | 'religious';
-  preferred_fasting_protocol: '16_8' | '18_6' | '20_4' | '5_2' | 'custom';
-  fasting_reason: 'weight_loss' | 'metabolic_health' | 'insulin_sensitivity' | 'mental_clarity' | 'longevity';
-  fasting_experience: 'beginner' | 'intermediate' | 'advanced';
+  fasting_status: 'none' | 'intermittent' | 'extended' | 'time_restricted' | 'religious' | '';
+  preferred_fasting_protocol: '16_8' | '18_6' | '20_4' | '5_2' | 'custom' | '';
+  fasting_reason: 'weight_loss' | 'metabolic_health' | 'insulin_sensitivity' | 'mental_clarity' | 'longevity' | '';
+  fasting_experience: 'beginner' | 'intermediate' | 'advanced' | '';
 
   // ... rest of the existing interface ...
 } 
