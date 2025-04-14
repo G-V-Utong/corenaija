@@ -4,6 +4,7 @@ import { ha } from './ha';
 import { yo } from './yo';
 import { ig } from './ig';
 
+// Export all translations
 export const translations = {
   en,
   pcm,
@@ -12,14 +13,14 @@ export const translations = {
   ig,
 } as const;
 
-export type TranslationKeys = keyof typeof translations;
+// Helper type to get nested keys
 export type TranslationsType = typeof en;
 
-// Helper type to get nested keys
+export type TranslationKeys = keyof typeof translations;
 export type NestedKeys<T> = {
   [K in keyof T]: T[K] extends object
     ? `${K & string}.${NestedKeys<T[K]> & string}`
     : K;
 }[keyof T];
 
-export type TranslationKey = NestedKeys<TranslationsType>; 
+export type TranslationKey = NestedKeys<TranslationsType>;

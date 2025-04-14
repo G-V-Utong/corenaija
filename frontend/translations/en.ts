@@ -124,6 +124,38 @@ export const en = {
     },
   },
 
+  // Calendar
+  calendar: {
+    weekDays: {
+      sunday: 'S',
+      monday: 'M',
+      tuesday: 'T',
+      wednesday: 'W',
+      thursday: 'T',
+      friday: 'F',
+      saturday: 'S',
+    },
+    months: {
+      january: 'January',
+      february: 'February',
+      march: 'March',
+      april: 'April',
+      may: 'May',
+      june: 'June',
+      july: 'July',
+      august: 'August',
+      september: 'September',
+      october: 'October',
+      november: 'November',
+      december: 'December',
+    },
+    selectYear: 'Select Year',
+    activities: 'Activities',
+    history: 'History',
+    bodyInformation: 'Body Information',
+    add: 'Add'
+  },
+
   // Settings Screen
   settings: {
     title: 'Settings',

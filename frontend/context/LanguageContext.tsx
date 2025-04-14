@@ -1,11 +1,9 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { en } from '../translations/en';
-import { pcm } from '../translations/pcm';
-import { ha } from '../translations/ha';
-import { ig } from '../translations/ig';
+import { translations } from '../translations';
+import type { TranslationsType } from '../translations';
 
-export type Language = 'en' | 'pcm' | 'ha' | 'ig';
+export type Language = 'en' | 'pcm' | 'ha' | 'ig' | 'yo';
 
 type NestedKeyOf<ObjectType extends object> = {
   [Key in keyof ObjectType & (string | number)]: ObjectType[Key] extends object
@@ -13,20 +11,13 @@ type NestedKeyOf<ObjectType extends object> = {
     : `${Key}`;
 }[keyof ObjectType & (string | number)];
 
-type TranslationKey = NestedKeyOf<typeof en>;
+type TranslationKey = NestedKeyOf<TranslationsType>;
 
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
   t: (key: TranslationKey) => string;
 }
-
-const translations = {
-  en,
-  pcm,
-  ha,
-  ig,
-};
 
 const LanguageContext = createContext<LanguageContextType>({
   language: 'en',
@@ -51,26 +42,30 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const t = useCallback((key: TranslationKey): string => {
     const keys = key.split('.');
     let value: any = translations[language];
+    
     for (const k of keys) {
       value = value?.[k];
       if (typeof value === 'string') break;
     }
+    
     if (typeof value !== 'string') {
+      // Fallback to English if translation is missing
       value = translations.en;
       for (const k of keys) {
         value = value?.[k];
         if (typeof value === 'string') break;
       }
     }
+    
     return typeof value === 'string' ? value : key;
   }, [language]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const loadLanguage = async () => {
       try {
         const savedLanguage = await AsyncStorage.getItem('language');
-        if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'pcm' || savedLanguage === 'ha' || savedLanguage === 'ig')) {
-          setLanguageState(savedLanguage);
+        if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'pcm' || savedLanguage === 'ha' || savedLanguage === 'ig' || savedLanguage === 'yo')) {
+          setLanguageState(savedLanguage as Language);
         }
       } catch (error) {
         console.error('Error loading language preference:', error);
@@ -85,4 +80,4 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       {children}
     </LanguageContext.Provider>
   );
-}; 
+};

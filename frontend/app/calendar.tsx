@@ -7,6 +7,7 @@ import { ThemedView } from '../components/ThemedView';
 import { ThemedText } from '../components/ThemedText';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 
@@ -18,6 +19,7 @@ interface UserProfile {
 export default function CalendarScreen() {
   const router = useRouter();
   const { isDarkMode } = useTheme();
+  const { t } = useLanguage();
   const { session } = useAuth();
   const [activeTab, setActiveTab] = useState<'activities' | 'history'>('activities');
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -45,9 +47,10 @@ export default function CalendarScreen() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
+    const weekDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as const;
     return {
       day: date.getDate(),
-      weekDay: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.getDay()]
+      weekDay: t(`calendar.weekDays.${weekDays[date.getDay()]}`)
     };
   };
 
@@ -69,23 +72,27 @@ export default function CalendarScreen() {
             style={[styles.tab, activeTab === 'activities' && styles.activeTab]}
             onPress={() => setActiveTab('activities')}
           >
-            <ThemedText style={[
-              styles.tabText,
-              activeTab === 'activities' && styles.activeTabText
-            ]}>
-              Activities
-            </ThemedText>
+            <View style={styles.tabContent}>
+              <ThemedText style={[
+                styles.tabText,
+                activeTab === 'activities' && styles.activeTabText
+              ]}>
+                {t('calendar.activities')}
+              </ThemedText>
+            </View>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.tab, activeTab === 'history' && styles.activeTab]}
             onPress={() => setActiveTab('history')}
           >
-            <ThemedText style={[
-              styles.tabText,
-              activeTab === 'history' && styles.activeTabText
-            ]}>
-              History
-            </ThemedText>
+            <View style={styles.tabContent}>
+              <ThemedText style={[
+                styles.tabText,
+                activeTab === 'history' && styles.activeTabText
+              ]}>
+                {t('calendar.history')}
+              </ThemedText>
+            </View>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -106,7 +113,7 @@ export default function CalendarScreen() {
                 <ThemedText style={styles.dateDay}>{formatDate(profile.updated_at).weekDay}</ThemedText>
               </View>
               <View style={styles.historyContent}>
-                <ThemedText style={styles.historyTitle}>Body Information</ThemedText>
+                <ThemedText style={styles.historyTitle}>{t('calendar.bodyInformation')}</ThemedText>
                 <ThemedText style={styles.historySubtitle}>{profile.weight}kg</ThemedText>
               </View>
               <Ionicons 
@@ -122,7 +129,7 @@ export default function CalendarScreen() {
       {activeTab === 'activities' && (
         <TouchableOpacity style={styles.addButton}>
           <Ionicons name="add" size={24} color="#000000" />
-          <ThemedText style={styles.addButtonText}>Add</ThemedText>
+          <ThemedText style={styles.addButtonText}>{t('calendar.add')}</ThemedText>
         </TouchableOpacity>
       )}
     </ThemedView>
@@ -139,19 +146,27 @@ const styles = StyleSheet.create({
   tabs: {
     flexDirection: 'row',
     paddingHorizontal: 16,
-    paddingBottom: 8,
+    paddingVertical: 24,
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   tab: {
-    marginRight: 24,
+    flex: 1,
+    alignItems: 'center',
     paddingBottom: 8,
+  },
+  tabContent: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   activeTab: {
     borderBottomWidth: 2,
     borderBottomColor: '#F36746',
   },
   tabText: {
-    fontSize: 24,
+    fontSize: 16,
     fontWeight: '600',
+    textAlign: 'center',
   },
   activeTabText: {
     color: '#F36746',
@@ -159,7 +174,8 @@ const styles = StyleSheet.create({
   historyList: {
     flex: 1,
     paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingTop: 24,
+    marginTop: 24,
   },
   historyItem: {
     flexDirection: 'row',

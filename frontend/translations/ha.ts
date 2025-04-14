@@ -124,6 +124,38 @@ export const ha = {
     },
   },
 
+  // Calendar
+  calendar: {
+    weekDays: {
+      sunday: 'L',
+      monday: 'L',
+      tuesday: 'T',
+      wednesday: 'L',
+      thursday: 'A',
+      friday: 'J',
+      saturday: 'A',
+    },
+    months: {
+      january: 'Janairu',
+      february: 'Fabrairu',
+      march: 'Maris',
+      april: 'Afrilu',
+      may: 'Mayu',
+      june: 'Yuni',
+      july: 'Yuli',
+      august: 'Agusta',
+      september: 'Satumba',
+      october: 'Oktoba',
+      november: 'Nuwamba',
+      december: 'Disamba',
+    },
+    selectYear: 'Zaɓi Shekara',
+    activities: 'Ayyukan Jiki',
+    history: 'Tarihin Ayyuka',
+    bodyInformation: 'Bayanan Jiki',
+    add: 'Ƙara'
+  },
+
   // Settings Screen
   settings: {
     title: 'Saituna',

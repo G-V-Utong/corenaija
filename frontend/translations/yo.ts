@@ -82,15 +82,19 @@ export const yo = {
 
   // Sidebar Menu
   sidebar: {
-    home: 'Ilé',
-    training: 'Ìkẹ́kọ̀',
-    nutrition: 'Oúnjẹ',
-    fasting: 'Ìjẹ̀yìn',
-    profile: 'Profáílì',
-    settings: 'Ètò',
-    help: 'Ìrànlọ́wọ́',
-    about: 'Nípa',
-    logout: 'Jáde',
+    viewProfile: 'Wo Profáílì',
+    stats: {
+      kilometers: 'Kìlómítà',
+      rides: 'Ìrìn'
+    },
+    menu: {
+      coach: 'Olùkọ́',
+      trainingHistory: 'Ìtàn Ìkẹ́kọ̀',
+      nutrition: 'Oúnjẹ',
+      help: 'Ìrànlọ́wọ́',
+      about: 'Nípa',
+      settings: 'Ètò'
+    }
   },
 
   // Training Screen
@@ -162,6 +166,38 @@ export const yo = {
     goal: 'Àfojúsùn',
   },
 
+  // Calendar
+  calendar: {
+    weekDays: {
+      sunday: 'À',
+      monday: 'A',
+      tuesday: 'Ì',
+      wednesday: 'Ọ',
+      thursday: 'Ọ̀',
+      friday: 'Ẹ',
+      saturday: 'À',
+    },
+    months: {
+      january: 'Oṣù Kínní',
+      february: 'Oṣù Kejì',
+      march: 'Oṣù Kẹta',
+      april: 'Oṣù Kẹrin',
+      may: 'Oṣù Kàrún',
+      june: 'Oṣù Kẹfà',
+      july: 'Oṣù Keje',
+      august: 'Oṣù Kẹjọ',
+      september: 'Oṣù Kẹsán',
+      october: 'Oṣù Kẹwá',
+      november: 'Oṣù Kọkànlá',
+      december: 'Oṣù Kejìlá',
+    },
+    selectYear: 'Yan Ọdún',
+    activities: 'Àwọn Ìṣe Ṣíṣe',
+    history: 'Àkọsílẹ̀ Ìṣẹ̀lẹ̀',
+    bodyInformation: 'Àlàyé Ara',
+    add: 'Fikún'
+  },
+
   // Onboarding
   onboarding: {
     welcome: 'Káàbọ̀',
@@ -190,27 +226,51 @@ export const yo = {
   // Settings Screen
   settings: {
     title: 'Ètò',
-    subtitle: 'Ṣe ètò rẹ',
-    account: 'Àkàtà',
-    profile: 'Profáílì',
-    notifications: 'Àwọn ìfọlétí',
-    privacy: 'Ìṣòfin',
-    language: 'Èdè',
-    theme: 'Àwòrán',
-    darkMode: 'Àwòrán dídúdú',
-    lightMode: 'Àwòrán ìmọlẹ̀',
-    system: 'Sístẹ́mù',
-    about: 'Nípa',
-    help: 'Ìrànlọ́wọ́',
-    logout: 'Jáde',
-    deleteAccount: 'Pa àkàtà rẹ',
-    changeEmail: 'Yípadà iméèlì',
-    changePassword: 'Yípadà ọ̀rọ̀ àbọ̀',
-    currentPassword: 'Ọ̀rọ̀ àbọ̀ lọ́wọ́',
-    newPassword: 'Ọ̀rọ̀ àbọ̀ tuntun',
-    confirmPassword: 'Jẹ́wọ́ ọ̀rọ̀ àbọ̀',
-    save: 'Fi pamọ́',
-    cancel: 'Fagilé',
+    theme: {
+      label: 'Àwòrán',
+      light: 'Ìmọ́lẹ̀',
+      dark: 'Òkùnkùn',
+      system: 'Sístẹ́mù',
+      modalTitle: 'Yan Àwòrán'
+    },
+    account: {
+      label: 'Àkàtà',
+      value: 'Ṣàkóso',
+      modalTitle: 'Ètò Àkàtà',
+      changeEmail: 'Yí Iméèlì padà',
+      changePassword: 'Yí Ọ̀rọ̀ Àṣínà padà',
+      currentEmail: 'Iméèlì Lọ́wọ́lọ́wọ́',
+      newEmail: 'Iméèlì Tuntun',
+      enterNewEmail: 'Tẹ iméèlì tuntun sí',
+      currentPassword: 'Ọ̀rọ̀ Àṣínà Lọ́wọ́lọ́wọ́',
+      enterCurrentPassword: 'Tẹ ọ̀rọ̀ àṣínà lọ́wọ́lọ́wọ́ sí',
+      newPassword: 'Ọ̀rọ̀ Àṣínà Tuntun',
+      enterNewPassword: 'Tẹ ọ̀rọ̀ àṣínà tuntun sí',
+      confirmPassword: 'Jẹ́rìí Ọ̀rọ̀ Àṣínà',
+      confirmNewPassword: 'Jẹ́rìí ọ̀rọ̀ àṣínà tuntun',
+      passwordsDontMatch: 'Àwọn ọ̀rọ̀ àṣínà kò bá ara wọn mu',
+      emailUpdated: 'Iméèlì ti yípadà',
+      passwordUpdated: 'Ọ̀rọ̀ àṣínà ti yípadà'
+    },
+    notifications: {
+      label: 'Ìfitónilétí',
+      value: 'Ṣí'
+    },
+    language: {
+      label: 'Èdè',
+      modalTitle: 'Yan Èdè',
+      selectLanguage: 'Yan èdè rẹ'
+    },
+    deleteAccount: {
+      label: 'Pa Àkàtà Rẹ́',
+      modalTitle: 'Pa Àkàtà Rẹ́',
+      warning: 'Ìgbésẹ̀ yìí kò ṣeé yí padà. Gbogbo dátà rẹ yóò parẹ́ láìlè yípadà.',
+      question: 'Ṣé o dájú pé o fẹ́ pa àkàtà rẹ rẹ́?',
+      deleting: 'Ń parẹ́...'
+    },
+    logout: {
+      label: 'Jáde'
+    }
   },
 
   // Form Validation

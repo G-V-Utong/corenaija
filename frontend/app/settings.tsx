@@ -16,6 +16,7 @@ const languageLabels: Record<Language, string> = {
   pcm: 'Nigerian Pidgin',
   ha: 'Hausa',
   ig: 'Igbo',
+  yo: 'Yorùbá',
 };
 
 export default function SettingsScreen() {
@@ -190,6 +191,7 @@ export default function SettingsScreen() {
     { label: languageLabels.pcm, value: 'pcm', icon: 'language-outline' },
     { label: languageLabels.ha, value: 'ha', icon: 'language-outline' },
     { label: languageLabels.ig, value: 'ig', icon: 'language-outline' },
+    { label: languageLabels.yo, value: 'yo', icon: 'language-outline' },
   ];
 
   return (
@@ -620,12 +622,12 @@ export default function SettingsScreen() {
                   }}
                 >
                   <View style={styles.modalOptionContent}>
-                    <Ionicons
+                    {/* <Ionicons
                       name={option.icon as any}
                       size={24}
                       color={isDarkMode ? '#FFFFFF' : '#000000'}
                       style={styles.modalOptionIcon}
-                    />
+                    /> */}
                     <ThemedText style={styles.modalOptionLabel}>
                       {option.label}
                     </ThemedText>
