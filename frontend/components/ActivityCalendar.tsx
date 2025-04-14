@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView, Modal } from 'react-native';
 import { ThemedView } from './ThemedView';
 import { ThemedText } from './ThemedText';
 import { useTheme } from '../context/ThemeContext';
@@ -12,6 +12,7 @@ interface ActivityCalendarProps {
 export const ActivityCalendar: React.FC<ActivityCalendarProps> = ({ onDayPress }) => {
   const { isDarkMode } = useTheme();
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [showYearModal, setShowYearModal] = useState(false);
 
   const getDaysInMonth = (date: Date) => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
@@ -58,6 +59,16 @@ export const ActivityCalendar: React.FC<ActivityCalendarProps> = ({ onDayPress }
     return date.toLocaleString('default', { month: 'long', year: 'numeric' });
   };
 
+  const changeYear = (year: number) => {
+    setCurrentDate(new Date(year, currentDate.getMonth(), 1));
+    setShowYearModal(false);
+  };
+
+  const generateYearList = () => {
+    const currentYear = new Date().getFullYear();
+    return Array.from({ length: 10 }, (_, i) => currentYear - 5 + i);
+  };
+
   return (
     <ThemedView style={styles.container}>
       <View style={styles.header}>
@@ -65,7 +76,7 @@ export const ActivityCalendar: React.FC<ActivityCalendarProps> = ({ onDayPress }
           <ThemedText style={styles.monthYear}>
             {formatMonthYear(currentDate)}
           </ThemedText>
-          <TouchableOpacity onPress={() => {}}>
+          <TouchableOpacity onPress={() => setShowYearModal(true)}>
             <Ionicons 
               name="chevron-down" 
               size={24} 
@@ -90,6 +101,44 @@ export const ActivityCalendar: React.FC<ActivityCalendarProps> = ({ onDayPress }
           </TouchableOpacity>
         </View>
       </View>
+
+      <Modal
+        visible={showYearModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowYearModal(false)}
+      >
+        <TouchableOpacity 
+          style={styles.modalOverlay} 
+          activeOpacity={1} 
+          onPress={() => setShowYearModal(false)}
+        >
+          <View style={[
+            styles.yearPickerContainer,
+            { backgroundColor: isDarkMode ? '#2A2A2A' : '#FFFFFF' }
+          ]}>
+            <ScrollView>
+              {generateYearList().map((year) => (
+                <TouchableOpacity
+                  key={year}
+                  style={[
+                    styles.yearItem,
+                    year === currentDate.getFullYear() && styles.selectedYear
+                  ]}
+                  onPress={() => changeYear(year)}
+                >
+                  <ThemedText style={[
+                    styles.yearText,
+                    year === currentDate.getFullYear() && styles.selectedYearText
+                  ]}>
+                    {year}
+                  </ThemedText>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        </TouchableOpacity>
+      </Modal>
 
       <ThemedView style={[
         styles.calendar,
@@ -190,6 +239,38 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   selectedDayText: {
+    color: '#FFFFFF',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  yearPickerContainer: {
+    width: '60%',
+    maxHeight: 300,
+    borderRadius: 16,
+    padding: 16,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+  yearItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+  },
+  selectedYear: {
+    backgroundColor: '#1E90FF',
+  },
+  yearText: {
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  selectedYearText: {
     color: '#FFFFFF',
   },
 });
