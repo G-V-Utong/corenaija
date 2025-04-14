@@ -1,16 +1,23 @@
 import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { Platform } from 'react-native';
 import { AppEventsProvider } from '../context/AppEventsContext';
 import { AuthProvider } from '../context/AuthContext';
 import { ToastProvider } from '../context/ToastContext';
-import { ThemeProvider } from '../context/ThemeContext';
+import { ThemeProvider, useTheme } from '../context/ThemeContext';
 import { LanguageProvider } from '../context/LanguageContext';
 import { OnboardingProvider } from '../context/OnboardingContext';
 import { AuthGuard } from '../components/AuthGuard';
+import { NavigationBarThemer } from '../components/NavigationBarThemer';
 
 export default function RootLayout() {
+  const { isDarkMode } = useTheme();
+
   return (
-    <AppEventsProvider>
-      <ThemeProvider>
+    <ThemeProvider>
+      <NavigationBarThemer />
+      <AppEventsProvider>
+        <StatusBar style={isDarkMode ? 'light' : 'dark'}/>
         <AuthProvider>
           <ToastProvider>
             <LanguageProvider>
@@ -47,7 +54,7 @@ export default function RootLayout() {
             </LanguageProvider>
           </ToastProvider>
         </AuthProvider>
-      </ThemeProvider>
-    </AppEventsProvider>
+      </AppEventsProvider>
+    </ThemeProvider>
   );
 }
