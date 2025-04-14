@@ -13,14 +13,15 @@ const languages: Record<Language, string> = {
   pcm: 'Nigerian Pidgin',
   ha: 'Hausa',
   ig: 'Igbo',
+  yo: 'Yorùbá',
 };
 
 export const LanguageModal: React.FC<LanguageModalProps> = ({ visible, onClose }) => {
   const { language, setLanguage, t } = useLanguage();
   const { isDarkMode } = useTheme();
 
-  const handleLanguageSelect = (lang: Language) => {
-    setLanguage(lang);
+  const handleLanguageSelect = async (lang: Language) => {
+    await setLanguage(lang);
     onClose();
   };
 
@@ -43,10 +44,10 @@ export const LanguageModal: React.FC<LanguageModalProps> = ({ visible, onClose }
             styles.title,
             { color: isDarkMode ? '#ffffff' : '#000000' }
           ]}>
-            {t('settings.language.modalTitle')}
+            {t('settings.language')}
           </Text>
           
-          {Object.entries(languages).map(([code, name]) => (
+          {(Object.entries(languages) as [Language, string][]).map(([code, name]) => (
             <TouchableOpacity
               key={code}
               style={[
@@ -54,7 +55,7 @@ export const LanguageModal: React.FC<LanguageModalProps> = ({ visible, onClose }
                 language === code && styles.selectedLanguage,
                 { borderColor: isDarkMode ? '#333333' : '#e0e0e0' }
               ]}
-              onPress={() => handleLanguageSelect(code as Language)}
+              onPress={() => handleLanguageSelect(code)}
             >
               <Text style={[
                 styles.languageText,
@@ -146,4 +147,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-}); 
+});

@@ -223,14 +223,40 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
   }, [user, subscribe]);
 
   const updateOnboardingData = useCallback(async (data: Partial<OnboardingData>) => {
-    console.log('[OnboardingContext] Updating local data:', data);
-    
-    // Update local state immediately for responsive UI
-    setOnboardingData(prev => {
-      if (!prev) return null;
-      return { ...prev, ...data };
-    });
-  }, []);
+    if (!user) {
+      console.error('[OnboardingContext] Cannot update onboarding data: No user found');
+      return;
+    }
+
+    try {
+      console.log('[OnboardingContext] Updating data:', data);
+      
+      // Update local state
+      setOnboardingData(prev => {
+        if (!prev) return null;
+        const newData = { ...prev, ...data };
+        console.log('[OnboardingContext] New local state:', newData);
+        return newData;
+      });
+
+      // Immediately save to database
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          ...data,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+
+      if (error) {
+        console.error('[OnboardingContext] Error updating onboarding data:', error);
+      } else {
+        console.log('[OnboardingContext] Successfully saved to database:', data);
+      }
+    } catch (error) {
+      console.error('[OnboardingContext] Error in updateOnboardingData:', error);
+    }
+  }, [user]);
 
   const nextStep = useCallback(() => {
     if (currentStep < totalSteps - 1) {
@@ -312,15 +338,19 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
 
   const saveSectionData = useCallback(async (sectionData: Partial<OnboardingData>) => {
     if (!user) {
-      console.error('Cannot save section data: No user found');
+      console.error('[OnboardingContext] Cannot save section data: No user found');
       return false;
     }
 
     try {
+      console.log('[OnboardingContext] Saving section data:', sectionData);
+      
       // Update local state first
       setOnboardingData(prev => {
         if (!prev) return null;
-        return { ...prev, ...sectionData };
+        const newData = { ...prev, ...sectionData };
+        console.log('[OnboardingContext] New local state after section update:', newData);
+        return newData;
       });
 
       // Then save to database
@@ -333,13 +363,14 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
         .eq('id', user.id);
 
       if (error) {
-        console.error('Error saving section data:', error);
+        console.error('[OnboardingContext] Error saving section data:', error);
         return false;
       }
 
+      console.log('[OnboardingContext] Successfully saved section data to database');
       return true;
     } catch (error) {
-      console.error('Error in saveSectionData:', error);
+      console.error('[OnboardingContext] Error in saveSectionData:', error);
       return false;
     }
   }, [user]);

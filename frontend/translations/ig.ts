@@ -82,15 +82,19 @@ export const ig = {
 
   // Sidebar Menu
   sidebar: {
-    home: 'Ụlọ',
-    training: 'Ọzụzụ',
-    nutrition: 'Nri',
-    fasting: 'Ịnọ n\'ụra',
-    profile: 'Profaịlụ',
-    settings: 'Ntọala',
-    help: 'Enyemaka',
-    about: 'Banyere',
-    logout: 'Wepụ',
+    viewProfile: 'Lelee Profaịlụ',
+    stats: {
+      kilometers: 'Kilomita',
+      rides: 'Njem'
+    },
+    menu: {
+      coach: 'Onye nkuzi',
+      trainingHistory: 'Akụkọ Nkuzi',
+      nutrition: 'Nri',
+      help: 'Enyemaka',
+      about: 'Banyere',
+      settings: 'Ntọala'
+    }
   },
 
   // Training Screen
@@ -187,30 +191,86 @@ export const ig = {
     },
   },
 
+  // Calendar
+  calendar: {
+    weekDays: {
+      sunday: 'Ụ́',
+      monday: 'M',
+      tuesday: 'T',
+      wednesday: 'W',
+      thursday: 'T',
+      friday: 'F',
+      saturday: 'S',
+    },
+    months: {
+      january: 'Jenụwarị',
+      february: 'Febrụwarị',
+      march: 'Maachị',
+      april: 'Eprel',
+      may: 'Mee',
+      june: 'Juun',
+      july: 'Julaị',
+      august: 'Ọgọọst',
+      september: 'Septemba',
+      october: 'Ọktoba',
+      november: 'Novemba',
+      december: 'Disemba',
+    },
+    selectYear: 'Họrọ Afọ',
+    activities: 'Ihe Omume',
+    history: 'Akụkọ Ihe Mere Eme',
+    bodyInformation: 'Ozi Gbasara Ahụ́',
+    add: 'Tinye'
+  },
+
   // Settings Screen
   settings: {
     title: 'Ntọala',
-    subtitle: 'Mee ntọala gị',
-    account: 'Akaụntụ',
-    profile: 'Profaịlụ',
-    notifications: 'Ọkwa',
-    privacy: 'Nzuzo',
-    language: 'Asụsụ',
-    theme: 'Ụdị',
-    darkMode: 'Ụdị gbara ọchịchịrị',
-    lightMode: 'Ụdị ọkụ',
-    system: 'Sistemụ',
-    about: 'Banyere',
-    help: 'Enyemaka',
-    logout: 'Wepụ',
-    deleteAccount: 'Hichapụ akaụntụ gị',
-    changeEmail: 'Gbanwee email',
-    changePassword: 'Gbanwee okwuntụhie',
-    currentPassword: 'Okwuntụhie dị ugbu a',
-    newPassword: 'Okwuntụhie ọhụrụ',
-    confirmPassword: 'Kwenye okwuntụhie',
-    save: 'Chekwaa',
-    cancel: 'Kaghị',
+    theme: {
+      label: 'Ụdị',
+      light: 'Ìhè',
+      dark: 'Ọchịchịrị',
+      system: 'Sistemụ',
+      modalTitle: 'Họrọ Ụdị'
+    },
+    account: {
+      label: 'Akaụntụ',
+      value: 'Jikwaa',
+      modalTitle: 'Ntọala Akaụntụ',
+      changeEmail: 'Gbanwee Email',
+      changePassword: 'Gbanwee Okwuntụghe',
+      currentEmail: 'Email Ugbu a',
+      newEmail: 'Email Ọhụrụ',
+      enterNewEmail: 'Tinye email ọhụrụ',
+      currentPassword: 'Okwuntụghe Ugbu a',
+      enterCurrentPassword: 'Tinye okwuntụghe ugbu a',
+      newPassword: 'Okwuntụghe Ọhụrụ',
+      enterNewPassword: 'Tinye okwuntụghe ọhụrụ',
+      confirmPassword: 'Kwenye Okwuntụghe',
+      confirmNewPassword: 'Kwenye okwuntụghe ọhụrụ',
+      passwordsDontMatch: 'Okwuntụghe adabaghị',
+      emailUpdated: 'Email agbanwela',
+      passwordUpdated: 'Okwuntụghe agbanwela'
+    },
+    notifications: {
+      label: 'Ọkwa',
+      value: 'Gbanyụọ'
+    },
+    language: {
+      label: 'Asụsụ',
+      modalTitle: 'Họrọ Asụsụ',
+      selectLanguage: 'Họrọ asụsụ gị'
+    },
+    deleteAccount: {
+      label: 'Hichapụ Akaụntụ',
+      modalTitle: 'Hichapụ Akaụntụ',
+      warning: 'Ihe a apụghị ịlaghachi azụ. A ga-ehichapụ data gị niile kpamkpam.',
+      question: 'Ị na-achọ ihichapụ akaụntụ gị?',
+      deleting: 'Na-ehichapụ...'
+    },
+    logout: {
+      label: 'Pụọ'
+    }
   },
 
   // Form Validation

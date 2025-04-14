@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, TextInput, TouchableOpacity, ScrollView, Switch, Animated } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { useTheme } from '@/context/ThemeContext';
+import { useOnboarding } from '@/context/OnboardingContext';
 import { OnboardingData } from '../../../types/onboarding.types';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -53,30 +54,30 @@ const energyLevelOptions = [
   'Low energy most of the time'
 ];
 
-interface PhysicalProfileProps {
-  onboardingData: OnboardingData | null;
-  onUpdate: (data: Partial<OnboardingData>) => Promise<void>;
-}
-
-export default function PhysicalProfile({ onboardingData, onUpdate }: PhysicalProfileProps) {
+export default function PhysicalProfile() {
+  const { onboardingData, updateOnboardingData } = useOnboarding();
   const { isDarkMode } = useTheme();
   
   // Add prop validation
   useEffect(() => {
-    console.log('PhysicalProfile mounted with props:', {
-      hasOnboardingData: !!onboardingData,
-      hasOnUpdate: typeof onUpdate === 'function',
-      onboardingData,
-      onUpdate
+    console.log('[PhysicalProfile] Initial data:', {
+      height: onboardingData?.height,
+      weight: onboardingData?.weight,
+      target_weight: onboardingData?.target_weight,
+      body_type: onboardingData?.body_type,
+      activity_level: onboardingData?.activity_level,
+      measurement_system: onboardingData?.measurement_system,
+      health_conditions: onboardingData?.health_conditions,
+      medications: onboardingData?.medications,
+      sleep_hours: onboardingData?.sleep_hours,
+      energy_level: onboardingData?.energy_level,
+      stress_level: onboardingData?.stress_level,
+      sleep_quality: onboardingData?.sleep_quality,
     });
-  }, [onboardingData, onUpdate]);
+  }, [onboardingData]);
 
   const safeUpdate = async (data: Partial<OnboardingData>) => {
-    if (typeof onUpdate !== 'function') {
-      console.error('onUpdate is not a function. Current value:', onUpdate);
-      return;
-    }
-
+    console.log('[PhysicalProfile] Updating data:', data);
     try {
       // Update local state first for immediate UI feedback
       if (data.health_conditions) {
@@ -108,10 +109,10 @@ export default function PhysicalProfile({ onboardingData, onUpdate }: PhysicalPr
       }
 
       // Then update the context
-      await onUpdate(data);
-      console.log('Successfully updated data:', data);
+      await updateOnboardingData(data);
+      console.log('[PhysicalProfile] Successfully saved to database:', data);
     } catch (error) {
-      console.error('Error updating data:', error);
+      console.error('[PhysicalProfile] Error saving to database:', error);
       // Revert local state on error
       if (onboardingData) {
         setSelectedHealthConditions(onboardingData.health_conditions || []);
@@ -210,24 +211,24 @@ export default function PhysicalProfile({ onboardingData, onUpdate }: PhysicalPr
   const handleWeightChange = (value: string) => {
     setWeight(value);
     const numValue = parseFloat(value);
-    if (!isNaN(numValue) && typeof onUpdate === 'function') {
-      onUpdate({ weight: numValue });
+    if (!isNaN(numValue)) {
+      safeUpdate({ weight: numValue });
     }
   };
 
   const handleHeightChange = (value: string) => {
     setHeight(value);
     const numValue = parseFloat(value);
-    if (!isNaN(numValue) && typeof onUpdate === 'function') {
-      onUpdate({ height: numValue });
+    if (!isNaN(numValue)) {
+      safeUpdate({ height: numValue });
     }
   };
 
   const handleTargetWeightChange = (value: string) => {
     setTargetWeight(value);
     const numValue = parseFloat(value);
-    if (!isNaN(numValue) && typeof onUpdate === 'function') {
-      onUpdate({ target_weight: numValue });
+    if (!isNaN(numValue)) {
+      safeUpdate({ target_weight: numValue });
     }
   };
 
@@ -236,16 +237,7 @@ export default function PhysicalProfile({ onboardingData, onUpdate }: PhysicalPr
     setBodyType(type);
     
     // Then update the context asynchronously
-    if (typeof onUpdate === 'function') {
-      try {
-        await onUpdate({ body_type: type });
-        console.log('Successfully updated body type:', type);
-      } catch (error) {
-        console.error('Error updating body type:', error);
-        // Revert local state on error
-        setBodyType(onboardingData?.body_type || '');
-      }
-    }
+    safeUpdate({ body_type: type });
   };
 
   const toggleHealthCondition = async (condition: string) => {
@@ -275,16 +267,7 @@ export default function PhysicalProfile({ onboardingData, onUpdate }: PhysicalPr
     setSelectedHealthConditions(newConditions);
     
     // Then update the context asynchronously
-    if (typeof onUpdate === 'function') {
-      try {
-        await onUpdate({ health_conditions: newConditions });
-        console.log('Successfully updated health conditions:', newConditions);
-      } catch (error) {
-        console.error('Error updating health conditions:', error);
-        // Revert local state on error
-        setSelectedHealthConditions(onboardingData?.health_conditions || []);
-      }
-    }
+    safeUpdate({ health_conditions: newConditions });
   };
 
   const handleSleepHoursSelect = async (hours: number) => {
@@ -294,16 +277,7 @@ export default function PhysicalProfile({ onboardingData, onUpdate }: PhysicalPr
     setSleepHours(hours);
     
     // Then update the context asynchronously
-    if (typeof onUpdate === 'function') {
-      try {
-        await onUpdate({ sleep_hours: hours });
-        console.log('Successfully updated sleep hours:', hours);
-      } catch (error) {
-        console.error('Error updating sleep hours:', error);
-        // Revert local state on error
-        setSleepHours(onboardingData?.sleep_hours || 0);
-      }
-    }
+    safeUpdate({ sleep_hours: hours });
   };
 
   const handleEnergyLevelSelect = async (level: string) => {
@@ -313,16 +287,7 @@ export default function PhysicalProfile({ onboardingData, onUpdate }: PhysicalPr
     setEnergyLevel(level);
     
     // Then update the context asynchronously
-    if (typeof onUpdate === 'function') {
-      try {
-        await onUpdate({ energy_level: level });
-        console.log('Successfully updated energy level:', level);
-      } catch (error) {
-        console.error('Error updating energy level:', error);
-        // Revert local state on error
-        setEnergyLevel(onboardingData?.energy_level || '');
-      }
-    }
+    safeUpdate({ energy_level: level });
   };
 
   const handleMedicationsChange = async (text: string) => {
@@ -333,10 +298,7 @@ export default function PhysicalProfile({ onboardingData, onUpdate }: PhysicalPr
       setMedications(medicationsArray);
       
       // Then update the context asynchronously
-      if (typeof onUpdate === 'function') {
-        await onUpdate({ medications: medicationsArray });
-        console.log('Successfully updated medications:', medicationsArray);
-      }
+      safeUpdate({ medications: medicationsArray });
     } catch (error) {
       console.error('Error updating medications:', error);
       // Revert local state on error

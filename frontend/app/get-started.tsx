@@ -7,15 +7,14 @@ import React, { useState, useEffect, useRef } from 'react';
    TouchableOpacity,
    FlatList,
    ImageBackground,
-   StatusBar,
    SafeAreaView,
  } from 'react-native';
+ import { StatusBar } from 'expo-status-bar';
  import { useRouter } from 'expo-router';
  import { LinearGradient } from 'expo-linear-gradient';
  import { ThemedText } from '../components/ThemedText';
- import Logo from '../components/Logo';
- import HomeLogo from '@/components/HomeLogo';
- import GetStartedLogo from '@/components/GetStartedLogo';
+ import { useTheme } from '../context/ThemeContext';
+import GetStartedLogo from '@/components/GetStartedLogo';
  
  const { width, height } = Dimensions.get('window');
  
@@ -62,6 +61,7 @@ import React, { useState, useEffect, useRef } from 'react';
    const [currentIndex, setCurrentIndex] = useState(0);
    const flatListRef = useRef<FlatList>(null);
    const timerRef = useRef<NodeJS.Timeout>();
+   const { isDarkMode } = useTheme();
  
    useEffect(() => {
      startAutoPlay();
@@ -138,7 +138,7 @@ import React, { useState, useEffect, useRef } from 'react';
  
    return (
      <SafeAreaView style={styles.container}>
-       <StatusBar barStyle="light-content" />
+       <StatusBar style={isDarkMode ? 'light' : 'dark'} />
        
        <View style={styles.logoContainer}>
          <GetStartedLogo size={30} color="#fff" />

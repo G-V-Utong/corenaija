@@ -1,17 +1,25 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView, Modal } from 'react-native';
 import { ThemedView } from './ThemedView';
 import { ThemedText } from './ThemedText';
 import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
 import { Ionicons } from '@expo/vector-icons';
 
 interface ActivityCalendarProps {
   onDayPress?: (date: Date) => void;
 }
 
+type MonthKey = 'january' | 'february' | 'march' | 'april' | 'may' | 'june' | 
+                'july' | 'august' | 'september' | 'october' | 'november' | 'december';
+
+type WeekDayKey = 'sunday' | 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday';
+
 export const ActivityCalendar: React.FC<ActivityCalendarProps> = ({ onDayPress }) => {
   const { isDarkMode } = useTheme();
+  const { t } = useLanguage();
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [showYearModal, setShowYearModal] = useState(false);
 
   const getDaysInMonth = (date: Date) => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
@@ -55,7 +63,19 @@ export const ActivityCalendar: React.FC<ActivityCalendarProps> = ({ onDayPress }
   };
 
   const formatMonthYear = (date: Date) => {
-    return date.toLocaleString('default', { month: 'long', year: 'numeric' });
+    const monthName = date.toLocaleString('default', { month: 'long' }).toLowerCase() as MonthKey;
+    const month = t(`calendar.months.${monthName}`);
+    return `${month} ${date.getFullYear()}`;
+  };
+
+  const changeYear = (year: number) => {
+    setCurrentDate(new Date(year, currentDate.getMonth(), 1));
+    setShowYearModal(false);
+  };
+
+  const generateYearList = () => {
+    const currentYear = new Date().getFullYear();
+    return Array.from({ length: 10 }, (_, i) => currentYear - 5 + i);
   };
 
   return (
@@ -65,7 +85,7 @@ export const ActivityCalendar: React.FC<ActivityCalendarProps> = ({ onDayPress }
           <ThemedText style={styles.monthYear}>
             {formatMonthYear(currentDate)}
           </ThemedText>
-          <TouchableOpacity onPress={() => {}}>
+          <TouchableOpacity onPress={() => setShowYearModal(true)}>
             <Ionicons 
               name="chevron-down" 
               size={24} 
@@ -91,14 +111,55 @@ export const ActivityCalendar: React.FC<ActivityCalendarProps> = ({ onDayPress }
         </View>
       </View>
 
+      <Modal
+        visible={showYearModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowYearModal(false)}
+      >
+        <TouchableOpacity 
+          style={styles.modalOverlay} 
+          activeOpacity={1} 
+          onPress={() => setShowYearModal(false)}
+        >
+          <View style={[
+            styles.yearPickerContainer,
+            { backgroundColor: isDarkMode ? '#2A2A2A' : '#FFFFFF' }
+          ]}>
+            <ThemedText style={styles.yearPickerTitle}>
+              {t('calendar.selectYear')}
+            </ThemedText>
+            <ScrollView>
+              {generateYearList().map((year) => (
+                <TouchableOpacity
+                  key={year}
+                  style={[
+                    styles.yearItem,
+                    year === currentDate.getFullYear() && styles.selectedYear
+                  ]}
+                  onPress={() => changeYear(year)}
+                >
+                  <ThemedText style={[
+                    styles.yearText,
+                    year === currentDate.getFullYear() && styles.selectedYearText
+                  ]}>
+                    {year}
+                  </ThemedText>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+
       <ThemedView style={[
         styles.calendar,
         { backgroundColor: isDarkMode ? '#2A2A2A' : '#F4F6F9' }
       ]}>
         <View style={styles.weekDays}>
-          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, index) => (
+          {(['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as WeekDayKey[]).map((day, index) => (
             <ThemedText key={index} style={styles.weekDayText}>
-              {day}
+              {t(`calendar.weekDays.${day}`)}
             </ThemedText>
           ))}
         </View>
@@ -191,5 +252,43 @@ const styles = StyleSheet.create({
   },
   selectedDayText: {
     color: '#FFFFFF',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  yearPickerContainer: {
+    width: '60%',
+    maxHeight: 300,
+    borderRadius: 16,
+    padding: 16,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+  yearItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+  },
+  selectedYear: {
+    backgroundColor: '#1E90FF',
+  },
+  yearText: {
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  selectedYearText: {
+    color: '#FFFFFF',
+  },
+  yearPickerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 16,
   },
 });

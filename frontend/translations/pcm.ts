@@ -124,6 +124,38 @@ export const pcm = {
     },
   },
 
+  // Calendar
+  calendar: {
+    weekDays: {
+      sunday: 'S',
+      monday: 'M',
+      tuesday: 'T',
+      wednesday: 'W',
+      thursday: 'T',
+      friday: 'F',
+      saturday: 'S',
+    },
+    months: {
+      january: 'January',
+      february: 'February',
+      march: 'March',
+      april: 'April',
+      may: 'May',
+      june: 'June',
+      july: 'July',
+      august: 'August',
+      september: 'September',
+      october: 'October',
+      november: 'November',
+      december: 'December',
+    },
+    selectYear: 'Choose Year',
+    activities: 'Exercise Wey You Don Do',
+    history: 'All Your Exercise History',
+    bodyInformation: 'Body Info',
+    add: 'Add New One'
+  },
+
   // Settings Screen
   settings: {
     title: 'Settings',
