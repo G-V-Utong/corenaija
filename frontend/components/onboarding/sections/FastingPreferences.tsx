@@ -42,7 +42,7 @@ export default function FastingPreferences() {
   const setFastingStatus = (status: string) => {
     updateOnboardingData({ 
       fasting_status: status,
-      // Clear other fasting-related fields if 'none' is selected
+    // Clear other fasting-related fields if 'none' is selected
       ...(status === 'none' ? {
         preferred_fasting_protocol: undefined,
         fasting_reason: undefined,
@@ -98,66 +98,66 @@ export default function FastingPreferences() {
         </ThemedText>
         {FASTING_TYPES.map(type => (
           <View key={type.id} style={styles.optionContainer}>
-            {renderOption(
+              {renderOption(
               type.id,
               type.label,
               onboardingData.fasting_status === type.id,
               () => setFastingStatus(type.id)
-            )}
-          </View>
-        ))}
+              )}
+            </View>
+          ))}
       </View>
 
-      <View style={styles.section}>
+          <View style={styles.section}>
         <ThemedText style={styles.sectionTitle}>Preferred Protocol</ThemedText>
         <ThemedText style={styles.sectionDescription}>
           Choose your preferred fasting schedule
         </ThemedText>
         {FASTING_SCHEDULES.map(schedule => (
           <View key={schedule.id} style={styles.optionContainer}>
-            {renderOption(
+                  {renderOption(
               schedule.id,
-              schedule.label,
+                    schedule.label,
               onboardingData.preferred_fasting_protocol === schedule.id,
-              () => setFastingProtocol(schedule.id)
-            )}
+                    () => setFastingProtocol(schedule.id)
+                  )}
+                </View>
+              ))}
           </View>
-        ))}
-      </View>
 
-      <View style={styles.section}>
+          <View style={styles.section}>
         <ThemedText style={styles.sectionTitle}>Fasting Goals</ThemedText>
         <ThemedText style={styles.sectionDescription}>
           What's your primary reason for fasting?
         </ThemedText>
         {FASTING_GOALS.map(goal => (
           <View key={goal.id} style={styles.optionContainer}>
-            {renderOption(
+                  {renderOption(
               goal.id,
-              goal.label,
+                    goal.label,
               onboardingData.fasting_reason === goal.id,
-              () => setFastingReason(goal.id)
-            )}
+                    () => setFastingReason(goal.id)
+                  )}
+                </View>
+              ))}
           </View>
-        ))}
-      </View>
 
-      <View style={styles.section}>
+          <View style={styles.section}>
         <ThemedText style={styles.sectionTitle}>Experience Level</ThemedText>
         <ThemedText style={styles.sectionDescription}>
           How experienced are you with fasting?
         </ThemedText>
         {EXPERIENCE_LEVELS.map(level => (
           <View key={level.id} style={styles.optionContainer}>
-            {renderOption(
+                  {renderOption(
               level.id,
-              level.label,
+                    level.label,
               onboardingData.fasting_experience === level.id,
-              () => setFastingExperience(level.id)
-            )}
-          </View>
-        ))}
-      </View>
+                    () => setFastingExperience(level.id)
+                  )}
+                </View>
+              ))}
+            </View>
     </ScrollView>
   );
 }
@@ -203,4 +203,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     flex: 1,
   },
-}); 
+});

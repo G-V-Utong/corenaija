@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { useOnboarding } from '@/context/OnboardingContext';
@@ -188,6 +188,20 @@ export default function FitnessGoals() {
   const { onboardingData, updateOnboardingData } = useOnboarding();
   const { isDarkMode } = useTheme();
 
+  // Log initial data when component mounts
+  useEffect(() => {
+    console.log('[FitnessGoals] Initial data:', {
+      fitness_goals: onboardingData?.fitness_goals,
+      muscle_group_focus: onboardingData?.muscle_group_focus,
+      health_conditions: onboardingData?.health_conditions,
+      medications: onboardingData?.medications,
+      sleep_hours: onboardingData?.sleep_hours,
+      energy_level: onboardingData?.energy_level,
+      stress_level: onboardingData?.stress_level,
+      sleep_quality: onboardingData?.sleep_quality,
+    });
+  }, [onboardingData]);
+
   // Filter goals based on user's gender
   const filteredGoals = primaryGoals.filter(goal => 
     goal.gender === onboardingData?.gender || goal.gender === 'both'
@@ -258,9 +272,13 @@ export default function FitnessGoals() {
     </TouchableOpacity>
   );
 
-  const handleOptionSelect = (key: string, value: any) => {
-    if (updateOnboardingData) {
-      updateOnboardingData({ [key]: value });
+  const handleOptionSelect = async (key: string, value: any) => {
+    console.log(`[FitnessGoals] Updating ${key}:`, value);
+    try {
+      await updateOnboardingData({ [key]: value });
+      console.log(`[FitnessGoals] Successfully saved ${key} to database`);
+    } catch (error) {
+      console.error(`[FitnessGoals] Error saving ${key} to database:`, error);
     }
   };
 

@@ -49,20 +49,16 @@ export default function OnboardingScreen() {
 
   const handleNext = useCallback(async () => {
     if (currentSection < SECTIONS.length - 1) {
-      // Save current section's data before moving to next
-      if (onboardingData) {
-        const sectionData = getCurrentSectionData(currentSection, onboardingData);
-        await saveSectionData(sectionData);
-      }
+      // Just move to next section since data is already saved
       setCurrentSection(prev => prev + 1);
     } else {
-      // This is the final section, save all data and complete onboarding
+      // This is the final section, complete onboarding
       const success = await saveOnboardingData();
       if (success) {
         setShowLoadingModal(true);
       }
     }
-  }, [currentSection, onboardingData, saveOnboardingData, saveSectionData]);
+  }, [currentSection, saveOnboardingData]);
 
   const handleBack = () => {
     if (currentSection > 0) {
