@@ -1,19 +1,34 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Header from '../../components/Header';
 import { ThemedView } from '../../components/ThemedView';
 import { WorkoutCalendar } from '../../components/WorkoutCalendar';
+import { ThemedText } from '../../components/ThemedText';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
+import { View } from 'react-native';
+import { useTheme } from '../../context/ThemeContext';
+import { useRouter } from 'expo-router';
+import { WaterTrackerModal } from '../../components/WaterTrackerModal';
+import { Ionicons } from '@expo/vector-icons';
+import { WaterTrackingHistory } from '../../components/WaterTrackingHistory';
+import { CircularProgress } from '../../components/CircularProgress';
 
 export default function ProfileScreen() {
+  const router = useRouter();
   const { session } = useAuth();
   const [userName, setUserName] = useState('');
+  const { isDarkMode } = useTheme();
+  const [isWaterModalVisible, setIsWaterModalVisible] = useState(false);
+  const [waterIntake, setWaterIntake] = useState(0);
+
+  const DAILY_WATER_GOAL = 2.0; // Match with WaterTrackerModal
 
   useEffect(() => {
     if (session?.user) {
       fetchUserProfile();
+      fetchWaterIntake();
     }
   }, [session]);
 
@@ -26,11 +41,39 @@ export default function ProfileScreen() {
         .single();
       
       if (profile?.full_name) {
-        setUserName(profile.full_name.split(' ')[0]); // Get first name only
+        setUserName(profile.full_name.split(' ')[0]);
       }
     } catch (error) {
       console.error('Error fetching user profile:', error);
     }
+  };
+
+  const fetchWaterIntake = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('water_intake')
+        .select('amount')
+        .eq('date', new Date().toISOString().split('T')[0])
+        .single();
+
+      if (error) {
+        console.error('Error fetching water intake:', error);
+        return;
+      }
+
+      setWaterIntake(data?.amount || 0);
+    } catch (error) {
+      console.error('Error in water intake fetch:', error);
+    }
+  };
+
+  const handleCardPress = (route: `/${string}`) => {
+    router.push(route);
+  };
+
+  const handleWaterModalClose = () => {
+    setIsWaterModalVisible(false);
+    fetchWaterIntake();
   };
 
   return (
@@ -38,9 +81,148 @@ export default function ProfileScreen() {
       <SafeAreaView edges={['top']}>
         <Header title="Me" />
       </SafeAreaView>
-      <ThemedView style={styles.content}>
+      <ScrollView style={styles.content}>
         <WorkoutCalendar userName={userName} />
-      </ThemedView>
+        
+        {/* Activity Dashboard */}
+        <View style={[styles.dashboardContainer, { 
+          backgroundColor: isDarkMode ? '#1A1A1A' : '#F1F5F9',
+        }]}>
+          <View style={styles.topSection}>
+            {/* Stats Cards */}
+            <View style={styles.leftCards}>
+              <View style={[styles.statCard, { backgroundColor: isDarkMode ? '#2D3748' : '#FFFFFF' }]}>
+                <View style={styles.statHeader}>
+                  <View style={styles.leftContainer}>
+                    <ThemedText style={[styles.statValue, { fontSize: 24 }]}>60</ThemedText>
+                    <ThemedText style={[styles.statLabel, { color: isDarkMode ? '#94A3B8' : '#64748B' }]}>
+                      Active Minutes
+                    </ThemedText>
+                  </View>
+                  <View style={styles.rightContainer}>
+                    <View style={[styles.iconContainer, { backgroundColor: isDarkMode ? '#374151' : '#F1F5F9' }]}>
+                      <Ionicons name="timer-outline" size={24} color={isDarkMode ? '#FFFFFF' : '#000000'} />
+                    </View>
+                    <TouchableOpacity 
+                      style={[styles.addButton, { backgroundColor: isDarkMode ? '#2D3748' : '#FFFFFF' }]}
+                      onPress={() => handleCardPress('/training')}
+                    >
+                      <ThemedText style={styles.addButtonText}>+</ThemedText>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+              <View style={[styles.statCard, { backgroundColor: isDarkMode ? '#2D3748' : '#FFFFFF' }]}>
+                <View style={styles.statHeader}>
+                  <View style={styles.leftContainer}>
+                    <ThemedText style={[styles.statValue, { fontSize: 24 }]}>480</ThemedText>
+                    <ThemedText style={[styles.statLabel, { color: isDarkMode ? '#94A3B8' : '#64748B' }]}>
+                      Calories Burned
+                    </ThemedText>
+                  </View>
+                  <View style={styles.rightContainer}>
+                    <View style={[styles.iconContainer, { backgroundColor: isDarkMode ? '#374151' : '#F1F5F9' }]}>
+                      <Ionicons name="flame-outline" size={24} color={isDarkMode ? '#FFFFFF' : '#000000'} />
+                    </View>
+                    <TouchableOpacity 
+                      style={[styles.addButton, { backgroundColor: isDarkMode ? '#2D3748' : '#FFFFFF' }]}
+                      onPress={() => handleCardPress('/training')}
+                    >
+                      <ThemedText style={styles.addButtonText}>+</ThemedText>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </View>
+
+             {/* Fasting and Water Cards */}
+             <View style={styles.statsCards}>
+              <View style={[styles.statCard, { backgroundColor: isDarkMode ? '#2D3748' : '#FFFFFF' }]}>
+                <View style={styles.statHeader}>
+                  <View style={styles.leftContainer}>
+                    <ThemedText style={[styles.statValue, { fontSize: 24 }]}>16</ThemedText>
+                    <ThemedText style={[styles.statLabel, { color: isDarkMode ? '#94A3B8' : '#64748B' }]}>
+                      Fasting Hours
+                    </ThemedText>
+                  </View>
+                  <View style={styles.rightContainer}>
+                    <View style={[styles.iconContainer, { backgroundColor: isDarkMode ? '#374151' : '#F1F5F9' }]}>
+                      <Ionicons name="time-outline" size={24} color={isDarkMode ? '#FFFFFF' : '#000000'} />
+                    </View>
+                    <TouchableOpacity 
+                      style={[styles.addButton, { backgroundColor: isDarkMode ? '#2D3748' : '#FFFFFF' }]}
+                      onPress={() => handleCardPress('/fasting')}
+                    >
+                      <ThemedText style={styles.addButtonText}>+</ThemedText>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+
+              <View style={[styles.statCard, { backgroundColor: isDarkMode ? '#2D3748' : '#FFFFFF' }]}>
+                <View style={styles.statHeader}>
+                  <View style={styles.leftContainer}>
+                    <ThemedText style={[styles.statValue, { fontSize: 24 }]}>{waterIntake.toFixed(1)}L</ThemedText>
+                    <ThemedText style={[styles.statLabel, { color: isDarkMode ? '#94A3B8' : '#64748B' }]}>
+                      Water Intake
+                    </ThemedText>
+                  </View>
+                  <View style={styles.rightContainer}>
+                    {waterIntake > 0 ? (
+                      <CircularProgress
+                        size={40}
+                        progress={Math.min((waterIntake / DAILY_WATER_GOAL) * 100, 100)}
+                        iconColor={isDarkMode ? '#FFFFFF' : '#000000'}
+                        backgroundColor={isDarkMode ? '#374151' : '#F1F5F9'}
+                      />
+                    ) : (
+                      <View style={[styles.iconContainer, { backgroundColor: isDarkMode ? '#374151' : '#F1F5F9' }]}>
+                        <Ionicons name="water-outline" size={24} color={isDarkMode ? '#FFFFFF' : '#000000'} />
+                      </View>
+                    )}
+                    <TouchableOpacity 
+                      style={[styles.addButton, { backgroundColor: isDarkMode ? '#2D3748' : '#FFFFFF' }]}
+                      onPress={() => setIsWaterModalVisible(true)}
+                    >
+                      <ThemedText style={styles.addButtonText}>+</ThemedText>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </View>
+
+          {/* Workout Duration Chart */}
+          <View style={[styles.workoutCard, { backgroundColor: isDarkMode ? '#2D3748' : '#FFFFFF' }]}>
+            <View style={styles.workoutHeader}>
+              <ThemedText style={styles.workoutTitle}>45 mins</ThemedText>
+              <ThemedText style={[styles.workoutSubtitle, { color: isDarkMode ? '#94A3B8' : '#64748B' }]}>
+                Workout Duration
+              </ThemedText>
+            </View>
+            <View style={styles.chartContainer}>
+              {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map((day, index) => (
+                <View key={day} style={styles.barColumn}>
+                  <View style={[styles.bar, { 
+                    height: index === 3 ? 45 : 25,
+                    backgroundColor: index === 3 ? '#F36746' : (isDarkMode ? '#374151' : '#F1F5F9')
+                  }]} />
+                  <ThemedText style={[styles.barLabel, { color: isDarkMode ? '#94A3B8' : '#64748B' }]}>
+                    {day}
+                  </ThemedText>
+                </View>
+              ))}
+            </View>
+          </View>
+        </View>
+
+        {/* Water Tracking History */}
+        <WaterTrackingHistory />
+      </ScrollView>
+      <WaterTrackerModal 
+        isVisible={isWaterModalVisible}
+        onClose={handleWaterModalClose}
+      />
     </ThemedView>
   );
 }
@@ -51,5 +233,121 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  dashboardContainer: {
+    margin: 16,
+    padding: 16,
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  topSection: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 4,
+    gap: 8
+  },
+  leftCards: {
+    flex: 1,    
+  },
+  statsCards: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  statCard: {
+    padding: 12,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+    marginBottom: 8,
+  },
+  statHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  leftContainer: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  },
+  rightContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 8,
+  },
+  iconContainer: {
+    padding: 8,
+    borderRadius: 8,
+  },
+  statValue: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 12,
+  },
+  workoutCard: {
+    padding: 16,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  workoutHeader: {
+    marginBottom: 16,
+  },
+  workoutTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  workoutSubtitle: {
+    fontSize: 12,
+  },
+  chartContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    height: 100,
+  },
+  barColumn: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  bar: {
+    width: 6,
+    borderRadius: 3,
+    marginBottom: 8,
+  },
+  barLabel: {
+    fontSize: 10,
+  },
+  addButton: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  addButtonText: {
+    fontSize: 24,
+    
   },
 });
