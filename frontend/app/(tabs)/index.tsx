@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Header from '../../components/Header';
 import { ThemedView } from '../../components/ThemedView';
@@ -14,6 +14,7 @@ import { WaterTrackerModal } from '../../components/WaterTrackerModal';
 import { Ionicons } from '@expo/vector-icons';
 import { WaterTrackingHistory } from '../../components/WaterTrackingHistory';
 import { CircularProgress } from '../../components/CircularProgress';
+import { Picker } from '@react-native-picker/picker';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -22,6 +23,7 @@ export default function ProfileScreen() {
   const { isDarkMode } = useTheme();
   const [isWaterModalVisible, setIsWaterModalVisible] = useState(false);
   const [waterIntake, setWaterIntake] = useState(0);
+  const [timeframe, setTimeframe] = useState('today');
 
   const DAILY_WATER_GOAL = 2.0; // Match with WaterTrackerModal
 
@@ -31,6 +33,22 @@ export default function ProfileScreen() {
       fetchWaterIntake();
     }
   }, [session]);
+
+  const getDateRange = (timeframe: string) => {
+    const today = new Date();
+    const startDate = new Date();
+    
+    if (timeframe === 'week') {
+      startDate.setDate(today.getDate() - 7);
+    } else if (timeframe === 'month') {
+      startDate.setMonth(today.getMonth() - 1);
+    }
+    
+    return {
+      start: startDate.toISOString().split('T')[0],
+      end: today.toISOString().split('T')[0]
+    };
+  };
 
   const fetchUserProfile = async () => {
     try {
@@ -50,21 +68,50 @@ export default function ProfileScreen() {
 
   const fetchWaterIntake = async () => {
     try {
-      const { data, error } = await supabase
-        .from('water_intake')
-        .select('amount')
-        .eq('date', new Date().toISOString().split('T')[0])
-        .single();
+      const { start, end } = getDateRange(timeframe);
+      
+      if (timeframe === 'today') {
+        const { data, error } = await supabase
+          .from('water_intake')
+          .select('amount')
+          .eq('date', new Date().toISOString().split('T')[0])
+          .single();
 
-      if (error) {
-        console.error('Error fetching water intake:', error);
-        return;
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error fetching water intake:', error);
+          return;
+        }
+        setWaterIntake(data?.amount || 0);
+      } else {
+        const { data, error } = await supabase
+          .from('water_intake')
+          .select('amount')
+          .gte('date', start)
+          .lte('date', end);
+
+        if (error) {
+          console.error('Error fetching water intake:', error);
+          return;
+        }
+
+        const total = data?.reduce((sum, record) => sum + (record.amount || 0), 0) || 0;
+        setWaterIntake(total);
       }
-
-      setWaterIntake(data?.amount || 0);
     } catch (error) {
       console.error('Error in water intake fetch:', error);
     }
+  };
+
+  useEffect(() => {
+    if (session?.user) {
+      fetchWaterIntake();
+    }
+  }, [timeframe]);
+
+  const getWaterGoal = () => {
+    if (timeframe === 'week') return DAILY_WATER_GOAL * 7;
+    if (timeframe === 'month') return DAILY_WATER_GOAL * 30;
+    return DAILY_WATER_GOAL;
   };
 
   const handleCardPress = (route: `/${string}`) => {
@@ -84,6 +131,36 @@ export default function ProfileScreen() {
       <ScrollView style={styles.content}>
         <WorkoutCalendar userName={userName} />
         
+        {/* Activity Summary Header */}
+        <View style={[styles.summaryHeader, { 
+          marginHorizontal: 16,
+          marginTop: 16,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }]}>
+          <ThemedText style={styles.summaryTitle}>Activity Summary</ThemedText>
+          <View style={[styles.timeframeSelect, { 
+            backgroundColor: isDarkMode ? '#1A1A1A' : '#F1F5F9',
+            borderRadius: 8,
+            overflow: 'hidden',
+            width: 'auto',
+          }]}>
+            <Picker
+              selectedValue={timeframe}
+              onValueChange={setTimeframe}
+              dropdownIconColor={isDarkMode ? '#FFFFFF' : '#000000'}
+              style={[styles.picker, {
+                color: isDarkMode ? '#FFFFFF' : '#000000',
+              }]}
+            >
+              <Picker.Item label="Today" value="today" />
+              <Picker.Item label="Week" value="week" />
+              <Picker.Item label="Month" value="month" />
+            </Picker>
+          </View>
+        </View>
+
         {/* Activity Dashboard */}
         <View style={[styles.dashboardContainer, { 
           backgroundColor: isDarkMode ? '#1A1A1A' : '#F1F5F9',
@@ -162,7 +239,12 @@ export default function ProfileScreen() {
               <View style={[styles.statCard, { backgroundColor: isDarkMode ? '#2D3748' : '#FFFFFF' }]}>
                 <View style={styles.statHeader}>
                   <View style={styles.leftContainer}>
-                    <ThemedText style={[styles.statValue, { fontSize: 24 }]}>{waterIntake.toFixed(1)}L</ThemedText>
+                    <View style={styles.waterValueContainer}>
+                      <ThemedText style={[styles.statValue, { fontSize: 24 }]}>{waterIntake.toFixed(1)}</ThemedText>
+                      <ThemedText style={[styles.waterGoalText, { color: isDarkMode ? '#94A3B8' : '#64748B' }]}>
+                        /{getWaterGoal()}L
+                      </ThemedText>
+                    </View>
                     <ThemedText style={[styles.statLabel, { color: isDarkMode ? '#94A3B8' : '#64748B' }]}>
                       Water Intake
                     </ThemedText>
@@ -171,7 +253,7 @@ export default function ProfileScreen() {
                     {waterIntake > 0 ? (
                       <CircularProgress
                         size={40}
-                        progress={Math.min((waterIntake / DAILY_WATER_GOAL) * 100, 100)}
+                        progress={Math.min((waterIntake / getWaterGoal()) * 100, 100)}
                         iconColor={isDarkMode ? '#FFFFFF' : '#000000'}
                         backgroundColor={isDarkMode ? '#374151' : '#F1F5F9'}
                       />
@@ -235,7 +317,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   dashboardContainer: {
-    margin: 16,
+    marginHorizontal: 16,
     padding: 16,
     borderRadius: 16,
     shadowColor: '#000',
@@ -348,6 +430,27 @@ const styles = StyleSheet.create({
   },
   addButtonText: {
     fontSize: 24,
+  },
+  summaryHeader: {
+    paddingVertical: 8,
+  },
+  summaryTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  timeframeSelect: {
     
+  },
+  picker: {
+    width: 130,
+    paddingHorizontal: 8,
+  },
+  waterValueContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  waterGoalText: {
+    fontSize: 14,
+    marginLeft: 2,
   },
 });
