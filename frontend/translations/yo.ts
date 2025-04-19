@@ -273,6 +273,72 @@ export const yo = {
     }
   },
 
+  // Water Tracker
+  waterTracker: {
+    title: 'Olùtọ́jú Omi',
+    description: 'Láti ṣe àtìlẹ́yìn fún ìlera àti àṣeyọrí rẹ, ó ṣe pàtàkì láti mu omi tó tó. A ti ṣe ìṣirò pé o nílò ó kéré tán 2.0 L gẹ́gẹ́ bí ìwọ̀n ara rẹ.',
+    waterDrunk: 'Omi tí o ti mu:',
+    goal: 'Ipò tí a fẹ́ dé: {amount} L',
+    dailyGoal: {
+      title: 'Ipò Ojoojúmọ́',
+      value: '2.0 L'
+    },
+    servingSize: {
+      title: 'Ìwọ̀n Ife',
+      value: '0.3 L fún ife kan'
+    },
+    reminders: {
+      title: 'Ìránilétì',
+      interval: 'Àkókò láàrin ìránilétì',
+      hourFormat: 'Wákàtí {hours}'
+    },
+    notifications: {
+      title: 'Mu Omi! 💧',
+      body: 'Àkókò láti mu omi. Ara rẹ yóò dúpẹ́!'
+    }
+  },
+
+  // Activity Summary
+  activitySummary: {
+    title: 'Ìsọníṣókí Iṣẹ́',
+    timeframes: {
+      today: 'Òní',
+      week: 'Ọ̀sẹ̀',
+      month: 'Osù'
+    },
+    stats: {
+      activeMinutes: {
+        title: 'Ìṣẹ́jú Iṣẹ́',
+        value: '{minutes}'
+      },
+      caloriesBurned: {
+        title: 'Calories tí ó jóná',
+        value: '{calories}'
+      },
+      fastingHours: {
+        title: 'Wákàtí Àwẹ̀',
+        value: '{hours}'
+      },
+      waterIntake: {
+        title: 'Omi tí o mu',
+        value: '{amount}/{goal}L'
+      }
+    },
+    workoutDuration: {
+      title: 'Ìṣẹ́jú {duration}',
+      subtitle: 'Àkókò Ìdárayá'
+    },
+    weekDays: {
+      mon: 'AJÉ',
+      tue: 'ÌSẸ́',
+      wed: 'ỌJỌ́',
+      thu: 'BỌ̀',
+      fri: 'ẸTÌ',
+      sat: 'ÀBÁ',
+      sun: 'AÌK'
+    }
+  },
+
   // Form Validation
   validation: {
     required: 'Kí o tẹ {field} sí',

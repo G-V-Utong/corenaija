@@ -13,6 +13,7 @@ export const en = {
     back: 'Back',
     skip: 'Skip',
     getStarted: 'Get Started',
+    ok: 'OK',
   },
 
   // Auth Screens
@@ -154,6 +155,72 @@ export const en = {
     history: 'History',
     bodyInformation: 'Body Information',
     add: 'Add'
+  },
+
+  // Water Tracker
+  waterTracker: {
+    title: 'Water Tracker',
+    description: 'To support your health and overall success, staying well-hydrated is essential. Our recommended daily minimum of 2.0 L is calculated based on your body weight.',
+    waterDrunk: 'Water drunk:',
+    goal: 'Goal: {amount} L',
+    dailyGoal: {
+      title: 'Daily Goal',
+      value: '2.0 L'
+    },
+    servingSize: {
+      title: 'Serving Size',
+      value: '0.3 L per glass'
+    },
+    reminders: {
+      title: 'Reminders',
+      interval: 'Reminder interval',
+      hourFormat: '{hours} Hr'
+    },
+    notifications: {
+      title: 'Stay Hydrated! 💧',
+      body: 'Time to drink some water. Your body will thank you!'
+    }
+  },
+
+  // Activity Summary
+  activitySummary: {
+    title: 'Activity Summary',
+    timeframes: {
+      today: 'Today',
+      week: 'Week',
+      month: 'Month'
+    },
+    stats: {
+      activeMinutes: {
+        title: 'Active Minutes',
+        value: '{minutes}'
+      },
+      caloriesBurned: {
+        title: 'Calories Burned',
+        value: '{calories}'
+      },
+      fastingHours: {
+        title: 'Fasting Hours',
+        value: '{hours}'
+      },
+      waterIntake: {
+        title: 'Water Intake',
+        value: '{amount}/{goal}L'
+      }
+    },
+    workoutDuration: {
+      title: '{duration} mins',
+      subtitle: 'Workout Duration'
+    },
+    weekDays: {
+      mon: 'MON',
+      tue: 'TUE',
+      wed: 'WED',
+      thu: 'THU',
+      fri: 'FRI',
+      sat: 'SAT',
+      sun: 'SUN'
+    }
   },
 
   // Settings Screen

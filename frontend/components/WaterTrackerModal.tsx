@@ -3,6 +3,7 @@ import { View, Modal, StyleSheet, TouchableOpacity, Switch, ScrollView, Activity
 import { ThemedText } from './ThemedText';
 import { ThemedView } from './ThemedView';
 import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
@@ -27,6 +28,7 @@ const STORAGE_KEY = '@water_tracker_settings';
 
 export const WaterTrackerModal = ({ isVisible, onClose }: WaterTrackerModalProps) => {
   const { isDarkMode } = useTheme();
+  const { t } = useLanguage();
   const [isSaving, setIsSaving] = useState(false);
   const [remindersEnabled, setRemindersEnabled] = useState(false);
   const [reminderInterval, setReminderInterval] = useState<number>(2);
@@ -104,8 +106,8 @@ export const WaterTrackerModal = ({ isVisible, onClose }: WaterTrackerModalProps
       // Schedule notification
       await Notifications.scheduleNotificationAsync({
         content: {
-          title: "Stay Hydrated! 💧",
-          body: "Time to drink some water. Your body will thank you!",
+          title: t('waterTracker.notifications.title'),
+          body: t('waterTracker.notifications.body'),
           data: { type: 'water_reminder' },
           ...(Platform.OS === 'android' && { channelId: 'water-reminders' }),
         },
@@ -238,7 +240,7 @@ export const WaterTrackerModal = ({ isVisible, onClose }: WaterTrackerModalProps
         }]}>
           {/* Header with close button */}
           <View style={styles.header}>
-            <ThemedText style={styles.title}>Water Tracker</ThemedText>
+            <ThemedText style={styles.title}>{t('waterTracker.title')}</ThemedText>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
               <ThemedText style={styles.closeButtonText}>✕</ThemedText>
             </TouchableOpacity>
@@ -248,7 +250,7 @@ export const WaterTrackerModal = ({ isVisible, onClose }: WaterTrackerModalProps
           <ThemedText style={[styles.description, { 
             color: isDarkMode ? '#94A3B8' : '#64748B'
           }]}>
-            To support your health and overall success, staying well-hydrated is essential. Our recommended daily minimum of 2.0 L is calculated based on your body weight.
+            {t('waterTracker.description')}
           </ThemedText>
 
           {/* Water Tracking Section */}
@@ -260,7 +262,7 @@ export const WaterTrackerModal = ({ isVisible, onClose }: WaterTrackerModalProps
           }]}>
             <View style={styles.trackingContainer}>
               <View style={styles.waterAmountContainer}>
-                <ThemedText style={styles.waterLabel}>Water drunk:</ThemedText>
+                <ThemedText style={styles.waterLabel}>{t('waterTracker.waterDrunk')}</ThemedText>
                 <ThemedText style={[styles.waterAmount, { color: '#F36746' }]}>{waterAmount.toFixed(1)} L</ThemedText>
               </View>
 
@@ -309,7 +311,9 @@ export const WaterTrackerModal = ({ isVisible, onClose }: WaterTrackerModalProps
               </View>
 
               <View style={styles.goalContainer}>
-                <ThemedText style={styles.goalLabel}>Goal: {DAILY_GOAL.toFixed(1)} L</ThemedText>
+                <ThemedText style={styles.goalLabel}>
+                  {t('waterTracker.goal').replace('{amount}', DAILY_GOAL.toFixed(1))}
+                </ThemedText>
                 <ThemedText style={[styles.progressText, { color: '#F36746' }]}>
                   {progressPercentage.toFixed(0)}%
                 </ThemedText>
@@ -329,11 +333,11 @@ export const WaterTrackerModal = ({ isVisible, onClose }: WaterTrackerModalProps
                 />
                 <ThemedText style={[styles.sectionTitle, {
                   color: isDarkMode ? '#E2E8F0' : '#1A202C'
-                }]}>Daily Goal</ThemedText>
+                }]}>{t('waterTracker.dailyGoal.title')}</ThemedText>
               </View>
               <ThemedText style={[styles.value, {
                 color: isDarkMode ? '#E2E8F0' : '#1A202C'
-              }]}>2.0 L</ThemedText>
+              }]}>{t('waterTracker.dailyGoal.value')}</ThemedText>
             </View>
           </View>
 
@@ -349,11 +353,11 @@ export const WaterTrackerModal = ({ isVisible, onClose }: WaterTrackerModalProps
                 />
                 <ThemedText style={[styles.sectionTitle, {
                   color: isDarkMode ? '#E2E8F0' : '#1A202C'
-                }]}>Serving Size</ThemedText>
+                }]}>{t('waterTracker.servingSize.title')}</ThemedText>
               </View>
               <ThemedText style={[styles.value, {
                 color: isDarkMode ? '#E2E8F0' : '#1A202C'
-              }]}>0.3 L per glass</ThemedText>
+              }]}>{t('waterTracker.servingSize.value')}</ThemedText>
             </View>
           </View>
 
@@ -369,7 +373,7 @@ export const WaterTrackerModal = ({ isVisible, onClose }: WaterTrackerModalProps
                 />
                 <ThemedText style={[styles.sectionTitle, {
                   color: isDarkMode ? '#E2E8F0' : '#1A202C'
-                }]}>Reminders</ThemedText>
+                }]}>{t('waterTracker.reminders.title')}</ThemedText>
               </View>
               <Switch
                 value={remindersEnabled}
@@ -383,7 +387,7 @@ export const WaterTrackerModal = ({ isVisible, onClose }: WaterTrackerModalProps
                 <ThemedText style={[styles.intervalText, {
                   color: isDarkMode ? '#94A3B8' : '#64748B'
                 }]}>
-                  Reminder interval
+                  {t('waterTracker.reminders.interval')}
                 </ThemedText>
                 <ScrollView 
                   horizontal 
@@ -405,7 +409,7 @@ export const WaterTrackerModal = ({ isVisible, onClose }: WaterTrackerModalProps
                         reminderInterval === interval && styles.selectedIntervalText,
                         { color: isDarkMode ? '#E2E8F0' : '#1A202C' }
                       ]}>
-                        {interval} Hr
+                        {t('waterTracker.reminders.hourFormat').replace('{hours}', interval.toString())}
                       </ThemedText>
                     </TouchableOpacity>
                   ))}
@@ -426,7 +430,7 @@ export const WaterTrackerModal = ({ isVisible, onClose }: WaterTrackerModalProps
             {isSaving ? (
               <ActivityIndicator color="#FFFFFF" />
             ) : (
-              <ThemedText style={styles.okButtonText}>OK</ThemedText>
+              <ThemedText style={styles.okButtonText}>{t('common.ok')}</ThemedText>
             )}
           </TouchableOpacity>
         </ThemedView>

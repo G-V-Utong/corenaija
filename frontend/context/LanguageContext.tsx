@@ -1,9 +1,10 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { translations } from '../translations';
-import type { TranslationsType } from '../translations';
+import { en, pcm, ha, yo, ig } from '../translations';
+import { useAuth } from './AuthContext';
+import { getGenderedText } from '../utils/translations';
 
-export type Language = 'en' | 'pcm' | 'ha' | 'ig' | 'yo';
+type Language = 'en' | 'pcm' | 'ha' | 'yo' | 'ig';
 
 type NestedKeyOf<ObjectType extends object> = {
   [Key in keyof ObjectType & (string | number)]: ObjectType[Key] extends object
@@ -11,73 +12,109 @@ type NestedKeyOf<ObjectType extends object> = {
     : `${Key}`;
 }[keyof ObjectType & (string | number)];
 
-type TranslationKey = NestedKeyOf<TranslationsType>;
+type TranslationKey = NestedKeyOf<typeof en>;
+type TranslationParams = Record<string, string | number>;
+
+type TranslationFunction = {
+  (key: string): string;
+  (key: string, params: TranslationParams): string;
+};
 
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (key: TranslationKey) => string;
+  t: TranslationFunction;
 }
 
+const translations = {
+  en,
+  pcm,
+  ha,
+  yo,
+  ig,
+} as const;
+
+const defaultLanguage: Language = 'en';
+
 const LanguageContext = createContext<LanguageContextType>({
-  language: 'en',
+  language: defaultLanguage,
   setLanguage: () => {},
-  t: (key: TranslationKey) => key,
+  t: (key: string) => key,
 });
 
-export const useLanguage = () => useContext(LanguageContext);
-
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguageState] = useState<Language>('en');
+  const [language, setLanguage] = useState<Language>(defaultLanguage);
+  const { user } = useAuth();
 
-  const setLanguage = useCallback(async (lang: Language) => {
+  useEffect(() => {
+    loadLanguagePreference();
+  }, []);
+
+  const loadLanguagePreference = async () => {
     try {
-      await AsyncStorage.setItem('language', lang);
-      setLanguageState(lang);
+      const savedLanguage = await AsyncStorage.getItem('userLanguage');
+      if (savedLanguage && savedLanguage in translations) {
+        setLanguage(savedLanguage as Language);
+      }
+    } catch (error) {
+      console.error('Error loading language preference:', error);
+    }
+  };
+
+  const handleSetLanguage = async (lang: Language) => {
+    try {
+      await AsyncStorage.setItem('userLanguage', lang);
+      setLanguage(lang);
     } catch (error) {
       console.error('Error saving language preference:', error);
     }
-  }, []);
+  };
 
-  const t = useCallback((key: TranslationKey): string => {
+  const t: TranslationFunction = useCallback((key: string, params?: TranslationParams) => {
     const keys = key.split('.');
     let value: any = translations[language];
     
     for (const k of keys) {
-      value = value?.[k];
-      if (typeof value === 'string') break;
-    }
-    
-    if (typeof value !== 'string') {
-      // Fallback to English if translation is missing
-      value = translations.en;
-      for (const k of keys) {
-        value = value?.[k];
-        if (typeof value === 'string') break;
+      if (value === undefined) {
+        console.warn(`Translation key not found: ${key}`);
+        return key;
+      }
+      
+      if (typeof value === 'object' && k in value) {
+        value = value[k];
+      } else {
+        console.warn(`Translation key not found: ${key}`);
+        return key;
       }
     }
+
+    // Handle gendered text if we're using Hausa and the value is a gendered object
+    if (language === 'ha' && typeof value === 'object' && ('male' in value || 'female' in value)) {
+      value = getGenderedText(value, user);
+    }
+
+    let text = typeof value === 'string' ? value : key;
     
-    return typeof value === 'string' ? value : key;
-  }, [language]);
-
-  useEffect(() => {
-    const loadLanguage = async () => {
-      try {
-        const savedLanguage = await AsyncStorage.getItem('language');
-        if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'pcm' || savedLanguage === 'ha' || savedLanguage === 'ig' || savedLanguage === 'yo')) {
-          setLanguageState(savedLanguage as Language);
-        }
-      } catch (error) {
-        console.error('Error loading language preference:', error);
-      }
-    };
-
-    loadLanguage();
-  }, []);
+    if (params) {
+      Object.entries(params).forEach(([paramKey, paramValue]) => {
+        text = text.replace(`{${paramKey}}`, paramValue.toString());
+      });
+    }
+    
+    return text;
+  }, [language, user]);
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={{ language, setLanguage: handleSetLanguage, t }}>
       {children}
     </LanguageContext.Provider>
   );
+};
+
+export const useLanguage = () => {
+  const context = useContext(LanguageContext);
+  if (!context) {
+    throw new Error('useLanguage must be used within a LanguageProvider');
+  }
+  return context;
 };

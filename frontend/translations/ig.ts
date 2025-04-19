@@ -223,6 +223,72 @@ export const ig = {
     add: 'Tinye'
   },
 
+  // Water Tracker
+  waterTracker: {
+    title: 'Nlekọta Mmiri',
+    description: 'Iji kwado ahụ ike gị na ọganihu gị niile, ọ dị mkpa ịṅụ mmiri zuru ezu. Anyị akọwapụtala na ị chọrọ opekata mpe 2.0 L dabere na arọ gị.',
+    waterDrunk: 'Mmiri ị ṅụrụ:',
+    goal: 'Ebumnuche: {amount} L',
+    dailyGoal: {
+      title: 'Ebumnuche Kwa Ụbọchị',
+      value: '2.0 L'
+    },
+    servingSize: {
+      title: 'Nha Iko',
+      value: '0.3 L na otu iko'
+    },
+    reminders: {
+      title: 'Ncheta',
+      interval: 'Oge etiti ncheta',
+      hourFormat: 'Awa {hours}'
+    },
+    notifications: {
+      title: 'Ṅụọ Mmiri! 💧',
+      body: 'Oge eruola ịṅụ mmiri. Ahụ gị ga-ekele gị!'
+    }
+  },
+
+  // Activity Summary
+  activitySummary: {
+    title: 'Nchịkọta Ọrụ',
+    timeframes: {
+      today: 'Taa',
+      week: 'Izu',
+      month: 'Ọnwa'
+    },
+    stats: {
+      activeMinutes: {
+        title: 'Nkeji Ọrụ',
+        value: '{minutes}'
+      },
+      caloriesBurned: {
+        title: 'Calories ereela',
+        value: '{calories}'
+      },
+      fastingHours: {
+        title: 'Awa Ọbu Nri',
+        value: '{hours}'
+      },
+      waterIntake: {
+        title: 'Mmiri Ị Ṅụrụ',
+        value: '{amount}/{goal}L'
+      }
+    },
+    workoutDuration: {
+      title: 'Nkeji {duration}',
+      subtitle: 'Ogologo Oge Egwuregwu'
+    },
+    weekDays: {
+      mon: 'MBỌ',
+      tue: 'ABỤ',
+      wed: 'WEN',
+      thu: 'TỌS',
+      fri: 'FRA',
+      sat: 'SAT',
+      sun: 'ỤKA'
+    }
+  },
+
   // Settings Screen
   settings: {
     title: 'Ntọala',

@@ -13,6 +13,7 @@ export const ha = {
     back: 'Baya',
     skip: 'Tsallake',
     getStarted: 'Fara',
+    ok: 'To',
   },
 
   // Auth Screens
@@ -20,42 +21,78 @@ export const ha = {
     signIn: {
       title: 'Shiga',
       emailLabel: 'Email',
-      emailPlaceholder: 'Shigar da email ɗinka',
+      emailPlaceholder: {
+        male: 'Shigar da email ɗinka',
+        female: 'Shigar da email ɗinki'
+      },
       passwordLabel: 'Kalmar sirri',
-      passwordPlaceholder: 'Shigar da kalmar sirri',
+      passwordPlaceholder: {
+        male: 'Shigar da kalmar sirrinka',
+        female: 'Shigar da kalmar sirriki'
+      },
       forgotPassword: 'Manta kalmar sirri?',
-      noAccount: 'Ba ka da asusu?',
+      noAccount: {
+        male: 'Ba ka da asusu?',
+        female: 'Ba ki da asusu?'
+      },
       signUp: 'Yi rajista',
       signInButton: 'Shiga',
     },
     signUp: {
       title: 'Yi Rajista',
-      fullNameLabel: 'Sunanka Gabaɗaya',
-      fullNamePlaceholder: 'Shigar da sunanka gabaɗaya',
+      fullNameLabel: 'Suna Cikakke',
+      fullNamePlaceholder: {
+        male: 'Shigar da sunanka cikakke',
+        female: 'Shigar da sunanki cikakke'
+      },
       emailLabel: 'Email',
-      emailPlaceholder: 'Shigar da email ɗinka',
+      emailPlaceholder: {
+        male: 'Shigar da email ɗinka',
+        female: 'Shigar da email ɗinki'
+      },
       passwordLabel: 'Kalmar sirri',
-      passwordPlaceholder: 'Shigar da kalmar sirri',
+      passwordPlaceholder: {
+        male: 'Shigar da kalmar sirrinka',
+        female: 'Shigar da kalmar sirriki'
+      },
       confirmPasswordLabel: 'Tabbatar da kalmar sirri',
-      confirmPasswordPlaceholder: 'Tabbatar da kalmar sirri',
+      confirmPasswordPlaceholder: {
+        male: 'Tabbatar da kalmar sirrinka',
+        female: 'Tabbatar da kalmar sirriki'
+      },
       signUpButton: 'Yi Rajista',
-      hasAccount: 'Kana da asusu?',
+      hasAccount: {
+        male: 'Kana da asusu?',
+        female: 'Kina da asusu?'
+      },
       signIn: 'Shiga'
     },
     forgotPassword: {
       title: 'Manta Kalmar Sirri',
-      description: 'Shigar da adireshin email ɗinka, za mu aika miki hanyar dawo da kalmar sirri.',
+      description: {
+        male: 'Shigar da adireshin email ɗinka, za mu aika maka hanyar dawo da kalmar sirri.',
+        female: 'Shigar da adireshin email ɗinki, za mu aika miki hanyar dawo da kalmar sirri.'
+      },
       emailLabel: 'Email',
-      emailPlaceholder: 'Shigar da email ɗinka',
+      emailPlaceholder: {
+        male: 'Shigar da email ɗinka',
+        female: 'Shigar da email ɗinki'
+      },
       sendButton: 'Aika Hanyar Dawo',
       backToSignIn: 'Komawa zuwa Shiga',
     },
     resetPassword: {
       title: 'Dawo da Kalmar Sirri',
       newPasswordLabel: 'Sabuwar Kalmar Sirri',
-      newPasswordPlaceholder: 'Shigar da sabuwar kalmar sirri',
+      newPasswordPlaceholder: {
+        male: 'Shigar da sabuwar kalmar sirrinka',
+        female: 'Shigar da sabuwar kalmar sirriki'
+      },
       confirmPasswordLabel: 'Tabbatar da Kalmar Sirri',
-      confirmPasswordPlaceholder: 'Tabbatar da sabuwar kalmar sirri',
+      confirmPasswordPlaceholder: {
+        male: 'Tabbatar da sabuwar kalmar sirrinka',
+        female: 'Tabbatar da sabuwar kalmar sirriki'
+      },
       resetButton: 'Dawo da Kalmar Sirri',
     },
   },
@@ -154,6 +191,78 @@ export const ha = {
     history: 'Tarihin Ayyuka',
     bodyInformation: 'Bayanan Jiki',
     add: 'Ƙara'
+  },
+
+  // Water Tracker
+  waterTracker: {
+    title: 'Mai Lura da Ruwa',
+    description: {
+      male: 'Don inganta lafiyar jikinka, yana da muhimmanci ka sha isasshen ruwa. Mun ƙididdige aƙalla litoci 2.0 ne dangane da nauyin jikinka.',
+      female: 'Don inganta lafiyar jikinki, yana da muhimmanci ki sha isasshen ruwa. Mun ƙididdige aƙalla litoci 2.0 ne dangane da nauyin jikinki.'
+    },
+    waterDrunk: 'Ruwan da aka sha:',
+    goal: 'Burin: {amount} L',
+    dailyGoal: {
+      title: 'Burin Yau',
+      value: '2.0 L'
+    },
+    servingSize: {
+      title: 'Girman Kofin',
+      value: '0.3 L a kowane kofi'
+    },
+    reminders: {
+      title: 'Tunatarwa',
+      interval: 'Lokacin tsakanin tunatarwa',
+      hourFormat: 'Awa {hours}'
+    },
+    notifications: {
+      title: 'Sha Ruwa! 💧',
+      body: {
+        male: 'Lokaci ya yi da za ka sha ruwa. Jikinka zai gode maka!',
+        female: 'Lokaci ya yi da za ki sha ruwa. Jikinki zai gode miki!'
+      }
+    }
+  },
+
+  // Activity Summary
+  activitySummary: {
+    title: 'Taƙaitaccen Ayyuka',
+    timeframes: {
+      today: 'Yau',
+      week: 'Mako',
+      month: 'Wata'
+    },
+    stats: {
+      activeMinutes: {
+        title: 'Mintuna na Aiki',
+        value: '{minutes}'
+      },
+      caloriesBurned: {
+        title: 'Calories da aka ƙona',
+        value: '{calories}'
+      },
+      fastingHours: {
+        title: 'Awannin Azumi',
+        value: '{hours}'
+      },
+      waterIntake: {
+        title: 'Shan Ruwa',
+        value: '{amount}/{goal}L'
+      }
+    },
+    workoutDuration: {
+      title: 'Mintuna {duration}',
+      subtitle: 'Tsawon Motsa Jiki'
+    },
+    weekDays: {
+      mon: 'LIT',
+      tue: 'TAL',
+      wed: 'LAR',
+      thu: 'ALH',
+      fri: 'JUM',
+      sat: 'ASA',
+      sun: 'LAH'
+    }
   },
 
   // Settings Screen

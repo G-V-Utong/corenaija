@@ -13,6 +13,7 @@ export const pcm = {
     back: 'Go back',
     skip: 'Skip am',
     getStarted: 'Start am',
+    ok: 'OK',
   },
 
   // Auth Screens
@@ -154,6 +155,72 @@ export const pcm = {
     history: 'All Your Exercise History',
     bodyInformation: 'Body Info',
     add: 'Add New One'
+  },
+
+  // Water Tracker
+  waterTracker: {
+    title: 'Water Monitor',
+    description: 'To make your body strong and healthy, you need to drink enough water. We don calculate say you need at least 2.0 L based on your body weight.',
+    waterDrunk: 'Water wey you don drink:',
+    goal: 'Target: {amount} L',
+    dailyGoal: {
+      title: 'Daily Target',
+      value: '2.0 L'
+    },
+    servingSize: {
+      title: 'Cup Size',
+      value: '0.3 L per cup'
+    },
+    reminders: {
+      title: 'Reminders',
+      interval: 'Time between reminders',
+      hourFormat: '{hours} Hour'
+    },
+    notifications: {
+      title: 'Drink Water! ',
+      body: 'Time to drink water. Your body go thank you!'
+    }
+  },
+
+  // Activity Summary
+  activitySummary: {
+    title: 'Activity Summary',
+    timeframes: {
+      today: 'Today',
+      week: 'Dis Week',
+      month: 'Dis Month'
+    },
+    stats: {
+      activeMinutes: {
+        title: 'Active Minutes',
+        value: '{minutes}'
+      },
+      caloriesBurned: {
+        title: 'Calories Wey You Burn',
+        value: '{calories}'
+      },
+      fastingHours: {
+        title: 'Fasting Hours',
+        value: '{hours}'
+      },
+      waterIntake: {
+        title: 'Water Wey You Don Drink',
+        value: '{amount}/{goal}L'
+      }
+    },
+    workoutDuration: {
+      title: '{duration} mins',
+      subtitle: 'How Long You Exercise'
+    },
+    weekDays: {
+      mon: 'MON',
+      tue: 'TUE',
+      wed: 'WED',
+      thu: 'THU',
+      fri: 'FRI',
+      sat: 'SAT',
+      sun: 'SUN'
+    }
   },
 
   // Settings Screen

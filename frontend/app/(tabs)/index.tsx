@@ -15,6 +15,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { WaterTrackingHistory } from '../../components/WaterTrackingHistory';
 import { CircularProgress } from '../../components/CircularProgress';
 import { Picker } from '@react-native-picker/picker';
+import { useTabBar } from '../../context/TabBarContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -24,6 +26,8 @@ export default function ProfileScreen() {
   const [isWaterModalVisible, setIsWaterModalVisible] = useState(false);
   const [waterIntake, setWaterIntake] = useState(0);
   const [timeframe, setTimeframe] = useState('today');
+  const { handleScroll } = useTabBar();
+  const { t } = useLanguage();
 
   const DAILY_WATER_GOAL = 2.0; // Match with WaterTrackerModal
 
@@ -123,12 +127,27 @@ export default function ProfileScreen() {
     fetchWaterIntake();
   };
 
+  const weekDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
+  type WeekDay = typeof weekDays[number];
+
+  const getTranslatedDay = (day: WeekDay) => {
+    return t(`activitySummary.weekDays.${day}`);
+  };
+
+  const formatTranslationParams = (key: string, params: Record<string, string | number>) => {
+    return t(key, params);
+  };
+
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView edges={['top']}>
         <Header title="Me" />
       </SafeAreaView>
-      <ScrollView style={styles.content}>
+      <ScrollView 
+        style={styles.content}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+      >
         <WorkoutCalendar userName={userName} />
         
         {/* Activity Summary Header */}
@@ -139,7 +158,7 @@ export default function ProfileScreen() {
           justifyContent: 'space-between',
           alignItems: 'center'
         }]}>
-          <ThemedText style={styles.summaryTitle}>Activity Summary</ThemedText>
+          <ThemedText style={styles.summaryTitle}>{t('activitySummary.title')}</ThemedText>
           <View style={[styles.timeframeSelect, { 
             backgroundColor: isDarkMode ? '#1A1A1A' : '#F1F5F9',
             borderRadius: 8,
@@ -154,9 +173,9 @@ export default function ProfileScreen() {
                 color: isDarkMode ? '#FFFFFF' : '#000000',
               }]}
             >
-              <Picker.Item label="Today" value="today" />
-              <Picker.Item label="Week" value="week" />
-              <Picker.Item label="Month" value="month" />
+              <Picker.Item label={t('activitySummary.timeframes.today')} value="today" />
+              <Picker.Item label={t('activitySummary.timeframes.week')} value="week" />
+              <Picker.Item label={t('activitySummary.timeframes.month')} value="month" />
             </Picker>
           </View>
         </View>
@@ -171,9 +190,11 @@ export default function ProfileScreen() {
               <View style={[styles.statCard, { backgroundColor: isDarkMode ? '#2D3748' : '#FFFFFF' }]}>
                 <View style={styles.statHeader}>
                   <View style={styles.leftContainer}>
-                    <ThemedText style={[styles.statValue, { fontSize: 24 }]}>60</ThemedText>
+                    <ThemedText style={[styles.statValue, { fontSize: 24 }]}>
+                      {formatTranslationParams('activitySummary.stats.activeMinutes.value', { minutes: 60 })}
+                    </ThemedText>
                     <ThemedText style={[styles.statLabel, { color: isDarkMode ? '#94A3B8' : '#64748B' }]}>
-                      Active Minutes
+                      {t('activitySummary.stats.activeMinutes.title')}
                     </ThemedText>
                   </View>
                   <View style={styles.rightContainer}>
@@ -192,9 +213,11 @@ export default function ProfileScreen() {
               <View style={[styles.statCard, { backgroundColor: isDarkMode ? '#2D3748' : '#FFFFFF' }]}>
                 <View style={styles.statHeader}>
                   <View style={styles.leftContainer}>
-                    <ThemedText style={[styles.statValue, { fontSize: 24 }]}>480</ThemedText>
+                    <ThemedText style={[styles.statValue, { fontSize: 24 }]}>
+                      {formatTranslationParams('activitySummary.stats.caloriesBurned.value', { calories: 480 })}
+                    </ThemedText>
                     <ThemedText style={[styles.statLabel, { color: isDarkMode ? '#94A3B8' : '#64748B' }]}>
-                      Calories Burned
+                      {t('activitySummary.stats.caloriesBurned.title')}
                     </ThemedText>
                   </View>
                   <View style={styles.rightContainer}>
@@ -212,14 +235,16 @@ export default function ProfileScreen() {
               </View>
             </View>
 
-             {/* Fasting and Water Cards */}
-             <View style={styles.statsCards}>
+            {/* Fasting and Water Cards */}
+            <View style={styles.statsCards}>
               <View style={[styles.statCard, { backgroundColor: isDarkMode ? '#2D3748' : '#FFFFFF' }]}>
                 <View style={styles.statHeader}>
                   <View style={styles.leftContainer}>
-                    <ThemedText style={[styles.statValue, { fontSize: 24 }]}>16</ThemedText>
+                    <ThemedText style={[styles.statValue, { fontSize: 24 }]}>
+                      {formatTranslationParams('activitySummary.stats.fastingHours.value', { hours: 16 })}
+                    </ThemedText>
                     <ThemedText style={[styles.statLabel, { color: isDarkMode ? '#94A3B8' : '#64748B' }]}>
-                      Fasting Hours
+                      {t('activitySummary.stats.fastingHours.title')}
                     </ThemedText>
                   </View>
                   <View style={styles.rightContainer}>
@@ -240,13 +265,15 @@ export default function ProfileScreen() {
                 <View style={styles.statHeader}>
                   <View style={styles.leftContainer}>
                     <View style={styles.waterValueContainer}>
-                      <ThemedText style={[styles.statValue, { fontSize: 24 }]}>{waterIntake.toFixed(1)}</ThemedText>
-                      <ThemedText style={[styles.waterGoalText, { color: isDarkMode ? '#94A3B8' : '#64748B' }]}>
+                      <ThemedText style={[styles.statValue, { fontSize: 24 }]}>
+                        {waterIntake}
+                      </ThemedText>
+                      <ThemedText style={[styles.statValue, { fontSize: 14, color: isDarkMode ? '#94A3B8' : '#64748B' }]}>
                         /{getWaterGoal()}L
                       </ThemedText>
                     </View>
                     <ThemedText style={[styles.statLabel, { color: isDarkMode ? '#94A3B8' : '#64748B' }]}>
-                      Water Intake
+                      {t('activitySummary.stats.waterIntake.title')}
                     </ThemedText>
                   </View>
                   <View style={styles.rightContainer}>
@@ -277,20 +304,22 @@ export default function ProfileScreen() {
           {/* Workout Duration Chart */}
           <View style={[styles.workoutCard, { backgroundColor: isDarkMode ? '#2D3748' : '#FFFFFF' }]}>
             <View style={styles.workoutHeader}>
-              <ThemedText style={styles.workoutTitle}>45 mins</ThemedText>
+              <ThemedText style={styles.workoutTitle}>
+                {formatTranslationParams('activitySummary.workoutDuration.title', { duration: 45 })}
+              </ThemedText>
               <ThemedText style={[styles.workoutSubtitle, { color: isDarkMode ? '#94A3B8' : '#64748B' }]}>
-                Workout Duration
+                {t('activitySummary.workoutDuration.subtitle')}
               </ThemedText>
             </View>
             <View style={styles.chartContainer}>
-              {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map((day, index) => (
+              {weekDays.map((day, index) => (
                 <View key={day} style={styles.barColumn}>
                   <View style={[styles.bar, { 
                     height: index === 3 ? 45 : 25,
                     backgroundColor: index === 3 ? '#F36746' : (isDarkMode ? '#374151' : '#F1F5F9')
                   }]} />
                   <ThemedText style={[styles.barLabel, { color: isDarkMode ? '#94A3B8' : '#64748B' }]}>
-                    {day}
+                    {getTranslatedDay(day)}
                   </ThemedText>
                 </View>
               ))}
@@ -359,10 +388,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    width: '100%',
   },
   leftContainer: {
     flexDirection: 'column',
     alignItems: 'flex-start',
+    maxWidth: '70%',
   },
   rightContainer: {
     flexDirection: 'column',
@@ -380,6 +411,7 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 12,
+    width: '100%',
   },
   workoutCard: {
     padding: 16,
@@ -447,7 +479,8 @@ const styles = StyleSheet.create({
   },
   waterValueContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'baseline',
+    marginBottom: 4,
   },
   waterGoalText: {
     fontSize: 14,
