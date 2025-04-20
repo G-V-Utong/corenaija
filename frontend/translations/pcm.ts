@@ -182,6 +182,21 @@ export const pcm = {
     }
   },
 
+  // Weight Tracker
+  weightTracker: {
+    title: "Weight",
+    starting: "First Weight",
+    goal: "Target",
+    updateWeight: "Update Weight",
+    enterWeight: "Put your weight (kg)",
+    save: "Save am",
+    timeframes: {
+      day: "Day",
+      week: "Week",
+      month: "Month"
+    }
+  },
+
   // Activity Summary
   activitySummary: {
     title: 'Activity Summary',
@@ -296,4 +311,23 @@ export const pcm = {
     resetPasswordFailed: 'E no fit change password',
     networkError: 'Network wahala. Abeg check your connection.',
   },
-}; 
+
+  // BMI
+  bmi: {
+    title: "BMI (kg/m²)",
+    description: "Body Mass Index (BMI) na simple way wey dem dey take check if your weight correct for your height.",
+    status: {
+      underweight: "Weight no reach",
+      normal: "Normal weight",
+      overweight: "Weight pass",
+      obese: "Weight pass too much"
+    },
+    ranges: {
+      underweight: "Weight no reach: less than 18.5",
+      normal: "Normal weight: 18.5 to 24.9",
+      overweight: "Weight pass: 25 to 29.9",
+      obese: "Weight pass too much: 30 or more"
+    },
+    recommendation: "For your height of {{height}}cm, better weight suppose dey between {{minWeight}}kg and {{maxWeight}}kg"
+  },
+};

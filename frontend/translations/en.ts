@@ -182,6 +182,21 @@ export const en = {
     }
   },
 
+  // Weight Tracker
+  weightTracker: {
+    title: "Weight",
+    starting: "Starting",
+    goal: "Goal",
+    updateWeight: "Update Weight",
+    enterWeight: "Enter weight (kg)",
+    save: "Save",
+    timeframes: {
+      day: "Day",
+      week: "Week",
+      month: "Month"
+    }
+  },
+
   // Activity Summary
   activitySummary: {
     title: 'Activity Summary',
@@ -296,4 +311,23 @@ export const en = {
     resetPasswordFailed: 'Failed to reset password',
     networkError: 'Network error. Please check your connection.',
   },
-}; 
+
+  // BMI Information
+  bmi: {
+    title: "BMI (kg/m²)",
+    description: "Body Mass Index (BMI) is a simple measure that uses your height and weight to work out if your weight is healthy.",
+    status: {
+      underweight: "Underweight",
+      normal: "Normal",
+      overweight: "Overweight",
+      obese: "Obese"
+    },
+    ranges: {
+      underweight: "Underweight: less than 18.5",
+      normal: "Normal weight: 18.5 to 24.9",
+      overweight: "Overweight: 25 to 29.9",
+      obese: "Obese: 30 or greater"
+    },
+    recommendation: "For your height of {{height}}cm, a healthy weight range would be between {{minWeight}}kg and {{maxWeight}}kg"
+  },
+};

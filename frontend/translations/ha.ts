@@ -224,6 +224,21 @@ export const ha = {
     }
   },
 
+  // Weight Tracker
+  weightTracker: {
+    title: "Nauyi",
+    starting: "Farawa",
+    goal: "Manufa",
+    updateWeight: "Sabunta Nauyi",
+    enterWeight: "Shigar da nauyi (kg)",
+    save: "Ajiye",
+    timeframes: {
+      day: "Rana",
+      week: "Mako",
+      month: "Wata"
+    }
+  },
+
   // Activity Summary
   activitySummary: {
     title: 'Taƙaitaccen Ayyuka',
@@ -338,4 +353,23 @@ export const ha = {
     resetPasswordFailed: 'An kasa dawo da kalmar sirri',
     networkError: 'Kuskuren hanyar sadarwa. Da fatan za a duba hanyar sadarwarka.',
   },
-}; 
+
+  // BMI
+  bmi: {
+    title: "BMI (kg/m²)",
+    description: "Awo na Nauyi Jiki (BMI) wani sauƙaƙƙen awo ne da ake amfani da shi don auna nauyin jiki da tsayi.",
+    status: {
+      underweight: "Rago nauyi",
+      normal: "Daidai",
+      overweight: "Nauyi ya wuce",
+      obese: "Nauyi ya wuce sosai"
+    },
+    ranges: {
+      underweight: "Rago nauyi: ƙasa da 18.5",
+      normal: "Daidai: 18.5 zuwa 24.9",
+      overweight: "Nauyi ya wuce: 25 zuwa 29.9",
+      obese: "Nauyi ya wuce sosai: 30 ko fiye"
+    },
+    recommendation: "Don tsayinka na {{height}}cm, daidaitaccen nauyi ya kamata ya kasance tsakanin {{minWeight}}kg da {{maxWeight}}kg"
+  },
+};

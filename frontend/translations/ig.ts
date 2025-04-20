@@ -248,6 +248,21 @@ export const ig = {
     }
   },
 
+  // Weight Tracker
+  weightTracker: {
+    title: "Arọ",
+    starting: "Mmalite",
+    goal: "Ebumnuche",
+    updateWeight: "Melite Arọ",
+    enterWeight: "Tinye arọ gị (kg)",
+    save: "Chekwa",
+    timeframes: {
+      day: "Ụbọchị",
+      week: "Izu",
+      month: "Ọnwa"
+    }
+  },
+
   // Activity Summary
   activitySummary: {
     title: 'Nchịkọta Ọrụ',
@@ -374,4 +389,23 @@ export const ig = {
       sessionExpired: 'Oge gị agwụla',
     },
   },
-}; 
+
+  // BMI
+  bmi: {
+    title: "BMI (kg/m²)",
+    description: "Atụmatụ Arọ Ahụ (BMI) bụ usoro mfe eji atụle ma arọ gị dabara na ogologo gị.",
+    status: {
+      underweight: "Adịghị ezuzu",
+      normal: "Dabara adaba",
+      overweight: "Karịrị akarị",
+      obese: "Karịrị nnukwu"
+    },
+    ranges: {
+      underweight: "Adịghị ezuzu: ka nta karịa 18.5",
+      normal: "Dabara adaba: 18.5 ruo 24.9",
+      overweight: "Karịrị akarị: 25 ruo 29.9",
+      obese: "Karịrị nnukwu: 30 ma ọ bụ karịa"
+    },
+    recommendation: "Maka ogologo gị nke {{height}}cm, arọ kwesịrị ịdị n'etiti {{minWeight}}kg na {{maxWeight}}kg"
+  },
+};

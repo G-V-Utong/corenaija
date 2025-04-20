@@ -298,6 +298,21 @@ export const yo = {
     }
   },
 
+  // Weight Tracker
+  weightTracker: {
+    title: "Ìwúwo",
+    starting: "Ìbẹ̀rẹ̀",
+    goal: "Ipò tí a fẹ́ dé",
+    updateWeight: "Ṣe Ìmúdójúìwọ̀n",
+    enterWeight: "Tẹ ìwúwo rẹ sílẹ̀ (kg)",
+    save: "Fipamọ́",
+    timeframes: {
+      day: "Ọjọ́",
+      week: "Ọ̀sẹ̀",
+      month: "Oṣù"
+    }
+  },
+
   // Activity Summary
   activitySummary: {
     title: 'Ìsọníṣókí Iṣẹ́',
@@ -374,4 +389,23 @@ export const yo = {
       sessionExpired: 'Àkókò ìgbà rẹ ti pẹ́',
     },
   },
-}; 
+
+  // BMI
+  bmi: {
+    title: "BMI (kg/m²)",
+    description: "Iwọn Iwuwo Ara (BMI) jẹ́ ọ̀nà tí a fi n wọn ìwúwo àti gíga rẹ láti mọ̀ bóyá ìwúwo rẹ wà ní ipò tó yẹ.",
+    status: {
+      underweight: "Kéré ju",
+      normal: "Déédé",
+      overweight: "Pọ̀ju",
+      obese: "Sanra púpọ̀"
+    },
+    ranges: {
+      underweight: "Kéré ju: kéré ju 18.5 lọ",
+      normal: "Déédé: 18.5 si 24.9",
+      overweight: "Pọ̀ju: 25 si 29.9",
+      obese: "Sanra púpọ̀: 30 tàbí jù bẹ́ẹ̀ lọ"
+    },
+    recommendation: "Fún gíga {{height}}cm rẹ, ìwúwo tó yẹ yóò wà láàrin {{minWeight}}kg àti {{maxWeight}}kg"
+  },
+};

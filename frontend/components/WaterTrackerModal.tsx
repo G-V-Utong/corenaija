@@ -40,10 +40,11 @@ export const WaterTrackerModal = ({ isVisible, onClose }: WaterTrackerModalProps
   const fetchWaterIntake = async () => {
     try {
       const { data, error } = await supabase
-        .from('water_intake')
-        .select()
-        .eq('date', new Date().toISOString().split('T')[0])
-        .single();
+      .from('water_intake')
+      .select('date, amount, target_amount')
+      .eq('profile_id', profile.id)
+      .order('date', { ascending: false })
+      .limit(7);
 
       if (error && error.code !== 'PGRST116') {
         console.error('Error fetching water intake:', error);
