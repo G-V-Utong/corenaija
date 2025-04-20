@@ -134,17 +134,6 @@ export default function Header({ title }: HeaderProps) {
                   </TouchableOpacity>
                 </View>
               </View>
-              
-              <View style={styles.statsContainer}>
-                <View style={styles.statItem}>
-                  <ThemedText style={styles.statValue}>108</ThemedText>
-                  <ThemedText style={styles.statLabel}>{t('sidebar.stats.kilometers')}</ThemedText>
-                </View>
-                <View style={styles.statItem}>
-                  <ThemedText style={styles.statValue}>4</ThemedText>
-                  <ThemedText style={styles.statLabel}>{t('sidebar.stats.rides')}</ThemedText>
-                </View>
-              </View>
             </View>
             
             <View style={styles.menuSection}>

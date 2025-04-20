@@ -13,6 +13,7 @@ export const en = {
     back: 'Back',
     skip: 'Skip',
     getStarted: 'Get Started',
+    ok: 'OK',
   },
 
   // Auth Screens
@@ -156,6 +157,92 @@ export const en = {
     add: 'Add'
   },
 
+  // Water Tracker
+  waterTracker: {
+    title: 'Water Tracker',
+    description: 'To support your health and overall success, staying well-hydrated is essential. Our recommended daily minimum of 2.0 L is calculated based on your body weight.',
+    waterDrunk: 'Water drunk:',
+    goal: 'Goal: {amount} L',
+    dailyGoal: {
+      title: 'Daily Goal',
+      value: '2.0 L'
+    },
+    servingSize: {
+      title: 'Serving Size',
+      value: '0.3 L per glass'
+    },
+    reminders: {
+      title: 'Reminders',
+      interval: 'Reminder interval',
+      hourFormat: '{hours} Hr'
+    },
+    notifications: {
+      title: 'Stay Hydrated! 💧',
+      body: 'Time to drink some water. Your body will thank you!'
+    }
+  },
+
+  // Weight Tracker
+  weightTracker: {
+    title: "Weight",
+    starting: "Starting",
+    goal: "Goal",
+    updateWeight: "Update Weight",
+    enterWeight: "Enter weight (kg)",
+    save: "Save",
+    timeframes: {
+      day: "Day",
+      week: "Week",
+      month: "Month"
+    }
+  },
+
+  // Activity Summary
+  activitySummary: {
+    title: 'Activity Summary',
+    timeframes: {
+      today: 'Today',
+      week: 'Week',
+      month: 'Month'
+    },
+    stats: {
+      activeMinutes: {
+        title: 'Active Minutes',
+        value: '{minutes}',
+        info: 'Measures your total active minutes. Aim for at least 30 minutes daily.'
+      },
+      caloriesBurned: {
+        title: 'Calories Burned',
+        value: '{calories}',
+        info: 'Shows calories burned through activity. Target varies by goal.'
+      },
+      fastingHours: {
+        title: 'Fasting Hours',
+        value: '{hours}',
+        info: 'Tracks your fasting hours. Common goal: 16 hours.'
+      },
+      waterIntake: {
+        title: 'Water Intake',
+        value: '{amount}/{goal}L',
+        info: 'Tracks your daily water intake. Recommended: 2L per day.'
+      }
+    },
+    workoutDuration: {
+      title: '{duration} mins',
+      subtitle: 'Workout Duration',
+      info: 'Duration of your workout session. Aim for 30-60 minutes.'
+    },
+    weekDays: {
+      mon: 'MON',
+      tue: 'TUE',
+      wed: 'WED',
+      thu: 'THU',
+      fri: 'FRI',
+      sat: 'SAT',
+      sun: 'SUN'
+    }
+  },
+
   // Settings Screen
   settings: {
     title: 'Settings',
@@ -224,4 +311,23 @@ export const en = {
     resetPasswordFailed: 'Failed to reset password',
     networkError: 'Network error. Please check your connection.',
   },
-}; 
+
+  // BMI Information
+  bmi: {
+    title: "BMI (kg/m²)",
+    description: "Body Mass Index (BMI) is a simple measure that uses your height and weight to work out if your weight is healthy.",
+    status: {
+      underweight: "Underweight",
+      normal: "Normal",
+      overweight: "Overweight",
+      obese: "Obese"
+    },
+    ranges: {
+      underweight: "Underweight: less than 18.5",
+      normal: "Normal weight: 18.5 to 24.9",
+      overweight: "Overweight: 25 to 29.9",
+      obese: "Obese: 30 or greater"
+    },
+    recommendation: "For your height of {{height}}cm, a healthy weight range would be between {{minWeight}}kg and {{maxWeight}}kg"
+  },
+};

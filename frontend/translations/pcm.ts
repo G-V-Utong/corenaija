@@ -13,6 +13,7 @@ export const pcm = {
     back: 'Go back',
     skip: 'Skip am',
     getStarted: 'Start am',
+    ok: 'OK',
   },
 
   // Auth Screens
@@ -156,6 +157,92 @@ export const pcm = {
     add: 'Add New One'
   },
 
+  // Water Tracker
+  waterTracker: {
+    title: 'Water Monitor',
+    description: 'To make your body strong and healthy, you need to drink enough water. We don calculate say you need at least 2.0 L based on your body weight.',
+    waterDrunk: 'Water wey you don drink:',
+    goal: 'Target: {amount} L',
+    dailyGoal: {
+      title: 'Daily Target',
+      value: '2.0 L'
+    },
+    servingSize: {
+      title: 'Cup Size',
+      value: '0.3 L per cup'
+    },
+    reminders: {
+      title: 'Reminders',
+      interval: 'Time between reminders',
+      hourFormat: '{hours} Hour'
+    },
+    notifications: {
+      title: 'Drink Water! ',
+      body: 'Time to drink water. Your body go thank you!'
+    }
+  },
+
+  // Weight Tracker
+  weightTracker: {
+    title: "Weight",
+    starting: "First Weight",
+    goal: "Target",
+    updateWeight: "Update Weight",
+    enterWeight: "Put your weight (kg)",
+    save: "Save am",
+    timeframes: {
+      day: "Day",
+      week: "Week",
+      month: "Month"
+    }
+  },
+
+  // Activity Summary
+  activitySummary: {
+    title: 'Activity Summary',
+    timeframes: {
+      today: 'Today',
+      week: 'Dis Week',
+      month: 'Dis Month'
+    },
+    stats: {
+      activeMinutes: {
+        title: 'Active Minutes',
+        value: '{minutes}',
+        info: 'E dey count how many minutes you do exercise. Try do at least 30 minutes every day.'
+      },
+      caloriesBurned: {
+        title: 'Calories Wey You Burn',
+        value: '{calories}',
+        info: 'E dey show how many calories you burn for exercise. Wetin you need fit change.'
+      },
+      fastingHours: {
+        title: 'Fasting Hours',
+        value: '{hours}',
+        info: 'E dey check how many hours you dey fast. Normal target na 16 hours.'
+      },
+      waterIntake: {
+        title: 'Water Wey You Don Drink',
+        value: '{amount}/{goal}L',
+        info: 'E dey check how much water you drink for one day. Beta make you drink at least 2L water every day.'
+      }
+    },
+    workoutDuration: {
+      title: '{duration} mins',
+      subtitle: 'How Long You Exercise',
+      info: 'How long you do exercise. Try do 30-60 minutes.'
+    },
+    weekDays: {
+      mon: 'MON',
+      tue: 'TUE',
+      wed: 'WED',
+      thu: 'THU',
+      fri: 'FRI',
+      sat: 'SAT',
+      sun: 'SUN'
+    }
+  },
+
   // Settings Screen
   settings: {
     title: 'Settings',
@@ -224,4 +311,23 @@ export const pcm = {
     resetPasswordFailed: 'E no fit change password',
     networkError: 'Network wahala. Abeg check your connection.',
   },
-}; 
+
+  // BMI
+  bmi: {
+    title: "BMI (kg/m²)",
+    description: "Body Mass Index (BMI) na simple way wey dem dey take check if your weight correct for your height.",
+    status: {
+      underweight: "Weight no reach",
+      normal: "Normal weight",
+      overweight: "Weight pass",
+      obese: "Weight pass too much"
+    },
+    ranges: {
+      underweight: "Weight no reach: less than 18.5",
+      normal: "Normal weight: 18.5 to 24.9",
+      overweight: "Weight pass: 25 to 29.9",
+      obese: "Weight pass too much: 30 or more"
+    },
+    recommendation: "For your height of {{height}}cm, better weight suppose dey between {{minWeight}}kg and {{maxWeight}}kg"
+  },
+};

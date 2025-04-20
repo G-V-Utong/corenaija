@@ -33,6 +33,9 @@ export default function TabLayout() {
           paddingTop: 8,
           paddingBottom: 24,
         },
+        headerStyle: {
+          backgroundColor: 'transparent',
+        },
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: '500',

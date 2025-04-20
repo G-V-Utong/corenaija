@@ -273,6 +273,92 @@ export const yo = {
     }
   },
 
+  // Water Tracker
+  waterTracker: {
+    title: 'Olùtọ́jú Omi',
+    description: 'Láti ṣe àtìlẹ́yìn fún ìlera àti àṣeyọrí rẹ, ó ṣe pàtàkì láti mu omi tó tó. A ti ṣe ìṣirò pé o nílò ó kéré tán 2.0 L gẹ́gẹ́ bí ìwọ̀n ara rẹ.',
+    waterDrunk: 'Omi tí o ti mu:',
+    goal: 'Ipò tí a fẹ́ dé: {amount} L',
+    dailyGoal: {
+      title: 'Ipò Ojoojúmọ́',
+      value: '2.0 L'
+    },
+    servingSize: {
+      title: 'Ìwọ̀n Ife',
+      value: '0.3 L fún ife kan'
+    },
+    reminders: {
+      title: 'Ìránilétì',
+      interval: 'Àkókò láàrin ìránilétì',
+      hourFormat: 'Wákàtí {hours}'
+    },
+    notifications: {
+      title: 'Mu Omi! 💧',
+      body: 'Àkókò láti mu omi. Ara rẹ yóò dúpẹ́!'
+    }
+  },
+
+  // Weight Tracker
+  weightTracker: {
+    title: "Ìwúwo",
+    starting: "Ìbẹ̀rẹ̀",
+    goal: "Ipò tí a fẹ́ dé",
+    updateWeight: "Ṣe Ìmúdójúìwọ̀n",
+    enterWeight: "Tẹ ìwúwo rẹ sílẹ̀ (kg)",
+    save: "Fipamọ́",
+    timeframes: {
+      day: "Ọjọ́",
+      week: "Ọ̀sẹ̀",
+      month: "Oṣù"
+    }
+  },
+
+  // Activity Summary
+  activitySummary: {
+    title: 'Ìsọníṣókí Iṣẹ́',
+    timeframes: {
+      today: 'Òní',
+      week: 'Ọ̀sẹ̀',
+      month: 'Osù'
+    },
+    stats: {
+      waterIntake: {
+        title: 'Omi tí o mu',
+        value: '{amount}/{goal}L',
+        info: 'O n tọ́pa omi tí o mu lójoojúmọ́. Dájú pé o mu tó lítà méjì (2L) lójoojúmọ́.'
+      },
+      activeMinutes: {
+        title: 'Ìṣẹ́jú Iṣẹ́',
+        value: '{minutes}',
+        info: 'O ń kà ìpẹ̀ tó pé o ṣe eré ìdárayá. Gbìyànjú kó tó ìṣẹ́jú mẹ́ta dínlọ́gbọ̀n (30) lójoojúmọ́.'
+      },
+      caloriesBurned: {
+        title: 'Calories tí ó jóná',
+        value: '{calories}',
+        info: 'O ń fi hàn iye kalori tí o jo nínú eré ìdárayá. Àfojúsùn lè yàtọ̀ síra.'
+      },
+      fastingHours: {
+        title: 'Wákàtí Àwẹ̀',
+        value: '{hours}',
+        info: 'O n tọ́pa àkókò tí o fi gbà àwẹ. Ìlànà àfojúsùn: wákàtí mẹrìndínlógún (16).' 
+      }
+    },
+    workoutDuration: {
+      title: 'Ìṣẹ́jú {duration}',
+      subtitle: 'Àkókò Ìdárayá',
+      info: 'Akókò tí o fi ṣe eré ìdárayá. Gbìyànjú kó tó ìṣẹ́jú mẹ́ta dínlọ́gbọ̀n sí mẹ́fa dínlọ́gọ́rin (30-60).' 
+    },
+    weekDays: {
+      mon: 'AJÉ',
+      tue: 'ÌSẸ́',
+      wed: 'ỌJỌ́',
+      thu: 'BỌ̀',
+      fri: 'ẸTÌ',
+      sat: 'ÀBÁ',
+      sun: 'AÌK'
+    }
+  },
+
   // Form Validation
   validation: {
     required: 'Kí o tẹ {field} sí',
@@ -303,4 +389,23 @@ export const yo = {
       sessionExpired: 'Àkókò ìgbà rẹ ti pẹ́',
     },
   },
-}; 
+
+  // BMI
+  bmi: {
+    title: "BMI (kg/m²)",
+    description: "Iwọn Iwuwo Ara (BMI) jẹ́ ọ̀nà tí a fi n wọn ìwúwo àti gíga rẹ láti mọ̀ bóyá ìwúwo rẹ wà ní ipò tó yẹ.",
+    status: {
+      underweight: "Kéré ju",
+      normal: "Déédé",
+      overweight: "Pọ̀ju",
+      obese: "Sanra púpọ̀"
+    },
+    ranges: {
+      underweight: "Kéré ju: kéré ju 18.5 lọ",
+      normal: "Déédé: 18.5 si 24.9",
+      overweight: "Pọ̀ju: 25 si 29.9",
+      obese: "Sanra púpọ̀: 30 tàbí jù bẹ́ẹ̀ lọ"
+    },
+    recommendation: "Fún gíga {{height}}cm rẹ, ìwúwo tó yẹ yóò wà láàrin {{minWeight}}kg àti {{maxWeight}}kg"
+  },
+};

@@ -223,6 +223,92 @@ export const ig = {
     add: 'Tinye'
   },
 
+  // Water Tracker
+  waterTracker: {
+    title: 'Nlekọta Mmiri',
+    description: 'Iji kwado ahụ ike gị na ọganihu gị niile, ọ dị mkpa ịṅụ mmiri zuru ezu. Anyị akọwapụtala na ị chọrọ opekata mpe 2.0 L dabere na arọ gị.',
+    waterDrunk: 'Mmiri ị ṅụrụ:',
+    goal: 'Ebumnuche: {amount} L',
+    dailyGoal: {
+      title: 'Ebumnuche Kwa Ụbọchị',
+      value: '2.0 L'
+    },
+    servingSize: {
+      title: 'Nha Iko',
+      value: '0.3 L na otu iko'
+    },
+    reminders: {
+      title: 'Ncheta',
+      interval: 'Oge etiti ncheta',
+      hourFormat: 'Awa {hours}'
+    },
+    notifications: {
+      title: 'Ṅụọ Mmiri! 💧',
+      body: 'Oge eruola ịṅụ mmiri. Ahụ gị ga-ekele gị!'
+    }
+  },
+
+  // Weight Tracker
+  weightTracker: {
+    title: "Arọ",
+    starting: "Mmalite",
+    goal: "Ebumnuche",
+    updateWeight: "Melite Arọ",
+    enterWeight: "Tinye arọ gị (kg)",
+    save: "Chekwa",
+    timeframes: {
+      day: "Ụbọchị",
+      week: "Izu",
+      month: "Ọnwa"
+    }
+  },
+
+  // Activity Summary
+  activitySummary: {
+    title: 'Nchịkọta Ọrụ',
+    timeframes: {
+      today: 'Taa',
+      week: 'Izu',
+      month: 'Ọnwa'
+    },
+    stats: {
+      activeMinutes: {
+        title: 'Nkeji Ọrụ',
+        value: '{minutes}',
+        info: 'Na-agbakwụnye oge ị na-eme mmega ahụ. Gbalịsie ike inweta nkeji iri atọ (30) kwa ụbọchị.'
+      },
+      caloriesBurned: {
+        title: 'Calories ereela',
+        value: '{calories}',
+        info: 'Na-egosi calorie ị kpọrọ site n’ịrụ ọrụ. Ebumnuche nwere ike ịdị iche.'
+      },
+      fastingHours: {
+        title: 'Awa Ọbu Nri',
+        value: '{hours}',
+        info: 'Na-enyocha awa ị na-anọ n’afụ. Ebumnuche a na-ahụkarị bụ awa iri isii (16).'
+      },
+      waterIntake: {
+        title: 'Mmiri Ị Ṅụrụ',
+        value: '{amount}/{goal}L',
+        info: 'Na-enyocha mmiri ị na-aṅụ kwa ụbọchị. I kwesị inyocha lita 2 kwa ụbọchị.'
+      }
+    },
+    workoutDuration: {
+      title: 'Nkeji {duration}',
+      subtitle: 'Ogologo Oge Egwuregwu',
+      info: 'Oge ị na-eji eme mmega ahụ. Gbalịsie ike mee nkeji iri atọ ruo iri isii (30-60).'
+    },
+    weekDays: {
+      mon: 'MBỌ',
+      tue: 'ABỤ',
+      wed: 'WEN',
+      thu: 'TỌS',
+      fri: 'FRA',
+      sat: 'SAT',
+      sun: 'ỤKA'
+    }
+  },
+
   // Settings Screen
   settings: {
     title: 'Ntọala',
@@ -303,4 +389,23 @@ export const ig = {
       sessionExpired: 'Oge gị agwụla',
     },
   },
-}; 
+
+  // BMI
+  bmi: {
+    title: "BMI (kg/m²)",
+    description: "Atụmatụ Arọ Ahụ (BMI) bụ usoro mfe eji atụle ma arọ gị dabara na ogologo gị.",
+    status: {
+      underweight: "Adịghị ezuzu",
+      normal: "Dabara adaba",
+      overweight: "Karịrị akarị",
+      obese: "Karịrị nnukwu"
+    },
+    ranges: {
+      underweight: "Adịghị ezuzu: ka nta karịa 18.5",
+      normal: "Dabara adaba: 18.5 ruo 24.9",
+      overweight: "Karịrị akarị: 25 ruo 29.9",
+      obese: "Karịrị nnukwu: 30 ma ọ bụ karịa"
+    },
+    recommendation: "Maka ogologo gị nke {{height}}cm, arọ kwesịrị ịdị n'etiti {{minWeight}}kg na {{maxWeight}}kg"
+  },
+};
