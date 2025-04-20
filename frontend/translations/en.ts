@@ -193,24 +193,29 @@ export const en = {
     stats: {
       activeMinutes: {
         title: 'Active Minutes',
-        value: '{minutes}'
+        value: '{minutes}',
+        info: 'Measures your total active minutes. Aim for at least 30 minutes daily.'
       },
       caloriesBurned: {
         title: 'Calories Burned',
-        value: '{calories}'
+        value: '{calories}',
+        info: 'Shows calories burned through activity. Target varies by goal.'
       },
       fastingHours: {
         title: 'Fasting Hours',
-        value: '{hours}'
+        value: '{hours}',
+        info: 'Tracks your fasting hours. Common goal: 16 hours.'
       },
       waterIntake: {
         title: 'Water Intake',
-        value: '{amount}/{goal}L'
+        value: '{amount}/{goal}L',
+        info: 'Tracks your daily water intake. Recommended: 2L per day.'
       }
     },
     workoutDuration: {
       title: '{duration} mins',
-      subtitle: 'Workout Duration'
+      subtitle: 'Workout Duration',
+      info: 'Duration of your workout session. Aim for 30-60 minutes.'
     },
     weekDays: {
       mon: 'MON',

@@ -259,24 +259,29 @@ export const ig = {
     stats: {
       activeMinutes: {
         title: 'Nkeji Ọrụ',
-        value: '{minutes}'
+        value: '{minutes}',
+        info: 'Na-agbakwụnye oge ị na-eme mmega ahụ. Gbalịsie ike inweta nkeji iri atọ (30) kwa ụbọchị.'
       },
       caloriesBurned: {
         title: 'Calories ereela',
-        value: '{calories}'
+        value: '{calories}',
+        info: 'Na-egosi calorie ị kpọrọ site n’ịrụ ọrụ. Ebumnuche nwere ike ịdị iche.'
       },
       fastingHours: {
         title: 'Awa Ọbu Nri',
-        value: '{hours}'
+        value: '{hours}',
+        info: 'Na-enyocha awa ị na-anọ n’afụ. Ebumnuche a na-ahụkarị bụ awa iri isii (16).'
       },
       waterIntake: {
         title: 'Mmiri Ị Ṅụrụ',
-        value: '{amount}/{goal}L'
+        value: '{amount}/{goal}L',
+        info: 'Na-enyocha mmiri ị na-aṅụ kwa ụbọchị. I kwesị inyocha lita 2 kwa ụbọchị.'
       }
     },
     workoutDuration: {
       title: 'Nkeji {duration}',
-      subtitle: 'Ogologo Oge Egwuregwu'
+      subtitle: 'Ogologo Oge Egwuregwu',
+      info: 'Oge ị na-eji eme mmega ahụ. Gbalịsie ike mee nkeji iri atọ ruo iri isii (30-60).'
     },
     weekDays: {
       mon: 'MBỌ',

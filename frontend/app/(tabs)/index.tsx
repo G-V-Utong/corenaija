@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { StyleSheet, ScrollView, TouchableOpacity, Pressable, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Header from '../../components/Header';
 import { ThemedView } from '../../components/ThemedView';
@@ -17,6 +17,7 @@ import { CircularProgress } from '../../components/CircularProgress';
 import { Picker } from '@react-native-picker/picker';
 import { useTabBar } from '../../context/TabBarContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { WeightAndBMITracker } from '../../components/WeightAndBMITracker';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -28,6 +29,8 @@ export default function ProfileScreen() {
   const [timeframe, setTimeframe] = useState('today');
   const { handleScroll } = useTabBar();
   const { t } = useLanguage();
+  const [tooltip, setTooltip] = useState({ visible: false, text: '', x: 0, y: 0 });
+  const iconRefs = useRef<{ [key: string]: any }>({});
 
   const DAILY_WATER_GOAL = 2.0; // Match with WaterTrackerModal
 
@@ -138,6 +141,56 @@ export default function ProfileScreen() {
     return t(key, params);
   };
 
+  const handleInfoPress = (key: string, infoText: string) => {
+    iconRefs.current[key]?.measure((fx: number, fy: number, width: number, height: number, px: number, py: number) => {
+      setTooltip({ visible: true, text: infoText, x: px + width / 2, y: py + height });
+    });
+  };
+
+  const TOOLTIP_WIDTH = 180;
+  const TOOLTIP_MARGIN = 12;
+
+  const InfoTooltip: React.FC<{
+    visible: boolean;
+    text: string;
+    x: number;
+    y: number;
+    onClose: () => void;
+    isDarkMode: boolean;
+  }> = ({ visible, text, x, y, onClose, isDarkMode }) => {
+    if (!visible) return null;
+    const screenWidth = Dimensions.get('window').width;
+    // Calculate left position with clamping
+    let left = x - TOOLTIP_WIDTH / 2;
+    if (left < TOOLTIP_MARGIN) left = TOOLTIP_MARGIN;
+    if (left + TOOLTIP_WIDTH > screenWidth - TOOLTIP_MARGIN) left = screenWidth - TOOLTIP_MARGIN - TOOLTIP_WIDTH;
+
+    return (
+      <Pressable
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 999 }}
+        onPress={onClose}
+      >
+        <View
+          style={{
+            position: 'absolute',
+            top: y + 24, // 24px below the icon
+            left,
+            width: TOOLTIP_WIDTH,
+            backgroundColor: isDarkMode ? '#222' : '#fff',
+            padding: 12,
+            borderRadius: 8,
+            shadowColor: '#000',
+            shadowOpacity: 0.2,
+            shadowRadius: 8,
+            elevation: 5,
+          }}
+        >
+          <ThemedText style={{ fontSize: 14, color: isDarkMode ? '#fff' : '#222', textAlign: 'center' }}>{text}</ThemedText>
+        </View>
+      </Pressable>
+    );
+  };
+
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView edges={['top']}>
@@ -190,9 +243,17 @@ export default function ProfileScreen() {
               <View style={[styles.statCard, { backgroundColor: isDarkMode ? '#2D3748' : '#FFFFFF' }]}>
                 <View style={styles.statHeader}>
                   <View style={styles.leftContainer}>
-                    <ThemedText style={[styles.statValue, { fontSize: 24 }]}>
-                      {formatTranslationParams('activitySummary.stats.activeMinutes.value', { minutes: 60 })}
-                    </ThemedText>
+                    <View style={{ flexDirection: 'row' }}>
+                      <ThemedText style={[styles.statValue, { fontSize: 24 }]}>
+                        {formatTranslationParams('activitySummary.stats.activeMinutes.value', { minutes: 60 })}
+                      </ThemedText>
+                      <TouchableOpacity
+                        ref={ref => (iconRefs.current['activeMinutes'] = ref)}
+                        onPress={() => handleInfoPress('activeMinutes', t('activitySummary.stats.activeMinutes.info'))}
+                      >
+                        <Ionicons name="information-circle-outline" size={12} color={isDarkMode ? '#94A3B8' : '#64748B'} style={{ marginLeft: 4, marginTop: 8 }} />
+                      </TouchableOpacity>
+                    </View>
                     <ThemedText style={[styles.statLabel, { color: isDarkMode ? '#94A3B8' : '#64748B' }]}>
                       {t('activitySummary.stats.activeMinutes.title')}
                     </ThemedText>
@@ -205,7 +266,7 @@ export default function ProfileScreen() {
                       style={[styles.addButton, { backgroundColor: isDarkMode ? '#2D3748' : '#FFFFFF' }]}
                       onPress={() => handleCardPress('/training')}
                     >
-                      <ThemedText style={styles.addButtonText}>+</ThemedText>
+                      <Ionicons name="add" size={18} color={isDarkMode ? '#FFFFFF' : '#000000'} />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -213,9 +274,17 @@ export default function ProfileScreen() {
               <View style={[styles.statCard, { backgroundColor: isDarkMode ? '#2D3748' : '#FFFFFF' }]}>
                 <View style={styles.statHeader}>
                   <View style={styles.leftContainer}>
-                    <ThemedText style={[styles.statValue, { fontSize: 24 }]}>
-                      {formatTranslationParams('activitySummary.stats.caloriesBurned.value', { calories: 480 })}
-                    </ThemedText>
+                    <View style={{ flexDirection: 'row' }}>
+                      <ThemedText style={[styles.statValue, { fontSize: 24 }]}>
+                        {formatTranslationParams('activitySummary.stats.caloriesBurned.value', { calories: 480 })}
+                      </ThemedText>
+                      <TouchableOpacity
+                        ref={ref => (iconRefs.current['caloriesBurned'] = ref)}
+                        onPress={() => handleInfoPress('caloriesBurned', t('activitySummary.stats.caloriesBurned.info'))}
+                      >
+                        <Ionicons name="information-circle-outline" size={12} color={isDarkMode ? '#94A3B8' : '#64748B'} style={{ marginLeft: 4, marginTop: 8 }} />
+                      </TouchableOpacity>
+                    </View>
                     <ThemedText style={[styles.statLabel, { color: isDarkMode ? '#94A3B8' : '#64748B' }]}>
                       {t('activitySummary.stats.caloriesBurned.title')}
                     </ThemedText>
@@ -228,7 +297,7 @@ export default function ProfileScreen() {
                       style={[styles.addButton, { backgroundColor: isDarkMode ? '#2D3748' : '#FFFFFF' }]}
                       onPress={() => handleCardPress('/training')}
                     >
-                      <ThemedText style={styles.addButtonText}>+</ThemedText>
+                      <Ionicons name="add" size={18} color={isDarkMode ? '#FFFFFF' : '#000000'} />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -240,9 +309,17 @@ export default function ProfileScreen() {
               <View style={[styles.statCard, { backgroundColor: isDarkMode ? '#2D3748' : '#FFFFFF' }]}>
                 <View style={styles.statHeader}>
                   <View style={styles.leftContainer}>
-                    <ThemedText style={[styles.statValue, { fontSize: 24 }]}>
-                      {formatTranslationParams('activitySummary.stats.fastingHours.value', { hours: 16 })}
-                    </ThemedText>
+                    <View style={{ flexDirection: 'row' }}>
+                      <ThemedText style={[styles.statValue, { fontSize: 24 }]}>
+                        {formatTranslationParams('activitySummary.stats.fastingHours.value', { hours: 16 })}
+                      </ThemedText>
+                      <TouchableOpacity
+                        ref={ref => (iconRefs.current['fastingHours'] = ref)}
+                        onPress={() => handleInfoPress('fastingHours', t('activitySummary.stats.fastingHours.info'))}
+                      >
+                        <Ionicons name="information-circle-outline" size={12} color={isDarkMode ? '#94A3B8' : '#64748B'} style={{ marginLeft: 4, marginTop: 8 }} />
+                      </TouchableOpacity>
+                    </View>
                     <ThemedText style={[styles.statLabel, { color: isDarkMode ? '#94A3B8' : '#64748B' }]}>
                       {t('activitySummary.stats.fastingHours.title')}
                     </ThemedText>
@@ -255,7 +332,7 @@ export default function ProfileScreen() {
                       style={[styles.addButton, { backgroundColor: isDarkMode ? '#2D3748' : '#FFFFFF' }]}
                       onPress={() => handleCardPress('/fasting')}
                     >
-                      <ThemedText style={styles.addButtonText}>+</ThemedText>
+                      <Ionicons name="add" size={18} color={isDarkMode ? '#FFFFFF' : '#000000'} />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -264,13 +341,17 @@ export default function ProfileScreen() {
               <View style={[styles.statCard, { backgroundColor: isDarkMode ? '#2D3748' : '#FFFFFF' }]}>
                 <View style={styles.statHeader}>
                   <View style={styles.leftContainer}>
-                    <View style={styles.waterValueContainer}>
+                    <View style={[{ flexDirection: 'row'}]}>
                       <ThemedText style={[styles.statValue, { fontSize: 24 }]}>
                         {waterIntake}
                       </ThemedText>
-                      <ThemedText style={[styles.statValue, { fontSize: 14, color: isDarkMode ? '#94A3B8' : '#64748B' }]}>
-                        /{getWaterGoal()}L
-                      </ThemedText>
+                      <ThemedText style={[styles.statValue, { fontSize: 12, marginTop: 12, color: isDarkMode ? '#94A3B8' : '#64748B' }]}> /{getWaterGoal()}L </ThemedText>
+                      <TouchableOpacity
+                        ref={ref => (iconRefs.current['waterIntake'] = ref)}
+                        onPress={() => handleInfoPress('waterIntake', t('activitySummary.stats.waterIntake.info'))}
+                      >
+                        <Ionicons name="information-circle-outline" size={12} color={isDarkMode ? '#94A3B8' : '#64748B'} style={{ marginLeft: 4, marginTop: 8 }} />
+                      </TouchableOpacity>
                     </View>
                     <ThemedText style={[styles.statLabel, { color: isDarkMode ? '#94A3B8' : '#64748B' }]}>
                       {t('activitySummary.stats.waterIntake.title')}
@@ -293,7 +374,7 @@ export default function ProfileScreen() {
                       style={[styles.addButton, { backgroundColor: isDarkMode ? '#2D3748' : '#FFFFFF' }]}
                       onPress={() => setIsWaterModalVisible(true)}
                     >
-                      <ThemedText style={styles.addButtonText}>+</ThemedText>
+                      <Ionicons name="add" size={18} color={isDarkMode ? '#FFFFFF' : '#000000'} />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -304,9 +385,17 @@ export default function ProfileScreen() {
           {/* Workout Duration Chart */}
           <View style={[styles.workoutCard, { backgroundColor: isDarkMode ? '#2D3748' : '#FFFFFF' }]}>
             <View style={styles.workoutHeader}>
-              <ThemedText style={styles.workoutTitle}>
+             <View style={[{ flexDirection: 'row'}]}>
+             <ThemedText style={styles.workoutTitle}>
                 {formatTranslationParams('activitySummary.workoutDuration.title', { duration: 45 })}
               </ThemedText>
+              <TouchableOpacity
+                ref={ref => (iconRefs.current['workoutDuration'] = ref)}
+                onPress={() => handleInfoPress('workoutDuration', t('activitySummary.workoutDuration.info'))}
+              >
+                <Ionicons name="information-circle-outline"  size={12} color={isDarkMode ? '#94A3B8' : '#64748B'} style={{ marginLeft: 4, marginTop: 8 }}/>
+              </TouchableOpacity>
+             </View>
               <ThemedText style={[styles.workoutSubtitle, { color: isDarkMode ? '#94A3B8' : '#64748B' }]}>
                 {t('activitySummary.workoutDuration.subtitle')}
               </ThemedText>
@@ -327,12 +416,22 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        {/* Water Tracking History */}
-        <WaterTrackingHistory />
+        {/* Water Tracking History
+        <WaterTrackingHistory /> */}
+        {/* Weight and BMI Tracker */}
+        <WeightAndBMITracker />
       </ScrollView>
       <WaterTrackerModal 
         isVisible={isWaterModalVisible}
         onClose={handleWaterModalClose}
+      />
+      <InfoTooltip
+        visible={tooltip.visible}
+        text={tooltip.text}
+        x={tooltip.x}
+        y={tooltip.y}
+        onClose={() => setTooltip({ ...tooltip, visible: false })}
+        isDarkMode={isDarkMode}
       />
     </ThemedView>
   );

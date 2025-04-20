@@ -307,26 +307,31 @@ export const yo = {
       month: 'Osù'
     },
     stats: {
+      waterIntake: {
+        title: 'Omi tí o mu',
+        value: '{amount}/{goal}L',
+        info: 'O n tọ́pa omi tí o mu lójoojúmọ́. Dájú pé o mu tó lítà méjì (2L) lójoojúmọ́.'
+      },
       activeMinutes: {
         title: 'Ìṣẹ́jú Iṣẹ́',
-        value: '{minutes}'
+        value: '{minutes}',
+        info: 'O ń kà ìpẹ̀ tó pé o ṣe eré ìdárayá. Gbìyànjú kó tó ìṣẹ́jú mẹ́ta dínlọ́gbọ̀n (30) lójoojúmọ́.'
       },
       caloriesBurned: {
         title: 'Calories tí ó jóná',
-        value: '{calories}'
+        value: '{calories}',
+        info: 'O ń fi hàn iye kalori tí o jo nínú eré ìdárayá. Àfojúsùn lè yàtọ̀ síra.'
       },
       fastingHours: {
         title: 'Wákàtí Àwẹ̀',
-        value: '{hours}'
-      },
-      waterIntake: {
-        title: 'Omi tí o mu',
-        value: '{amount}/{goal}L'
+        value: '{hours}',
+        info: 'O n tọ́pa àkókò tí o fi gbà àwẹ. Ìlànà àfojúsùn: wákàtí mẹrìndínlógún (16).' 
       }
     },
     workoutDuration: {
       title: 'Ìṣẹ́jú {duration}',
-      subtitle: 'Àkókò Ìdárayá'
+      subtitle: 'Àkókò Ìdárayá',
+      info: 'Akókò tí o fi ṣe eré ìdárayá. Gbìyànjú kó tó ìṣẹ́jú mẹ́ta dínlọ́gbọ̀n sí mẹ́fa dínlọ́gọ́rin (30-60).' 
     },
     weekDays: {
       mon: 'AJÉ',

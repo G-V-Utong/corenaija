@@ -235,24 +235,29 @@ export const ha = {
     stats: {
       activeMinutes: {
         title: 'Mintuna na Aiki',
-        value: '{minutes}'
+        value: '{minutes}',
+        info: 'Yana auna jimillar mintuna na motsa jiki. Ka/ki yi ƙoƙarin samun aƙalla mintuna 30 a rana.'
       },
       caloriesBurned: {
         title: 'Calories da aka ƙona',
-        value: '{calories}'
+        value: '{calories}',
+        info: 'Yana nuna adadin kuzarin da aka ƙone ta motsa jiki. Burin yana bambanta da manufa.'
       },
       fastingHours: {
         title: 'Awannin Azumi',
-        value: '{hours}'
+        value: '{hours}',
+        info: 'Yana bin diddigin awannin azumi. Burin gama gari: awanni 16.'
       },
       waterIntake: {
         title: 'Shan Ruwa',
-        value: '{amount}/{goal}L'
+        value: '{amount}/{goal}L',
+        info: 'Yana bin diddigin shan ruwa na yau da kullum. Shawara: Lita 2 a rana.'
       }
     },
     workoutDuration: {
       title: 'Mintuna {duration}',
-      subtitle: 'Tsawon Motsa Jiki'
+      subtitle: 'Tsawon Motsa Jiki',
+      info: 'Lokacin da aka ɗauka a motsa jiki. Shawara: mintuna 30-60.'
     },
     weekDays: {
       mon: 'LIT',

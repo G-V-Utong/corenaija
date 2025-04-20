@@ -193,24 +193,29 @@ export const pcm = {
     stats: {
       activeMinutes: {
         title: 'Active Minutes',
-        value: '{minutes}'
+        value: '{minutes}',
+        info: 'E dey count how many minutes you do exercise. Try do at least 30 minutes every day.'
       },
       caloriesBurned: {
         title: 'Calories Wey You Burn',
-        value: '{calories}'
+        value: '{calories}',
+        info: 'E dey show how many calories you burn for exercise. Wetin you need fit change.'
       },
       fastingHours: {
         title: 'Fasting Hours',
-        value: '{hours}'
+        value: '{hours}',
+        info: 'E dey check how many hours you dey fast. Normal target na 16 hours.'
       },
       waterIntake: {
         title: 'Water Wey You Don Drink',
-        value: '{amount}/{goal}L'
+        value: '{amount}/{goal}L',
+        info: 'E dey check how much water you drink for one day. Beta make you drink at least 2L water every day.'
       }
     },
     workoutDuration: {
       title: '{duration} mins',
-      subtitle: 'How Long You Exercise'
+      subtitle: 'How Long You Exercise',
+      info: 'How long you do exercise. Try do 30-60 minutes.'
     },
     weekDays: {
       mon: 'MON',
