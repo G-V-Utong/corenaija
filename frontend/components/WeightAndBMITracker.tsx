@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
+import { LineChart } from "react-native-gifted-charts";
 import {
   View,
   Text,
@@ -8,6 +9,7 @@ import {
   Pressable,
   Modal,
   TextInput,
+  ScrollView,
 } from "react-native";
 import { supabase } from "../lib/supabase";
 import { Ionicons } from "@expo/vector-icons";
@@ -41,72 +43,36 @@ const BMI_RANGES = [
 
 type TimeFrame = "day" | "week" | "month";
 
-// Get x-axis labels based on timeframe
-const getTimeLabels = (
-  timeframe: TimeFrame,
-  currentDate: Date = new Date()
-): string[] => {
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-
-  switch (timeframe) {
-    case "day": {
-      // Show days of current week (e.g., 15, 16, 17, 18, 19, 20)
-      const startOfWeek = new Date(currentDate);
-      startOfWeek.setDate(currentDate.getDate() - 6); // Go back 6 days
-      return Array.from({ length: 7 }, (_, i) => {
-        const date = new Date(startOfWeek);
-        date.setDate(startOfWeek.getDate() + i);
-        return date.getDate().toString();
-      });
-    }
-    case "week": {
-      // Show dates for last 7 weeks
-      const result = [];
-      const date = new Date(currentDate);
-      for (let i = 6; i >= 0; i--) {
-        const weekDate = new Date(date);
-        weekDate.setDate(date.getDate() - i * 7);
-        // Format as "DD/MM"
-        result.push(`${weekDate.getDate()}/${weekDate.getMonth() + 1}`);
-      }
-      return result;
-    }
-    case "month": {
-      // Show last 6 months + current month
-      const result = [];
-      const month = currentDate.getMonth();
-      for (let i = 6; i >= 0; i--) {
-        const monthIndex = (month - i + 12) % 12;
-        result.push(months[monthIndex]);
-      }
-      return result;
-    }
-  }
+type WeightRecord = {
+  weight: number;
+  created_at: string;
 };
 
-// Mock weight data based on timeframe - only show current weight
-const getWeightData = (
-  weight: number | null,
-  timeframe: TimeFrame
-): (number | null)[] => {
-  if (!weight) return Array(7).fill(null);
-  // Return array with null values except for the last position which has current weight
-  return Array(7)
-    .fill(null)
-    .map((_, i) => (i === 6 ? weight : null));
+// Get x-axis labels based on timeframe
+const getTimeLabels = (timeframe: TimeFrame): string[] => {
+  const today = new Date();
+  const labels: string[] = [];
+
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date();
+    switch (timeframe) {
+      case "day":
+        date.setDate(today.getDate() - i);
+        labels.push(date.getDate().toString());
+        break;
+      case "week":
+        date.setDate(today.getDate() - i * 7);
+        labels.push(
+          date.toLocaleDateString("en-US", { month: "short", day: "numeric" })
+        );
+        break;
+      case "month":
+        date.setMonth(today.getMonth() - i);
+        labels.push(date.toLocaleDateString("en-US", { month: "short" }));
+        break;
+    }
+  }
+  return labels;
 };
 
 // Create styles outside component to avoid TypeScript errors
@@ -199,27 +165,16 @@ const createStyles = (isDarkMode: boolean) =>
       color: isDarkMode ? "#94A3B8" : "#64748B",
     },
     chartContainer: {
-      flexDirection: "row",
-      height: 200,
-      paddingRight: 8,
-      paddingBottom: 24,
       marginTop: 8,
-      overflow: "hidden",
+      alignItems: "start",
+      backgroundColor: isDarkMode ? "#23272F" : LIGHT_GRAY,
+      borderRadius: 12,
+      overflow: "hidden", // Prevents chart content from overflowing
     },
     yAxis: {
       justifyContent: "space-between",
       paddingRight: 8,
       height: "100%",
-    },
-    axisLabel: {
-      fontSize: 12,
-      color: isDarkMode ? "#94A3B8" : "#64748B",
-      marginRight: 4,
-    },
-    chartArea: {
-      flex: 1,
-      height: "100%",
-      position: "relative",
     },
     targetLine: {
       position: "absolute",
@@ -294,6 +249,7 @@ const createStyles = (isDarkMode: boolean) =>
       fontSize: 12,
       color: isDarkMode ? "#94A3B8" : "#64748B",
       textAlign: "center",
+      
     },
     bmiRow: {
       flexDirection: "row",
@@ -467,6 +423,7 @@ export const WeightAndBMITracker = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [newWeightInput, setNewWeightInput] = useState("");
   const [showBMIInfo, setShowBMIInfo] = useState(false);
+  const [weightHistory, setWeightHistory] = useState<WeightRecord[]>([]);
 
   const handleSaveWeight = async () => {
     const newWeight = parseFloat(newWeightInput);
@@ -474,11 +431,17 @@ export const WeightAndBMITracker = () => {
     setLoading(true);
     const userRes = await supabase.auth.getUser();
     if (userRes.data.user) {
-      await supabase
-        .from("profiles")
-        .update({ current_weight: newWeight })
-        .eq("id", userRes.data.user.id);
+      // Insert into weight_history
+      await supabase.from("weight_history").insert({
+        user_id: userRes.data.user.id,
+        weight: newWeight,
+      });
+      // Update local state
       setWeight(newWeight);
+      setWeightHistory([
+        ...weightHistory,
+        { weight: newWeight, created_at: new Date().toISOString() },
+      ]);
     }
     setLoading(false);
     setModalVisible(false);
@@ -496,8 +459,79 @@ export const WeightAndBMITracker = () => {
     });
   };
 
+  const getWeightData = (
+    timeframe: TimeFrame
+  ): { value: number; label?: string }[] => {
+    if (!weightHistory.length || !startWeight) return [];
+
+    const now = new Date();
+    const labels = getTimeLabels(timeframe);
+
+    // Create date ranges for each label based on timeframe
+    const dateRanges = labels.map((_, index) => {
+      const date = new Date();
+      switch (timeframe) {
+        case "day":
+          date.setDate(now.getDate() - (6 - index));
+          return {
+            start: new Date(date.setHours(0, 0, 0, 0)),
+            end: new Date(date.setHours(23, 59, 59, 999)),
+          };
+        case "week":
+          date.setDate(now.getDate() - (6 - index) * 7);
+          return {
+            start: new Date(date.setHours(0, 0, 0, 0)),
+            end: new Date(new Date(date).setDate(date.getDate() + 6)),
+          };
+        case "month":
+          date.setMonth(now.getMonth() - (6 - index));
+          return {
+            start: new Date(date.getFullYear(), date.getMonth(), 1),
+            end: new Date(date.getFullYear(), date.getMonth() + 1, 0),
+          };
+      }
+    });
+
+    // Sort weight history chronologically
+    const sortedHistory = [...weightHistory].sort(
+      (a, b) =>
+        new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+    );
+
+    let lastKnownWeight = startWeight;
+    const dataPoints = dateRanges.map((range) => {
+      // Find all records in this date range
+      const recordsInRange = sortedHistory.filter((record) => {
+        const recordDate = new Date(record.created_at);
+        return recordDate >= range.start && recordDate <= range.end;
+      });
+
+      // If there are records in this range, update the last known weight
+      if (recordsInRange.length > 0) {
+        // Use the most recent record in this range
+        const mostRecent = recordsInRange.reduce((prev, current) =>
+          new Date(prev.created_at) > new Date(current.created_at)
+            ? prev
+            : current
+        );
+        lastKnownWeight = mostRecent.weight;
+      }
+
+      // Return the last known weight (could be from a previous period)
+      return {
+        value: lastKnownWeight,
+        // Add metadata for the tooltip
+        dataPointText: lastKnownWeight.toFixed(1),
+        label: labels[dateRanges.indexOf(range)],
+        dateRange: range,
+      };
+    });
+
+    return dataPoints;
+  };
+
   // Current date for x-axis labels
-  const currentDate = useMemo(() => new Date("2025-04-20T10:41:43+01:00"), []);
+  const currentDate = useMemo(() => new Date(), []);
 
   // Create styles with current theme
   const styles = createStyles(isDarkMode);
@@ -512,15 +546,16 @@ export const WeightAndBMITracker = () => {
   }, [weight, startWeight, goalWeight]);
 
   const chartWeights = useMemo(
-    () => getWeightData(weight, timeframe),
-    [weight, timeframe]
+    () => getWeightData(timeframe),
+    [weightHistory, timeframe]
   );
   const chartValues = useMemo(() => {
-    const vals = chartWeights.filter((w) => w !== null) as number[];
+    const vals = chartWeights.map((point) => point.value);
     if (goalWeight !== null) vals.push(goalWeight);
     if (startWeight !== null) vals.push(startWeight);
     return vals;
   }, [chartWeights, goalWeight, startWeight]);
+
   const yMax = useMemo(
     () => Math.ceil(Math.max(...chartValues) + 2),
     [chartValues]
@@ -546,10 +581,8 @@ export const WeightAndBMITracker = () => {
       Math.round(yMax - stepSize * i)
     );
   }, [yMax, yMin]);
-  const xLabels = useMemo(
-    () => getTimeLabels(timeframe, currentDate),
-    [timeframe, currentDate]
-  );
+
+  const xLabels = useMemo(() => getTimeLabels(timeframe), [timeframe]);
 
   // Update where BMI status is displayed
   const bmiStatus = useMemo(() => {
@@ -557,7 +590,7 @@ export const WeightAndBMITracker = () => {
     const status = getBMIStatus(bmi);
     return {
       label: t(`bmi.status.${status.label}`),
-      color: status.color
+      color: status.color,
     };
   }, [bmi, t]);
 
@@ -566,21 +599,37 @@ export const WeightAndBMITracker = () => {
       setLoading(true);
       const user = await supabase.auth.getUser();
       if (!user.data.user) return;
-      const { data, error } = await supabase
+
+      // Fetch profile data
+      const { data: profile, error: profileError } = await supabase
         .from("profiles")
-        .select("weight, height, target_weight, current_weight")
+        .select("weight, height, target_weight")
         .eq("id", user.data.user.id)
         .single();
-      if (!error && data) {
-        setStartWeight(data.weight);
-        setWeight(data.current_weight ?? data.weight);
-        setHeight(data.height);
-        setGoalWeight(data.target_weight);
-        if (data.weight && data.height) {
-          const bmiVal = data.weight / (data.height / 100) ** 2;
+
+      // Fetch weight history
+      const { data: weights, error: weightsError } = await supabase
+        .from("weight_history")
+        .select("weight, created_at")
+        .eq("user_id", user.data.user.id)
+        .order("created_at", { ascending: true });
+
+      if (!profileError && profile) {
+        setStartWeight(profile.weight);
+        setHeight(profile.height);
+        setGoalWeight(profile.target_weight);
+      }
+
+      if (!weightsError && weights && weights.length > 0) {
+        setWeightHistory(weights);
+        setWeight(weights[weights.length - 1].weight);
+        if (profile?.height) {
+          const bmiVal =
+            weights[weights.length - 1].weight / (profile.height / 100) ** 2;
           setBMI(Number(bmiVal.toFixed(2)));
         }
       }
+
       setLoading(false);
     };
     fetchProfile();
@@ -617,13 +666,16 @@ export const WeightAndBMITracker = () => {
             <Text style={styles.unit}>kg</Text>
           </Text>
           <View style={styles.goalRow}>
-            <Text style={styles.goalLabel}>{t("weightTracker.starting")}: </Text>
+            <Text style={styles.goalLabel}>
+              {t("weightTracker.starting")}:{" "}
+            </Text>
             <Text style={styles.goalValue}>{startWeight ?? "--"}kg</Text>
-            <Text style={[styles.goalLabel, { marginLeft: 8 }]}>{t("weightTracker.goal")}: </Text>
+            <Text style={[styles.goalLabel, { marginLeft: 8 }]}>
+              {t("weightTracker.goal")}:{" "}
+            </Text>
             <Text style={styles.goalValue}>{goalWeight ?? "--"}kg</Text>
           </View>
         </View>
-
         {/* Time Period Selector */}
         <View style={styles.timeSelector}>
           {(["day", "week", "month"] as TimeFrame[]).map((period) => (
@@ -650,98 +702,85 @@ export const WeightAndBMITracker = () => {
             </TouchableOpacity>
           ))}
         </View>
-
         {/* Chart */}
+        // Replace your current chart container with this:
         <View style={styles.chartContainer}>
-          <View style={styles.yAxis}>
-            {yLabels.map((label) => (
-              <Text key={String(label)} style={styles.axisLabel}>
-                {label}
-              </Text>
-            ))}
-          </View>
-          <View style={styles.chartArea}>
-            {/* Target Weight Line */}
-            {goalWeight !== null && (
-              <>
-                <View
-                  style={[
-                    styles.targetLine,
-                    {
-                      top: getYPosition(goalWeight),
-                      borderColor: WARM_YELLOW,
-                    },
-                  ]}
-                />
-                <Text
-                  style={[
-                    styles.goalLineText,
-                    { top: getYPosition(goalWeight), marginTop: -16 },
-                  ]}
-                >
-                  {goalWeight}kg
-                </Text>
-              </>
-            )}
-
-            {/* Vertical Grid Lines */}
-            {xLabels.map((_, idx) => (
-              <View
-                key={idx}
-                style={[styles.verticalLine, { left: getXPosition(idx) }]}
-              />
-            ))}
-
-            {/* Weight Line */}
-            {startWeight !== null && weight !== null && (
-              <View
-                style={[
-                  styles.weightLine,
-                  {
-                    left: 0,
-                    width: '100%',
-                    top: getYPosition(startWeight),
-                    transform: [{
-                      rotate: `${Math.atan2(
-                        parseFloat(getYPosition(weight).replace('%', '')) - 
-                        parseFloat(getYPosition(startWeight).replace('%', '')),
-                        100 // full width percentage
-                      )}rad`
-                    }],
-                    transformOrigin: 'left',
-                  }
-                ]}
-              />
-            )}
-
-            {/* Weight Points */}
-            <View style={styles.pointsContainer}>
-              {chartWeights.map(
-                (w, i) =>
-                  w !== null && (
-                    <View
-                      key={i}
-                      style={[
-                        styles.weightPoint,
-                        {
-                          left: getXPosition(i),
-                          top: getYPosition(w),
-                        },
-                      ]}
-                    />
-                  )
-              )}
-            </View>
-
-            {/* X-Axis */}
-            <View style={styles.xAxis}>
-              {xLabels.map((label, index) => (
-                <Text key={index} style={styles.xAxisLabel}>
-                  {label}
-                </Text>
-              ))}
-            </View>
-          </View>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingRight: 20 }}
+          >
+            <LineChart
+              data={getWeightData(timeframe)}
+              height={200}
+              width={Dimensions.get("window").width * 1.15} // Wider than screen for scrolling
+              maxValue={yMax}
+              minValue={yMin}
+              noOfSections={4}
+              spacing={timeframe === "month" ? 40 : 60} // Adjust based on timeframe
+              initialSpacing={10}
+              endSpacing={10}
+              backgroundColor={isDarkMode ? "#23272F" : LIGHT_GRAY}
+              curved
+              thickness={3}
+              color={PRIMARY}
+              dataPointsColor={PRIMARY}
+              dataPointsHeight={8}
+              dataPointsWidth={8}
+              textFontSize1={8}
+              textColor={isDarkMode ? OFF_WHITE : DARK_GRAY}
+              textFontSize={12}
+              textShiftY={20}
+              textShiftX={-1}
+              yAxisTextStyle={{
+                color: isDarkMode ? "#94A3B8" : "#64748B",
+                fontSize: 12,
+              }}
+              xAxisLabelTextStyle={{
+                color: isDarkMode ? "#94A3B8" : "#64748B",
+                fontSize: 12,
+                width: timeframe === "month" ? 40 : 60,
+              }}
+              xAxisLabelsHeight={24}
+              xAxisLabelsVerticalShift={4}
+              yAxisLabelWidth={40}
+              yAxisColor={isDarkMode ? "#374151" : "#E0E0E0"}
+              xAxisColor={isDarkMode ? "#374151" : "#E0E0E0"}
+              rulesColor={isDarkMode ? "#374151" : "#E0E0E0"}
+              xAxisLabelTexts={getTimeLabels(timeframe)}
+              referenceLines={[
+                {
+                  value: goalWeight || 0, // Fallback to 0 if goalWeight is null
+                  color: WARM_YELLOW,    // Use your yellow color constant
+                  thickness: 2,          // Line thickness
+                  dashWidth: 4,          // Length of each dash
+                  dashGap: 4,            // Space between dashes
+                  labelText: goalWeight ? `${goalWeight}kg` : undefined,
+                  labelTextStyle: {
+                    color: OFF_WHITE,
+                    backgroundColor: WARM_YELLOW,
+                    paddingHorizontal: 4,
+                    paddingVertical: 2,
+                    borderRadius: 4,
+                    fontSize: 12,
+                    zIndex: 100,
+                  },
+                  labelComponent: () => (
+                    <View style={{
+                      backgroundColor: WARM_YELLOW,
+                      paddingHorizontal: 6,
+                      paddingVertical: 2,
+                      borderRadius: 4,
+                    }}>
+                      <Text style={{ color: OFF_WHITE, fontSize: 12 }}>
+                        {goalWeight ? `Goal: ${goalWeight}kg` : ''}
+                      </Text>
+                    </View>
+                  ),
+                },
+              ]}
+            />
+          </ScrollView>
         </View>
       </View>
 
@@ -756,15 +795,6 @@ export const WeightAndBMITracker = () => {
                 size={12}
                 color={isDarkMode ? "#94A3B8" : "#64748B"}
                 style={{ marginLeft: 4, marginTop: 4 }}
-              />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.headerActions}>
-            <TouchableOpacity>
-              <Ionicons
-                name="pencil"
-                size={16}
-                color={bmiStatus?.color ?? PRIMARY}
               />
             </TouchableOpacity>
           </View>
@@ -850,7 +880,9 @@ export const WeightAndBMITracker = () => {
                 color={isDarkMode ? OFF_WHITE : DARK_GRAY}
               />
             </TouchableOpacity>
-            <Text style={styles.modalTitle}>{t("weightTracker.updateWeight")}</Text>
+            <Text style={styles.modalTitle}>
+              {t("weightTracker.updateWeight")}
+            </Text>
             <TextInput
               style={styles.modalInput}
               placeholder={t("weightTracker.enterWeight")}
@@ -863,7 +895,9 @@ export const WeightAndBMITracker = () => {
               style={styles.modalButton}
               onPress={handleSaveWeight}
             >
-              <Text style={styles.modalButtonText}>{t("weightTracker.save")}</Text>
+              <Text style={styles.modalButtonText}>
+                {t("weightTracker.save")}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

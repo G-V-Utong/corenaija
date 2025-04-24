@@ -89,10 +89,12 @@ export default function ProfileScreen() {
       const { start, end } = getDateRange(timeframe);
 
       if (timeframe === "today") {
+        const today = new Date().toISOString().split("T")[0];
+        
         const { data, error } = await supabase
           .from("water_intake")
           .select("amount")
-          .eq("date", new Date().toISOString().split("T")[0])
+          .eq("date", today)
           .single();
 
         if (error && error.code !== "PGRST116") {
@@ -101,6 +103,7 @@ export default function ProfileScreen() {
         }
         setWaterIntake(data?.amount || 0);
       } else {
+        
         const { data, error } = await supabase
           .from("water_intake")
           .select("amount")
@@ -112,8 +115,7 @@ export default function ProfileScreen() {
           return;
         }
 
-        const total =
-          data?.reduce((sum, record) => sum + (record.amount || 0), 0) || 0;
+        const total = Number((data?.reduce((sum, record) => sum + (record.amount || 0), 0) || 0).toFixed(1));
         setWaterIntake(total);
       }
     } catch (error) {
